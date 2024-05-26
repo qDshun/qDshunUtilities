@@ -14,7 +14,7 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
+        var connectionString = builder.Configuration["qDshunUtilitiesConnectionString"];
         builder.Services
             .AddDbContext<ApplicationDbContext>(options =>
             {
