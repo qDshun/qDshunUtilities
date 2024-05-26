@@ -1,0 +1,6 @@
+@qDshunUtilities_HostAddress = http://localhost:5087
+
+GET {{qDshunUtilities_HostAddress}}/Herbalism/
+Accept: application/json
+
+###
