@@ -72,7 +72,7 @@ public class Program
 
 
         app.MapControllers();
-        app.MapIdentityApi<UserEntity>();
+        app.MapGroup("/api/identity").WithTags("Identity").MapIdentityApi<UserEntity>();
         app.Run();
     }
 
