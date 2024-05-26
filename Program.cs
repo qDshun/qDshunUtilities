@@ -32,7 +32,6 @@ public class Program
         builder.Services
             .AddIdentityCore<UserEntity>(passwordConfiguration)
             .AddDefaultTokenProviders()
-            .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddApiEndpoints();
 
@@ -64,6 +63,13 @@ public class Program
         {
             app.UseSwagger();
             app.UseSwaggerUI();
+            app.UseCors(options =>
+            {
+                options.SetIsOriginAllowed(_ => true)
+                       .AllowAnyHeader()
+                       .AllowAnyMethod()
+                       .AllowCredentials();
+            });
         }
 
         app.UseHttpsRedirection();

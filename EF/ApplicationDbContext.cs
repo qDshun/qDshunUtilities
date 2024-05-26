@@ -5,7 +5,8 @@ using qDshunUtilities.EF.Entities;
 
 namespace qDshunUtilities.EF;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<UserEntity, IdentityRole<Guid>, Guid>(options)
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
+    : IdentityUserContext<UserEntity, Guid>(options)
 {
     public DbSet<LootItemEntity> LootItems { get; set; }
     public DbSet<LootSourceEntity> LootSources { get; set; }
