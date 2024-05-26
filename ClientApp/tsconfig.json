@@ -18,6 +18,17 @@
     "target": "ES2022",
     "module": "ES2022",
     "useDefineForClassFields": false,
+    "paths": {
+      "@services/*": [
+        "./src/app/services/*"
+      ],
+      "@models/*": [
+        "./src/app/models/*"
+      ],
+      "@helpers/*": [
+        "./src/app/helpers/*"
+      ],
+    },
     "lib": [
       "ES2022",
       "dom"
