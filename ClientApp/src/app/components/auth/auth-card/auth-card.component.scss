@@ -7,16 +7,20 @@
 
 .auth-card-content-container {
   flex-basis: 100%;
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
 }
 
 ::ng-deep  .auth-card-form {
   display: flex;
   flex-flow: column;
-  padding-top: 20%;
-  padding-left: 30%;
-  padding-right: 30%;
+  padding-top: min(20%, 250px);
   justify-content: center;
   column-gap: 10px;
+  max-width: 400px;
+  width: 100%;
+
 }
 
 ::ng-deep .auth-card-text {
