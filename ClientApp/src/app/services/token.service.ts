@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { TokenResponse } from '@models/token-response.model';
+import { TokenResponse } from '../models';
 
 const accessTokenName = 'accessToken';
 const refreshTokenName = 'refreshToken';
