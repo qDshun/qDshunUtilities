@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using qDshunUtilities.Automapper;
@@ -35,11 +36,13 @@ public class Program
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddApiEndpoints();
 
+
         builder.Services.AddAuthorizationBuilder();
 
         builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme)
             .AddIdentityCookies();
 
+        builder.Services.ConfigureApplicationCookie(disableRedirectsOnFailedLogin);
         // Add services to the container.
 
         builder.Services.AddControllers();
@@ -71,7 +74,7 @@ public class Program
         app.UseHttpsRedirection();
 
         app.UseAuthorization();
-
+        
 
         app.MapControllers();
         app.MapGroup("/api/identity").WithTags("Identity").MapIdentityApi<UserEntity>();
@@ -81,5 +84,22 @@ public class Program
     private static readonly Action<IdentityOptions> passwordConfiguration = options =>
     {
         options.Password.RequireNonAlphanumeric = false;
+    };
+
+    private static readonly Action<CookieAuthenticationOptions> disableRedirectsOnFailedLogin = options =>
+    {
+        options.Events = new CookieAuthenticationEvents
+        {
+            OnRedirectToLogin = context =>
+            {
+                context.Response.StatusCode = 401;
+                return Task.CompletedTask;
+            },
+            OnRedirectToAccessDenied = context =>
+            {
+                context.Response.StatusCode = 403;
+                return Task.CompletedTask;
+            }
+        };
     };
 }
