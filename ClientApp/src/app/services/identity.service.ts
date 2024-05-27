@@ -43,11 +43,11 @@ export class IdentityService {
   }
 
   redirectToLogin(): Promise<boolean> {
-    return this.router.navigateByUrl(this.loginRoute, { skipLocationChange: false });
+    return this.router.navigateByUrl('/login', { skipLocationChange: false });
   }
 
   redirectToRegister(): Promise<boolean> {
-    return this.router.navigateByUrl(this.registerRoute, { skipLocationChange: false });
+    return this.router.navigateByUrl('/register', { skipLocationChange: false });
   }
 
   redirectToHome(): Promise<boolean> {
