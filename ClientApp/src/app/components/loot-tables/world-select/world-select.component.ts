@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { WorldService } from '../../../services';
 
 @Component({
   selector: 'app-world-select',
@@ -8,6 +9,11 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrl: './world-select.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class WorldSelectComponent {
+export class WorldSelectComponent implements OnInit{
+  private worldService = inject(WorldService);
+  worlds$ = this.worldService.worlds$;
+  ngOnInit(): void {
+    this.worlds$.subscribe();
+  }
 
 }

@@ -18,23 +18,23 @@ export class WorldService {
   );
 
   private getWorlds(): Observable<WorldResponse[]> {
-    return this.apiService.get<WorldResponse[]>('api/world/');
+    return this.apiService.get<WorldResponse[]>('world/');
   }
 
   createWorld(world: EditWorldRequest){
-    return this.apiService.post('api/world/', world).pipe(
+    return this.apiService.post('world/', world).pipe(
       tap(() => this.worldsUpdated$.next(null))
     );
   }
 
   updateWorld(id: string, world: EditWorldRequest){
-    return this.apiService.put(`api/world/${id}`, world).pipe(
+    return this.apiService.put(`world/${id}`, world).pipe(
       tap(() => this.worldsUpdated$.next(null))
     );
   }
 
   deleteWorld(id: string){
-    return this.apiService.delete(`api/world/${id}`).pipe(
+    return this.apiService.delete(`world/${id}`).pipe(
       tap(() => this.worldsUpdated$.next(null))
     );
   }
