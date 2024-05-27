@@ -4,6 +4,6 @@ public class WorldEntity: BaseEntity
 {
     public string Name { get; set; }
     public string ImageUrl { get; set; }
-    public IEnumerable<WorldUserEntity> WorldUsers { get; set; } = [];
-    public IEnumerable<LootSourceEntity> LootSources { get; set; } = [];
+    public List<WorldUserEntity> WorldUsers { get; set; } = [];
+    public List<LootSourceEntity> LootSources { get; set; } = [];
 }

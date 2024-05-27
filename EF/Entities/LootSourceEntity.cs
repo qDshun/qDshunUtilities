@@ -2,5 +2,5 @@
 
 public class LootSourceEntity: BaseEntity
 {
-    public IEnumerable<LootItemEntity> LootItems { get; set; } = [];
+    public List<LootItemEntity> LootItems { get; set; } = [];
 }

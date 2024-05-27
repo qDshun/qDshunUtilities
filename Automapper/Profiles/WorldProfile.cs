@@ -10,5 +10,8 @@ public class WorldProfile : Profile
     {
         CreateMap<WorldEntity, World>();
 
+        CreateMap<WorldCreate, WorldEntity>();
+
+        CreateMap<WorldUpdate, WorldEntity>();
     }
 }
