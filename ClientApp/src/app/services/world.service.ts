@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, ReplaySubject, share, switchMap, tap } fro
 import { ApiService } from './api.service';
 import { EditWorldRequest } from '../models/edit-world-request';
 import { WorldResponse } from '../models/world-response';
+import { CreateWorldRequest } from '../models/create-world-request';
 
 @Injectable({
   providedIn: 'root'
@@ -21,19 +22,19 @@ export class WorldService {
     return this.apiService.get<WorldResponse[]>('world/');
   }
 
-  createWorld(world: EditWorldRequest){
+  createWorld(world: CreateWorldRequest) {
     return this.apiService.post('world/', world).pipe(
       tap(() => this.worldsUpdated$.next(null))
     );
   }
 
-  updateWorld(id: string, world: EditWorldRequest){
+  updateWorld(id: string, world: EditWorldRequest) {
     return this.apiService.put(`world/${id}`, world).pipe(
       tap(() => this.worldsUpdated$.next(null))
     );
   }
 
-  deleteWorld(id: string){
+  deleteWorld(id: string) {
     return this.apiService.delete(`world/${id}`).pipe(
       tap(() => this.worldsUpdated$.next(null))
     );

@@ -10,8 +10,16 @@ public class WorldProfile : Profile
     {
         CreateMap<WorldEntity, World>();
 
-        CreateMap<WorldCreate, WorldEntity>();
+        CreateMap<WorldCreate, WorldEntity>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.WorldUsers, opt => opt.Ignore())
+            .ForMember(dest => dest.LootSources, opt => opt.Ignore())
+            ;
 
-        CreateMap<WorldUpdate, WorldEntity>();
+        CreateMap<WorldUpdate, WorldEntity>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.WorldUsers, opt => opt.Ignore())
+            .ForMember(dest => dest.LootSources, opt => opt.Ignore())
+            ;
     }
 }
