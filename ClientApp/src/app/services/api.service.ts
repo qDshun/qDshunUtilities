@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class ApiService {
 
+  private apiPrefix = 'api/';
   constructor(
     private http: HttpClient,
     @Inject('BASE_URL') private baseUrl: string
@@ -32,7 +33,7 @@ export class ApiService {
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-    return this.baseUrl + url;
+    return this.baseUrl + this.apiPrefix + url ;
   }
 
 }

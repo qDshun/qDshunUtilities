@@ -9,7 +9,7 @@ import { TokenService } from './token.service';
   providedIn: 'root'
 })
 export class IdentityService {
-  private authPrefix = '';
+  private authPrefix = 'identity';
   private tokenService = inject(TokenService);
   private apiService = inject(ApiService);
   private router = inject(Router);

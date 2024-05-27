@@ -1,9 +1,10 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, isDevMode, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { AuthInterceptor } from './interceptors';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -11,10 +12,11 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync('noop'),
     provideHttpClient(withInterceptorsFromDi()),
-    { provide: 'BASE_URL', useFactory: getBaseUrl, deps: [] }
+    { provide: 'BASE_URL', useFactory: getBaseUrl, deps: [] },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ]
 };
 
 function getBaseUrl() {
-  return document.getElementsByTagName('base')[0].href;
+  return isDevMode() ? "https://localhost:7297/" : document.getElementsByTagName('base')[0].href;
 }
