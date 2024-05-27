@@ -56,6 +56,7 @@ public class Program
 
         builder.Services.AddScoped<IWorldService, WorldService>();
 
+        builder.Services.AddCors();
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
