@@ -9,8 +9,7 @@ export class ApiService {
 
   private apiPrefix = 'api/';
   constructor(
-    private http: HttpClient,
-    @Inject('BASE_URL') private baseUrl: string
+    private http: HttpClient
     ) { }
 
   get<T>(url: string, headers?: HttpHeaders, params?: HttpParams): Observable<T> {
@@ -33,7 +32,7 @@ export class ApiService {
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-    return this.baseUrl + this.apiPrefix + url ;
+    return this.apiPrefix + url ;
   }
 
 }

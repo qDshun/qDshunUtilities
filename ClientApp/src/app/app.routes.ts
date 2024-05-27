@@ -16,6 +16,12 @@ export const routes: Routes = [
     title: 'Register',
   },
   {
+    path: '',
+    component: WorldSelectComponent,
+    title: 'Worlds',
+    canActivate: [authGuard]
+  },
+  {
     path: 'worlds',
     component: WorldSelectComponent,
     title: 'Worlds',

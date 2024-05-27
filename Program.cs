@@ -37,13 +37,8 @@ public class Program
 
         builder.Services.AddAuthorizationBuilder();
 
-        builder.Services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = IdentityConstants.BearerScheme;
-            options.DefaultChallengeScheme = IdentityConstants.BearerScheme;
-            options.DefaultSignInScheme = IdentityConstants.BearerScheme;
-        })
-            .AddBearerToken(IdentityConstants.BearerScheme);
+        builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme)
+            .AddIdentityCookies();
 
         // Add services to the container.
 

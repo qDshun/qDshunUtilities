@@ -1,45 +1,49 @@
 import { Injectable, inject } from '@angular/core';
-import { map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { RegisterRequest, LoginRequest, TokenResponse } from '../models';
 import { ApiService } from './api.service';
-import { TokenService } from './token.service';
+import { tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class IdentityService {
   private authPrefix = 'identity';
-  private tokenService = inject(TokenService);
   private apiService = inject(ApiService);
   private router = inject(Router);
-
   private registerRoute = `${this.authPrefix}/register`;
-  private loginRoute = `${this.authPrefix}/login`;
+  private loginRoute = `${this.authPrefix}/login?useCookies=true`;
 
-  constructor() { }
+
+  private isLoggedInName = 'IsLoggedIn';
+  private isLoggedInValue = 'true';
+
+  constructor() {
+  }
 
   register(registerRequest: RegisterRequest) {
     return this.apiService.post(this.registerRoute, registerRequest);
   }
 
   login(loginRequest: LoginRequest, rememberMe: boolean) {
-    return this.apiService.post<TokenResponse>(this.loginRoute, loginRequest)
-      .pipe(
-        tap(response => this.tokenService.setToken(response, rememberMe))
-      );
+    return this.apiService.post<TokenResponse>(this.loginRoute, loginRequest).pipe(
+      tap(() => this.rememberLogIn())
+    );
   }
 
   get isLoggedIn(): boolean {
-    return this.tokenService.getAccessToken() !== null;
+    const isLoggedIn = localStorage.getItem(this.isLoggedInName) ?? sessionStorage.getItem(this.isLoggedInName);
+    return !!isLoggedIn;
   }
 
-  getToken() {
-    return this.tokenService.getAccessToken();
+  rememberLogIn(){
+    localStorage.setItem(this.isLoggedInName, this.isLoggedInValue);
+    sessionStorage.setItem(this.isLoggedInName, this.isLoggedInValue);
   }
 
   logout() {
-    this.tokenService.removeToken();
+    localStorage.removeItem(this.isLoggedInName);
+    sessionStorage.removeItem(this.isLoggedInName);
   }
 
   redirectToLogin(): Promise<boolean> {
@@ -53,5 +57,4 @@ export class IdentityService {
   redirectToHome(): Promise<boolean> {
     return this.router.navigateByUrl('/', { skipLocationChange: false });
   }
-
 }
