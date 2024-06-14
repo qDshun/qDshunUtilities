@@ -9,7 +9,9 @@ public class WorldProfile : Profile
 {
     public WorldProfile()
     {
-        CreateMap<WorldEntity, World>();
+        CreateMap<WorldEntity, World>()
+            .ForMember(dest => dest.LootSources, opt => opt.MapFrom(src => src.LootSources))
+            ;
 
         CreateMap<WorldCreate, WorldEntity>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())

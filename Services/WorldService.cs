@@ -25,6 +25,8 @@ public class WorldService(ApplicationDbContext dbContext, IMapper mapper, IAcces
         var world = await dbContext.Worlds
             .Include(w => w.WorldUsers)
             .Where(w => w.WorldUsers.Any(wu => wu.UserId == authenticatedUser) && w.Id == worldId)
+            .Include(w => w.LootSources)
+                .ThenInclude(ls => ls.LootItems)
             .FirstAsync();
 
         return mapper.Map<World>(world);
@@ -34,6 +36,8 @@ public class WorldService(ApplicationDbContext dbContext, IMapper mapper, IAcces
     {
         var worlds = await dbContext.Worlds
             .Include(w => w.WorldUsers.Where(wu => wu.UserId == authenticatedUser))
+            .Include(w => w.LootSources)
+                .ThenInclude(ls => ls.LootItems)
             .ToListAsync();
 
         return worlds.Select(mapper.Map<World>);

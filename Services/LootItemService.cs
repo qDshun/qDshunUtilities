@@ -19,7 +19,7 @@ public class LootItemService(ApplicationDbContext dbContext, IMapper mapper, IAc
     {
         var lootSourceEntity = await dbContext.LootSources
             .Where(ls => ls.World.WorldUsers.Any(wu => wu.UserId == authenticatedUser))
-            .SingleAsync();
+            .SingleAsync(ls => ls.Id == lootSourceId);
 
         await accessService.AssertHasAccessToWorldAsync(lootSourceEntity.WorldId, authenticatedUser);
 

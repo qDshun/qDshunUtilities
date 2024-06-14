@@ -1,9 +1,8 @@
 ﻿namespace qDshunUtilities.Models.Outbound;
 
-public class World
+public class LootSource
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
-    public string ImageUrl { get; set; }
-    public IEnumerable<LootSource> LootSources { get; set; }
+    public IEnumerable<LootItem> LootItems { get; set; }
 }

@@ -6,11 +6,10 @@ using qDshunUtilities.Automapper;
 using qDshunUtilities.EF;
 using qDshunUtilities.EF.Entities;
 using qDshunUtilities.Services;
-using System;
 
 namespace qDshunUtilities;
 
-public class Program
+public static class Program
 {
     public static void Main(string[] args)
     {
@@ -56,6 +55,7 @@ public class Program
         builder.Services.AddScoped<ILootItemService, LootItemService>();
         builder.Services.AddScoped<ILootSourceService, LootSourceService>();
         builder.Services.AddScoped<IAccessService, AccessService>();
+        builder.Services.AddSingleton<IDiceService, DiceService>();
 
         builder.Services.AddCors();
         var app = builder.Build();

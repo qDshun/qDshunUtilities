@@ -9,6 +9,16 @@ public class LootSourceProfile : Profile
 {
     public LootSourceProfile()
     {
+        CreateMap<LootSourceEntity, MaterializedLootSource>()
+            .ForMember(dest => dest.Expression, opt => opt.Ignore())
+            .ForMember(dest => dest.Count, opt => opt.Ignore())
+            .ForMember(dest => dest.MaterializedLootItems, opt => opt.MapFrom(src => src.LootItems))
+            ;
+
+        CreateMap<LootSourceEntity, LootSource>()
+            .ForMember(dest => dest.LootItems, opt => opt.MapFrom(src => src.LootItems))
+            ;
+
         CreateMap<LootSourceCreate, LootSourceEntity>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.LootItems, opt => opt.Ignore())
