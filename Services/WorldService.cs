@@ -2,7 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using qDshunUtilities.EF;
 using qDshunUtilities.EF.Entities;
-using qDshunUtilities.Models;
+using qDshunUtilities.Models.Inbound;
+using qDshunUtilities.Models.Outbound;
 
 namespace qDshunUtilities.Services;
 
@@ -10,15 +11,17 @@ public interface IWorldService
 {
     Task<IEnumerable<World>> GetWorldsAsync(Guid authenticatedUser);
     Task<World> GetWorldAsync(Guid worldId, Guid authenticatedUser);
-    Task CreateWorld(WorldCreate worldCreate, Guid authenticatedUser);
-    Task UpdateWorld(Guid worldId, WorldUpdate worldupdate, Guid authenticatedUser);
-    Task DeleteWorld(Guid worldId, Guid authenticatedUser);
+    Task CreateWorldAsync(WorldCreate worldCreate, Guid authenticatedUser);
+    Task UpdateWorldAsync(Guid worldId, WorldUpdate worldupdate, Guid authenticatedUser);
+    Task DeleteWorldAsync(Guid worldId, Guid authenticatedUser);
 }
 
-public class WorldService(ApplicationDbContext dbContext, IMapper mapper) : IWorldService
+public class WorldService(ApplicationDbContext dbContext, IMapper mapper, IAccessService accessService) : IWorldService
 {
     public async Task<World> GetWorldAsync(Guid worldId, Guid authenticatedUser)
     {
+        await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
+
         var world = await dbContext.Worlds
             .Include(w => w.WorldUsers)
             .Where(w => w.WorldUsers.Any(wu => wu.UserId == authenticatedUser) && w.Id == worldId)
@@ -36,7 +39,7 @@ public class WorldService(ApplicationDbContext dbContext, IMapper mapper) : IWor
         return worlds.Select(mapper.Map<World>);
     }
 
-    public async Task CreateWorld(WorldCreate worldCreate, Guid authenticatedUser)
+    public async Task CreateWorldAsync(WorldCreate worldCreate, Guid authenticatedUser)
     {
         var worldEntity = mapper.Map<WorldEntity>(worldCreate);
         var user = await dbContext.Users.SingleAsync(u => u.Id == authenticatedUser);
@@ -47,8 +50,10 @@ public class WorldService(ApplicationDbContext dbContext, IMapper mapper) : IWor
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateWorld(Guid worldId, WorldUpdate worldupdate, Guid authenticatedUser)
+    public async Task UpdateWorldAsync(Guid worldId, WorldUpdate worldupdate, Guid authenticatedUser)
     {
+        await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
+
         var worldEntity = await dbContext.Worlds
             .Include(w => w.WorldUsers.Where(wu => wu.UserId == authenticatedUser))
             .SingleAsync(w => w.Id == worldId);
@@ -59,8 +64,10 @@ public class WorldService(ApplicationDbContext dbContext, IMapper mapper) : IWor
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteWorld(Guid worldId, Guid authenticatedUser)
+    public async Task DeleteWorldAsync(Guid worldId, Guid authenticatedUser)
     {
+        await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
+
         var worldEntity = await dbContext.Worlds
             .Include(w => w.WorldUsers.Where(wu => wu.UserId == authenticatedUser))
             .SingleAsync(w => w.Id == worldId);

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using qDshunUtilities.EF;
 
@@ -11,9 +12,11 @@ using qDshunUtilities.EF;
 namespace qDshunUtilities.EF.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240614190256_RenameNavigationPropertiesOnLootSource")]
+    partial class RenameNavigationPropertiesOnLootSource
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,7 +105,7 @@ namespace qDshunUtilities.EF.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("LootSourceId")
+                    b.Property<Guid?>("LootSourceEntityId")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Name")
@@ -114,7 +117,7 @@ namespace qDshunUtilities.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LootSourceId");
+                    b.HasIndex("LootSourceEntityId");
 
                     b.ToTable("LootItems");
                 });
@@ -273,13 +276,9 @@ namespace qDshunUtilities.EF.Migrations
 
             modelBuilder.Entity("qDshunUtilities.EF.Entities.LootItemEntity", b =>
                 {
-                    b.HasOne("qDshunUtilities.EF.Entities.LootSourceEntity", "LootSource")
+                    b.HasOne("qDshunUtilities.EF.Entities.LootSourceEntity", null)
                         .WithMany("LootItems")
-                        .HasForeignKey("LootSourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("LootSource");
+                        .HasForeignKey("LootSourceEntityId");
                 });
 
             modelBuilder.Entity("qDshunUtilities.EF.Entities.LootSourceEntity", b =>

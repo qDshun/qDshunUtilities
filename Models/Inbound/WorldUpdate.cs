@@ -1,4 +1,4 @@
-﻿namespace qDshunUtilities.Models;
+﻿namespace qDshunUtilities.Models.Inbound;
 
 public class WorldUpdate
 {

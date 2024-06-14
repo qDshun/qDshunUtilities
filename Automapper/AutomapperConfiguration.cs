@@ -31,6 +31,8 @@ public class AutomapperConfiguration
 
         // Register profiles
         cfg.AddProfile(new WorldProfile());
+        cfg.AddProfile(new LootSourceProfile());
+        cfg.AddProfile(new LootItemProfile());
 
         return cfg;
     }

@@ -53,6 +53,9 @@ public class Program
         builder.Services.AddSingleton(serviceProvider => new AutomapperConfiguration(serviceProvider, builder.Environment).GetMapper());
 
         builder.Services.AddScoped<IWorldService, WorldService>();
+        builder.Services.AddScoped<ILootItemService, LootItemService>();
+        builder.Services.AddScoped<ILootSourceService, LootSourceService>();
+        builder.Services.AddScoped<IAccessService, AccessService>();
 
         builder.Services.AddCors();
         var app = builder.Build();
@@ -88,6 +91,7 @@ public class Program
 
     private static readonly Action<CookieAuthenticationOptions> disableRedirectsOnFailedLogin = options =>
     {
+        options.Cookie.SameSite = SameSiteMode.None;
         options.Events = new CookieAuthenticationEvents
         {
             OnRedirectToLogin = context =>

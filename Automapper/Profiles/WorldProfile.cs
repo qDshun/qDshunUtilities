@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using qDshunUtilities.EF.Entities;
-using qDshunUtilities.Models;
+using qDshunUtilities.Models.Inbound;
+using qDshunUtilities.Models.Outbound;
 
 namespace qDshunUtilities.Automapper.Profiles;
 

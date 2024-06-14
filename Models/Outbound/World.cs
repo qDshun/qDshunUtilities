@@ -1,4 +1,4 @@
-﻿namespace qDshunUtilities.Models;
+﻿namespace qDshunUtilities.Models.Outbound;
 
 public class World
 {
