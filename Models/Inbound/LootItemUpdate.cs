@@ -7,4 +7,5 @@ public class LootItemUpdate
     public double Weight { get; set; }
     public double Cost { get; set; }
     public string CountExpression { get; set; }
+    public int Rarity { get; set; }
 }

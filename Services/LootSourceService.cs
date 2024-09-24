@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using KaimiraGames;
 using Microsoft.EntityFrameworkCore;
 using qDshunUtilities.EF;
 using qDshunUtilities.EF.Entities;
@@ -62,6 +63,7 @@ public class LootSourceService(ApplicationDbContext dbContext, IMapper mapper, I
             .Include(ls => ls.World)
             .Include(ls => ls.LootItems)
             .SingleAsync();
+
         var itemCount = DiceExpressionEvaluator.EvaluateDiceExpression(lootExpression);
         lootSourceEntity.LootItems = GetRandomisedItems(lootSourceEntity, itemCount);
 
@@ -90,7 +92,10 @@ public class LootSourceService(ApplicationDbContext dbContext, IMapper mapper, I
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    Count = item.Count,
+                    Description = item.Description,
+                    Weight = item.Weight,
+                    Cost = item.Cost,
+                    Count = item.Count
                 };
             }
         }
@@ -104,15 +109,10 @@ public class LootSourceService(ApplicationDbContext dbContext, IMapper mapper, I
         {
             return [];
         }
-        var random = new Random();
-        var selectedLootItems = new List<LootItemEntity>();
+        var weightedLootItems = lootSourceEntity.LootItems.Select(li => new WeightedListItem<LootItemEntity>(li, li.Rarity)).ToList();
 
-        for (int i = 0; i < count; i++)
-        {
-            var randomIndex = random.Next(lootSourceEntity.LootItems.Count);
-            var selectedItem = lootSourceEntity.LootItems[randomIndex];
-            selectedLootItems.Add(selectedItem);
-        }
-        return selectedLootItems;
+        WeightedList<LootItemEntity> weightedList = new(weightedLootItems);
+
+        return Enumerable.Range(0, count).Select(_ => weightedList.Next()).ToList();
     }
 }

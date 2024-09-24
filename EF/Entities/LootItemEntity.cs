@@ -7,6 +7,7 @@ public class LootItemEntity: BaseEntity
     public double Weight { get; set; }
     public double Cost { get; set; }
     public string CountExpression { get; set; }
+    public int Rarity { get; set; }
 
     public Guid LootSourceId { get; set; }
     public LootSourceEntity LootSource { get; set; }
