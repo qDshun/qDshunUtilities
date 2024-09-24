@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using qDshunUtilities.EF;
 
@@ -11,9 +12,11 @@ using qDshunUtilities.EF;
 namespace qDshunUtilities.EF.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240924152951_RemoveDuplicatedColumns")]
+    partial class RemoveDuplicatedColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,7 +123,7 @@ namespace qDshunUtilities.EF.Migrations
 
                     b.HasIndex("LootSourceId");
 
-                    b.ToTable("LootItems", (string)null);
+                    b.ToTable("LootItems");
                 });
 
             modelBuilder.Entity("qDshunUtilities.EF.Entities.LootSourceEntity", b =>
@@ -140,7 +143,7 @@ namespace qDshunUtilities.EF.Migrations
 
                     b.HasIndex("WorldId");
 
-                    b.ToTable("LootSources", (string)null);
+                    b.ToTable("LootSources");
                 });
 
             modelBuilder.Entity("qDshunUtilities.EF.Entities.UserEntity", b =>
@@ -224,7 +227,7 @@ namespace qDshunUtilities.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Worlds", (string)null);
+                    b.ToTable("Worlds");
                 });
 
             modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldUserEntity", b =>
@@ -245,7 +248,7 @@ namespace qDshunUtilities.EF.Migrations
 
                     b.HasIndex("WorldId");
 
-                    b.ToTable("WorldUsers", (string)null);
+                    b.ToTable("WorldUsers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>

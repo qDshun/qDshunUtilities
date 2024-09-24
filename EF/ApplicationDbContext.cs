@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using qDshunUtilities.EF.Entities;
+using System.Reflection.Emit;
 
 namespace qDshunUtilities.EF;
 
@@ -15,6 +16,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        builder.Entity<UserEntity>()
+            .HasMany(u => u.WorldUsers)
+            .WithOne(u => u.User);
+
         base.OnModelCreating(builder);
     }
 }
