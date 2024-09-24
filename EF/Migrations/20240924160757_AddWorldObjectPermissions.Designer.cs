@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using qDshunUtilities.EF;
 
@@ -11,9 +12,11 @@ using qDshunUtilities.EF;
 namespace qDshunUtilities.EF.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240924160757_AddWorldObjectPermissions")]
+    partial class AddWorldObjectPermissions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -167,21 +170,6 @@ namespace qDshunUtilities.EF.Migrations
                     b.ToTable("ObjectFields");
                 });
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.PermissionEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Permissions");
-                });
-
             modelBuilder.Entity("qDshunUtilities.EF.Entities.UserEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -296,9 +284,6 @@ namespace qDshunUtilities.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("PermissionId")
-                        .HasColumnType("char(36)");
-
                     b.Property<Guid?>("WorldObjectId")
                         .HasColumnType("char(36)");
 
@@ -306,8 +291,6 @@ namespace qDshunUtilities.EF.Migrations
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PermissionId");
 
                     b.HasIndex("WorldObjectId");
 
@@ -389,7 +372,7 @@ namespace qDshunUtilities.EF.Migrations
             modelBuilder.Entity("qDshunUtilities.EF.Entities.ObjectFieldEntity", b =>
                 {
                     b.HasOne("qDshunUtilities.EF.Entities.WorldObjectEntity", "WorldObject")
-                        .WithMany("ObjectFields")
+                        .WithMany()
                         .HasForeignKey("WorldObjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -400,7 +383,7 @@ namespace qDshunUtilities.EF.Migrations
             modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjectEntity", b =>
                 {
                     b.HasOne("qDshunUtilities.EF.Entities.WorldEntity", "World")
-                        .WithMany("WorldObjects")
+                        .WithMany()
                         .HasForeignKey("WorldId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -410,23 +393,15 @@ namespace qDshunUtilities.EF.Migrations
 
             modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjectPermissionEntity", b =>
                 {
-                    b.HasOne("qDshunUtilities.EF.Entities.PermissionEntity", "Permission")
-                        .WithMany("WorldObjectPermissions")
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("qDshunUtilities.EF.Entities.WorldObjectEntity", "WorldObject")
                         .WithMany()
                         .HasForeignKey("WorldObjectId");
 
                     b.HasOne("qDshunUtilities.EF.Entities.WorldUserEntity", "WorldUser")
-                        .WithMany("WorldObjectPermissions")
+                        .WithMany()
                         .HasForeignKey("WorldUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Permission");
 
                     b.Navigation("WorldObject");
 
@@ -457,11 +432,6 @@ namespace qDshunUtilities.EF.Migrations
                     b.Navigation("LootItems");
                 });
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.PermissionEntity", b =>
-                {
-                    b.Navigation("WorldObjectPermissions");
-                });
-
             modelBuilder.Entity("qDshunUtilities.EF.Entities.UserEntity", b =>
                 {
                     b.Navigation("WorldUsers");
@@ -471,19 +441,7 @@ namespace qDshunUtilities.EF.Migrations
                 {
                     b.Navigation("LootSources");
 
-                    b.Navigation("WorldObjects");
-
                     b.Navigation("WorldUsers");
-                });
-
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjectEntity", b =>
-                {
-                    b.Navigation("ObjectFields");
-                });
-
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldUserEntity", b =>
-                {
-                    b.Navigation("WorldObjectPermissions");
                 });
 #pragma warning restore 612, 618
         }

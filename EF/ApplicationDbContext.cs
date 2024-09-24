@@ -13,6 +13,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     override public DbSet<UserEntity> Users { get; set; }
     public DbSet<WorldEntity> Worlds { get; set; }
     public DbSet<WorldUserEntity> WorldUsers { get; set; }
+    public DbSet<WorldObjectEntity> WorldObjects { get; set; }
+    public DbSet<ObjectFieldEntity> ObjectFields { get; set; }
+    public DbSet<WorldObjectPermissionEntity> WorldObjectPermissions { get; set; }
+    public DbSet<PermissionEntity> Permissions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

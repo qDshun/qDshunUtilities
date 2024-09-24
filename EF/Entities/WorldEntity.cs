@@ -7,4 +7,5 @@ public class WorldEntity: BaseEntity
     public List<LootSourceEntity> LootSources { get; set; } = [];
 
     public List<WorldUserEntity> WorldUsers { get; set; } = [];
+    public List<WorldObjectEntity> WorldObjects { get; set; } = [];
 }
