@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-game-bar-tools',
@@ -9,5 +10,9 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GameBarToolsComponent {
+  private router = inject(Router);
 
+  redirectToHome(){
+    this.router.navigateByUrl('/')
+  }
 }

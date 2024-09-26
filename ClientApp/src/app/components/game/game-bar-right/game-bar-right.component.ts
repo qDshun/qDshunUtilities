@@ -6,7 +6,7 @@ import { WorldObjectListComponent } from "../world-object-list/world-object-list
 @Component({
   selector: 'app-game-bar-right',
   standalone: true,
-  imports: [MatTabsModule, ChatComponent, WorldObjectListComponent],
+  imports: [MatTabsModule, ChatComponent, WorldObjectListComponent, ],
   templateUrl: './game-bar-right.component.html',
   styleUrl: './game-bar-right.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
