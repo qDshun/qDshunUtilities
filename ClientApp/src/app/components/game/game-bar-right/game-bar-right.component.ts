@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ChatComponent } from '../chat/chat.component';
 import { WorldObjectListComponent } from "../world-object-list/world-object-list.component";
@@ -9,7 +9,8 @@ import { WorldObjectListComponent } from "../world-object-list/world-object-list
   imports: [MatTabsModule, ChatComponent, WorldObjectListComponent],
   templateUrl: './game-bar-right.component.html',
   styleUrl: './game-bar-right.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None
 })
 export class GameBarRightComponent {
 

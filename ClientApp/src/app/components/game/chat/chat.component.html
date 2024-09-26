@@ -1,1 +1,4 @@
-<p>chat works!</p>
+
+@for (chatEntry of messages$ | async; track chatEntry) {
+  <div class="chat-entry">{{chatEntry}}</div>
+}
