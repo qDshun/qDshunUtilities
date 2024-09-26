@@ -17,7 +17,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<ObjectFieldEntity> ObjectFields { get; set; }
     public DbSet<WorldObjectPermissionEntity> WorldObjectPermissions { get; set; }
     public DbSet<PermissionEntity> Permissions { get; set; }
-
+    public DbSet<TemplateEntity> Templates { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.Entity<UserEntity>()
