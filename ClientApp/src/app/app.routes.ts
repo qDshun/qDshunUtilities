@@ -32,7 +32,12 @@ export const routes: Routes = [
         path: 'world/:worldId',
         component: WorldComponent,
         title: 'World UI',
-      }
+      },
+      {
+        path: '',
+        redirectTo: 'worlds',
+        pathMatch: 'full'
+      },
     ]
   },
 ];
