@@ -1,0 +1,46 @@
+:host{
+  display:flex;
+  flex-direction: row;
+  height:100%;
+}
+
+.game-container-left {
+  display: flex;
+  flex-direction: column;
+  flex: 4;
+  background-color: green;
+}
+
+.game-container-right {
+  display: flex;
+  flex-direction: column;
+  flex:1;
+  background-color: blue;
+}
+
+.game-container-left-inner {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+}
+
+.game-container-left-inner-inner {
+  display: flex;
+  flex-direction: column;
+  flex: 10;
+
+}
+
+app-game-bar-map-select {
+  background-color: aqua;
+}
+
+app-game-bar-quick-access {
+  background-color: orange;
+  flex: 1;
+}
+
+app-game-screen {
+  background-color: black;
+  flex: 1;
+}
