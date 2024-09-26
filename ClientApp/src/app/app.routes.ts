@@ -5,6 +5,7 @@ import { authGuard } from './guards';
 import { WorldSelectComponent } from './components/portal/world-select/world-select.component';
 import { WorldComponent } from './components/portal/world/world.component';
 import { PortalLayoutComponent } from './components/portal/portal-layout/portal-layout.component';
+import { GameComponent } from './components/game/game/game.component';
 
 export const routes: Routes = [
   {
@@ -40,4 +41,10 @@ export const routes: Routes = [
       },
     ]
   },
+  {
+    path: 'game/:worldId',
+    component: GameComponent,
+    title: 'Game',
+    canActivate: [authGuard],
+  }
 ];
