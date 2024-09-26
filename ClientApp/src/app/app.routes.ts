@@ -6,6 +6,7 @@ import { WorldSelectComponent } from './components/portal/world-select/world-sel
 import { WorldComponent } from './components/portal/world/world.component';
 import { PortalLayoutComponent } from './components/portal/portal-layout/portal-layout.component';
 import { GameComponent } from './components/game/game/game.component';
+import { PrivacyPolicyComponent } from './components/portal/privacy-policy/privacy-policy.component';
 
 export const routes: Routes = [
   {
@@ -33,6 +34,11 @@ export const routes: Routes = [
         path: 'world/:worldId',
         component: WorldComponent,
         title: 'World UI',
+      },
+      {
+        path: 'privacy',
+        component: PrivacyPolicyComponent,
+        pathMatch: 'full'
       },
       {
         path: '',
