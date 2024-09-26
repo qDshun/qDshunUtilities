@@ -1,1 +1,5 @@
-<p>world-object-list works!</p>
+<div cdkDropList (cdkDropListDropped)="drop($event)">
+  @for (worldObject of worldObjects; track worldObject.id) {
+    <div class="example-box" cdkDrag>{{worldObject.name}}</div>
+  }
+</div>
