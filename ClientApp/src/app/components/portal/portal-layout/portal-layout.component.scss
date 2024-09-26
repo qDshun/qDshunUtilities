@@ -1,0 +1,31 @@
+.side-nav {
+  width: max-content;
+  height: fit-content;
+}
+
+.main {
+  width: auto;
+  flex: 1;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+mat-drawer-container {
+  display: flex;
+  flex-grow: 1;
+
+  mat-drawer {
+    display: flex;
+    flex-direction: column;
+  }
+
+  mat-drawer-content {
+    display: flex;
+    flex-direction: column;
+  }
+}

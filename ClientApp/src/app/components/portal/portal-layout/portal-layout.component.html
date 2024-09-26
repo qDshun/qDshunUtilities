@@ -1,0 +1,19 @@
+<mat-toolbar>
+  <span> TTRPG Portal</span>
+</mat-toolbar>
+
+<mat-drawer-container>
+
+  <mat-drawer mode="side" opened class="side-nav">
+    <mat-list role="list">
+      @for (link of links; track link) {
+        <mat-list-item role="listitem">{{link}}</mat-list-item>
+        }
+    </mat-list>
+  </mat-drawer>
+
+  <mat-drawer-content class="main">
+    <router-outlet />
+  </mat-drawer-content>
+
+</mat-drawer-container>

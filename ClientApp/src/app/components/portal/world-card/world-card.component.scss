@@ -1,0 +1,30 @@
+
+
+.world-card {
+  display: flex;
+  flex-direction: row;
+}
+
+.world-image {
+  aspect-ratio: auto;
+  display: flex;
+  flex: 1;
+  background-position: center center;
+  background-size: cover;
+  overflow: hidden;
+  border-radius: var(--mdc-outlined-card-container-shape);
+}
+
+.world-card-inner-container {
+  display: flex;
+  flex-direction: column;
+  flex:4;
+}
+
+.world-description {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* number of lines to show */
+          line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
