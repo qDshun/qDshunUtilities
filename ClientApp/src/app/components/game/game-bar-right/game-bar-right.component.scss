@@ -1,0 +1,16 @@
+mat-tab-group {
+  max-height: 100vh;
+  background-color: var(--mat-app-background-color, transparent);
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  overflow-y: scroll;
+  background: grey;
+  box-shadow: inset 0 0 4px #707070;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--mdc-tab-indicator-active-indicator-color);
+  border-radius: 10px;
+}

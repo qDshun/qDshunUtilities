@@ -7,6 +7,7 @@ public class WorldObjectEntity : BaseEntity
 
     public Guid WorldId { get; set; }
     public WorldEntity World { get; set; }
-
+    public Guid TemplateId { get; set; }
+    public TemplateEntity Template { get; set; }
     public List<ObjectFieldEntity> ObjectFields { get; set; } = [];
 }

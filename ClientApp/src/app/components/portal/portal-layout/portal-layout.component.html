@@ -1,0 +1,22 @@
+<mat-toolbar>
+  <span> TTRPG Portal</span>
+</mat-toolbar>
+
+<mat-drawer-container>
+
+  <mat-drawer mode="side" opened class="side-nav">
+    <mat-list role="list">
+
+      <mat-list-item role="listitem"> <a routerLink="/worlds"> My games </a> </mat-list-item>
+      <mat-list-item role="listitem"> <a routerLink="/lfg"> Find party </a> </mat-list-item>
+      <mat-list-item role="listitem"> <a routerLink="/settings"> Settings </a> </mat-list-item>
+      <mat-list-item role="listitem"> <a routerLink="/privacy"> Privacy policy </a> </mat-list-item>
+
+    </mat-list>
+  </mat-drawer>
+
+  <mat-drawer-content class="main">
+    <router-outlet />
+  </mat-drawer-content>
+
+</mat-drawer-container>

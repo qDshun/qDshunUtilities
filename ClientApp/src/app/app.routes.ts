@@ -1,8 +1,12 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './components/auth/login/login.component';
 import { RegisterComponent } from './components/auth/register/register.component';
-import { WorldSelectComponent } from './components/loot-tables/world-select/world-select.component';
 import { authGuard } from './guards';
+import { WorldSelectComponent } from './components/portal/world-select/world-select.component';
+import { WorldComponent } from './components/portal/world/world.component';
+import { PortalLayoutComponent } from './components/portal/portal-layout/portal-layout.component';
+import { GameComponent } from './components/game/game/game.component';
+import { PrivacyPolicyComponent } from './components/portal/privacy-policy/privacy-policy.component';
 
 export const routes: Routes = [
   {
@@ -17,14 +21,36 @@ export const routes: Routes = [
   },
   {
     path: '',
-    component: WorldSelectComponent,
-    title: 'Worlds',
-    canActivate: [authGuard]
+    component: PortalLayoutComponent,
+    title: 'Portal',
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'worlds',
+        component: WorldSelectComponent,
+        title: 'Choose a World',
+      },
+      {
+        path: 'world/:worldId',
+        component: WorldComponent,
+        title: 'World UI',
+      },
+      {
+        path: 'privacy',
+        component: PrivacyPolicyComponent,
+        pathMatch: 'full'
+      },
+      {
+        path: '',
+        redirectTo: 'worlds',
+        pathMatch: 'full'
+      },
+    ]
   },
   {
-    path: 'worlds',
-    component: WorldSelectComponent,
-    title: 'Worlds',
-    canActivate: [authGuard]
-  },
+    path: 'game/:worldId',
+    component: GameComponent,
+    title: 'Game',
+    canActivate: [authGuard],
+  }
 ];
