@@ -1,0 +1,29 @@
+mat-icon {
+  width: fit-content;
+  height: 50%;
+}
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.row-container {
+  display: flex;
+  flex-direction: row;
+  flex:1;
+}
+
+table {
+  height: fit-content;
+  min-width: auto;
+  box-shadow: none;
+
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
