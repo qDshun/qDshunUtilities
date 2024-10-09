@@ -5,19 +5,9 @@
 } -->
 
 <mat-tab-group [mat-stretch-tabs]="false" animationDuration="0ms">
-  @for (mapName of mapsMock; track mapName) {
-    <mat-tab [label]="mapName" >
+  @for (map of mapsMock; track map.id) {
+    <mat-tab [label]="map.name" >
     </mat-tab>
   }
 
 </mat-tab-group>
-
-<!-- <nav mat-tab-nav-bar [tabPanel]="tabPanel">
-  @for (mapName of mapsMock; track mapName) {
-    <a mat-tab-link
-      (click)="activeLink = mapName"
-      [active]="activeLink == mapName"> {{mapName}} </a>
-  }
-  <a mat-tab-link disabled>Disabled Link</a>
-</nav>
-<mat-tab-nav-panel #tabPanel></mat-tab-nav-panel> -->

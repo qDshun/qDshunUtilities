@@ -13,7 +13,7 @@ import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
 })
 export class GameBarMapSelectComponent {
   activeLink = "";
-  mapsMock = [
+  mapNamesMock = [
     'volcano',
     'forest',
     'village',
@@ -50,4 +50,5 @@ export class GameBarMapSelectComponent {
     'home',
     'dungeon level 1',
   ]
+  mapsMock = this.mapNamesMock.map((mapName, index) => {return {id:index, name: mapName}});
 }
