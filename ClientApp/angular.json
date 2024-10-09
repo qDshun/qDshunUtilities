@@ -42,12 +42,13 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "src/app/assets/",
+                "output": "/assets/"
               }
             ],
             "styles": [
-              "@angular/material/prebuilt-themes/magenta-violet.css",
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/dark-theme.scss"
             ],
             "scripts": []
           },
@@ -103,12 +104,13 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "src/app/assets/",
+                "output": "/assets/"
               }
             ],
             "styles": [
-              "@angular/material/prebuilt-themes/magenta-violet.css",
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/dark-theme.scss"
             ],
             "scripts": []
           }
