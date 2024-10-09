@@ -1,0 +1,10 @@
+.world-object-icon {
+  background-position: center center;
+  background-size: cover
+}
+
+:host {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
