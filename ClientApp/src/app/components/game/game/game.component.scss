@@ -1,23 +1,23 @@
+@use '@angular/material' as mat;
+@import "../../../../dark-theme.scss";
 
 :host{
   display:flex;
   flex-direction: row;
   height:100%;
-  --map-select-height: 2rem;
 }
 
 .game-container-left {
   display: flex;
   flex-direction: column;
-  flex: 4;
-  background-color: green;
+  width:80%;
+  flex: 1;
 }
 
 .game-container-right {
   display: flex;
   flex-direction: column;
-  flex:1;
-  background-color: blue;
+  width:20%;
   z-index: 1;
 }
 
@@ -30,26 +30,21 @@
 .game-container-left-inner-inner {
   display: flex;
   flex-direction: column;
-  flex: 10;
   position: relative;
+  width: 90%;
 }
 
 app-game-bar-map-select {
-  height: var(--map-select-height);
-  background-color: aqua;
-
-  position: absolute;
-  overflow: hidden;
-  opacity: 0.5;
+  background-color: mat.get-theme-color($theme, neutral, 98);
+  justify-content: space-between;
 }
 
 app-game-bar-quick-access {
   background-color: orange;
-  flex: 1;
+  width:10%
 }
 
 app-game-screen {
   top: calc(var(--map-select-height)*-1);
   background-color: black;
-  flex: 1;
 }

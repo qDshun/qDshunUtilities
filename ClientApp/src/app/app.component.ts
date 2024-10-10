@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatCommonModule } from '@angular/material/core';
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
@@ -12,4 +14,15 @@ import { RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   title = 'qDshunWebUtilities';
+
+  private icons = [
+    "human-armor-locations"
+    ]
+
+  constructor(
+    private matIconRegistry: MatIconRegistry,
+    private domSanitizer: DomSanitizer
+    ){
+    this.icons.map(iconName => this.matIconRegistry.addSvgIcon(iconName, this.domSanitizer.bypassSecurityTrustResourceUrl(`../assets/${iconName}.svg`)));
+    }
 }

@@ -1,27 +1,54 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
+import { MatRippleModule } from '@angular/material/core';
+import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-game-bar-map-select',
   standalone: true,
-  imports: [],
+  imports: [MatCardModule, MatTabsModule, MatRippleModule],
   templateUrl: './game-bar-map-select.component.html',
   styleUrl: './game-bar-map-select.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GameBarMapSelectComponent {
-
-  mapsMock = [
+  activeLink = "";
+  mapNamesMock = [
     'volcano',
     'forest',
     'village',
     'home',
     'dungeon level 1',
-    'dungeon level 2',
-    'dungeon level 3',
-    'dungeon level 4',
-    'dungeon level 5',
-    'dungeon level 6',
-    'dungeon level 7',
-    'dungeon level 8',
+    'volcano',
+    'forest',
+    'village',
+    'home',
+    'dungeon level 1',
+    'volcano',
+    'forest',
+    'village',
+    'home',
+    'dungeon level 1',
+    'volcano',
+    'forest',
+    'village',
+    'home',
+    'dungeon level 1',
+    'volcano',
+    'forest',
+    'village',
+    'home',
+    'dungeon level 1',
+    'volcano',
+    'forest',
+    'village',
+    'home',
+    'dungeon level 1',
+    'volcano',
+    'forest',
+    'village',
+    'home',
+    'dungeon level 1',
   ]
+  mapsMock = this.mapNamesMock.map((mapName, index) => {return {id:index, name: mapName}});
 }
