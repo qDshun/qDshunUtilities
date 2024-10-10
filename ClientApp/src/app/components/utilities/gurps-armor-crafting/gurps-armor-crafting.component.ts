@@ -50,7 +50,6 @@ export class GurpsArmorCraftingComponent implements OnInit, OnDestroy {
   )
 
   ngOnInit(): void {
-    console.log(this.displayedColumns)
     this.svgLoaded$.subscribe(() => this.registerBodyPartHandlers());
     merge(
       this.form.valueChanges,
