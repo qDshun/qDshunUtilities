@@ -1,1 +1,8 @@
-<p>game-bar-quick-access works!</p>
+@if (worldObjects$ | async; as worldObjects) {
+  <div cdkDropList (cdkDropListDropped)="drop($event, worldObjects)">
+    @for (worldObject of worldObjects; track worldObject.id) {
+      <div class="example-box" cdkDrag>{{worldObject.path}}</div>
+    }
+  </div>
+
+}

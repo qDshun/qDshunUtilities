@@ -1,0 +1,101 @@
+
+<div class="table-row-container">
+</div>
+
+<div class="row-container">
+  <mat-icon matPrefix svgIcon="human-armor-locations" (load)="registerBodyPartHandlers()"></mat-icon>
+  <form class="armor-calculator-form" [formGroup]="form">
+
+    <mat-form-field appearance="outline" hideRequiredMarker>
+      <mat-label>HP</mat-label>
+      <input type="number" formControlName="hp" placeholder="HP" matInput required/>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" hideRequiredMarker>
+      <mat-label>Crafter's salary</mat-label>
+      <input type="number" formControlName="crafterMonthlySalary" placeholder="Crafter's monthly salary" matInput required/>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Select material</mat-label>
+      <mat-select formControlName="materialIndex">
+        @for (material of availibleMaterials; track $index) {
+          <mat-option [value]="$index"> {{availibleMaterials[$index].name}}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+
+    <mat-form-field>
+      <mat-label>Select construction type</mat-label>
+      <mat-select formControlName="constructionTypeIndex">
+        @for (constructionType of availibleMaterials[form.controls.materialIndex.value].constructionTypes; track $index) {
+          <mat-option [value]="$index"> {{constructionType.name}}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-checkbox matInput formControlName="isSymmetric">
+      Symmetric selection?
+    </mat-checkbox>
+
+    <label> Select DR</label>
+    <mat-slider
+      [min]="availibleMaterials[form.controls.materialIndex.value].constructionTypes[form.controls.constructionTypeIndex.value].minDr"
+      [max]="availibleMaterials[form.controls.materialIndex.value].drMax"
+      step="1" showTickMarks discrete>
+      <input matSliderThumb formControlName="selectedDr">
+    </mat-slider>
+
+  </form>
+
+  <table mat-table [dataSource]="armorResults$" class="mat-elevation-z8">
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> Id </th>
+      <td mat-cell *matCellDef="let armorResult"> {{armorResult.id}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="surfaceArea">
+      <th mat-header-cell *matHeaderCellDef> Surface </th>
+      <td mat-cell *matCellDef="let armorResult"> {{ armorResult.surfaceArea.toFixed(2) }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="constructionType">
+      <th mat-header-cell *matHeaderCellDef> CType </th>
+      <td mat-cell *matCellDef="let armorResult"> {{armorResult.constructionType.name}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="timeToEquip">
+      <th mat-header-cell *matHeaderCellDef> Don </th>
+      <td mat-cell *matCellDef="let armorResult"> {{ armorResult.timeToEquip.toFixed(2) }} sec </td>
+    </ng-container>
+
+    <ng-container matColumnDef="damageResistnce">
+      <th mat-header-cell *matHeaderCellDef> DR </th>
+      <td mat-cell *matCellDef="let armorResult"> {{ armorResult.damageResistnce }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="materialCost">
+      <th mat-header-cell *matHeaderCellDef> Materials </th>
+      <td mat-cell *matCellDef="let armorResult"> {{ Math.round(armorResult.materialCost) }}$ </td>
+    </ng-container>
+
+    <ng-container matColumnDef="armorCost">
+      <th mat-header-cell *matHeaderCellDef> Total </th>
+      <td mat-cell *matCellDef="let armorResult"> {{ Math.round(armorResult.armorCost) }}$ </td>
+    </ng-container>
+
+    <ng-container matColumnDef="workTimeInDays">
+      <th mat-header-cell *matHeaderCellDef> Time To Craft </th>
+      <td mat-cell *matCellDef="let armorResult"> {{ armorResult.workTimeInDays.toFixed(2) }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="weight">
+      <th mat-header-cell *matHeaderCellDef> Weight </th>
+      <td mat-cell *matCellDef="let armorResult"> {{ armorResult.weight.toFixed(2) }} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>

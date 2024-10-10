@@ -7,6 +7,7 @@ import { WorldComponent } from './components/portal/world/world.component';
 import { PortalLayoutComponent } from './components/portal/portal-layout/portal-layout.component';
 import { GameComponent } from './components/game/game/game.component';
 import { PrivacyPolicyComponent } from './components/portal/privacy-policy/privacy-policy.component';
+import { GurpsArmorCraftingComponent } from './components/utilities/gurps-armor-crafting/gurps-armor-crafting.component';
 
 export const routes: Routes = [
   {
@@ -41,6 +42,12 @@ export const routes: Routes = [
         pathMatch: 'full'
       },
       {
+        path: 'utilities/gurps-armor-crafting',
+        component: GurpsArmorCraftingComponent,
+        title: 'Armor calculator',
+        pathMatch: 'full'
+      },
+      {
         path: '',
         redirectTo: 'worlds',
         pathMatch: 'full'
@@ -52,5 +59,5 @@ export const routes: Routes = [
     component: GameComponent,
     title: 'Game',
     canActivate: [authGuard],
-  }
+  },
 ];

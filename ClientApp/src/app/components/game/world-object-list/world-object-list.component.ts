@@ -1,26 +1,33 @@
-import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { WorldObjectResponse } from '../../../models/world-object-response';
+import { DragDropModule } from "@angular/cdk/drag-drop";
+import { CommonModule } from "@angular/common";
+import { Component, ChangeDetectionStrategy, inject } from "@angular/core";
+import { MatIconModule } from "@angular/material/icon";
+import { MatTreeModule } from "@angular/material/tree";
+import { map } from "rxjs";
+import { WorldObjectResponse } from "../../../models";
+import { TreeService, NamedTreeNode } from "../../../services/tree-service";
+import { WorldObjectService } from "../../../services/world-object.service";
+import { MatButtonModule } from "@angular/material/button";
+import { WorldObjectComponent } from "../world-object/world-object.component";
 
 @Component({
   selector: 'app-world-object-list',
   standalone: true,
-  imports: [DragDropModule],
+  imports: [CommonModule, DragDropModule, MatTreeModule, MatIconModule, MatButtonModule, WorldObjectComponent],
   templateUrl: './world-object-list.component.html',
   styleUrl: './world-object-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WorldObjectListComponent {
+  private treeService = inject(TreeService);
+  private worldObjectService = inject(WorldObjectService);
+  worldObjects$ = this.worldObjectService.worldsOrbjects$
 
-  worldObjects: WorldObjectResponse[] = [
-    { name: 'Character 1', path: '/characters', id: '1' },
-    { name: 'Character 2', path: '/characters', id: '2'  },
-    { name: 'Character 3', path: '/characters', id: '3'  },
-    { name: 'Handout 1', path: '/handouts', id: '4'  },
-    { name: 'Handout 3', path: '/handouts', id: '5'  },
-  ]
+  treeData$ = this.worldObjects$.pipe(
+    map(worldObjects => this.treeService.toTree(worldObjects)),
+  )
 
-  drop(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.worldObjects, event.previousIndex, event.currentIndex);
-  }
+  childrenAccessor = (node: NamedTreeNode<WorldObjectResponse>) => node.children ?? [];
+
+  hasChild = (_: number, node: NamedTreeNode<WorldObjectResponse>) => !!node.children && node.children.length > 0;
 }

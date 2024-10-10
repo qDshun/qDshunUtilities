@@ -1,3 +1,13 @@
-@for (mapName of mapsMock; track mapName) {
-  <div class="map-textbox"> {{mapName}}</div>
-}
+<!-- @for (mapName of mapsMock; track mapName) {
+  <mat-card appearance="outlined">
+    <mat-card-content>{{mapName}}</mat-card-content>
+  </mat-card>
+} -->
+
+<mat-tab-group [mat-stretch-tabs]="false" animationDuration="0ms">
+  @for (map of mapsMock; track map.id) {
+    <mat-tab [label]="map.name" >
+    </mat-tab>
+  }
+
+</mat-tab-group>
