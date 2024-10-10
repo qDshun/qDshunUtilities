@@ -17,12 +17,14 @@ public class WorldProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.WorldUsers, opt => opt.Ignore())
             .ForMember(dest => dest.LootSources, opt => opt.Ignore())
+            .ForMember(dest => dest.WorldObjects, opt => opt.Ignore())
             ;
 
         CreateMap<WorldUpdate, WorldEntity>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.WorldUsers, opt => opt.Ignore())
             .ForMember(dest => dest.LootSources, opt => opt.Ignore())
+            .ForMember(dest => dest.WorldObjects, opt => opt.Ignore())
             ;
     }
 }
