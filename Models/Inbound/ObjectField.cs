@@ -1,11 +1,7 @@
-﻿using qDshunUtilities.EF.Entities;
-
-namespace qDshunUtilities.Models.Inbound;
+﻿namespace qDshunUtilities.Models.Inbound;
 
 public class ObjectField
 {
     public string Name { get; set; }
     public string Value { get; set; }
-
-
 }

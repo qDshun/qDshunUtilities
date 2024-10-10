@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using qDshunUtilities.Models.Inbound;
 using qDshunUtilities.Models.Outbound;
@@ -18,32 +17,25 @@ namespace qDshunUtilities.Controllers
             return Ok(await worldObjectService.GetWorldObjectsAsync(worldId, AuthenticatedUser));
         }
 
-        [HttpGet]
-        public async Task<ActionResult<World>> GetWorld([FromRoute] Guid worldId)
-        {
-            return Ok(worldObjectService.GetWorldObjectAsync(worldId, AuthenticatedUser));
-        }
-
         [HttpPost("{worldId}")]
-        public async Task<ActionResult> CreateWorldObject([FromBody] WorldObjectCreate worldObjectCreate, [FromRoute] Guid worldId)
+        public async Task<ActionResult> CreateWorldObject([FromRoute] Guid worldId, [FromBody] WorldObjectCreate worldObjectCreate)
         {
-            await worldObjectService.CreateWorldObjectAsync(worldObjectCreate, worldId, AuthenticatedUser);
+            await worldObjectService.CreateWorldObjectAsync(worldId, AuthenticatedUser, worldObjectCreate);
             return Ok();
         }
 
-        [HttpPut("{worldId}")]
-        public async Task<ActionResult> UpdateWorld(
-        [FromRoute] Guid worldId,
-            [FromBody] WorldUpdate worldUpdate)
+        [HttpPut("{worldObjectId}")]
+        public async Task<ActionResult> UpdateWorldObject([FromRoute] Guid worldObjectId, [FromBody] WorldObjectUpdate worldObjectUpdate)
         {
+            await worldObjectService.UpdateWorldObjectAsync(worldObjectId, AuthenticatedUser, worldObjectUpdate);
             return Ok();
         }
 
 
-        [HttpDelete("{worldId}")]
-        public async Task<ActionResult> DeleteWorld(
-            [FromRoute] Guid worldId)
+        [HttpDelete("{worldObjectId}")]
+        public async Task<ActionResult> DeleteWorld([FromRoute] Guid worldObjectId)
         {
+            await worldObjectService.DeleteWorldObjectAsync(worldObjectId, AuthenticatedUser);
             return Ok();
         }
     }

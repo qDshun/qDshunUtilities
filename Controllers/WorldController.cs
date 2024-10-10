@@ -39,7 +39,6 @@ public class WorldController(ILogger<WorldController> logger, IWorldService worl
         return Ok();
     }
 
-
     [HttpDelete("{worldId}")]
     public async Task<ActionResult> DeleteWorld(
         [FromRoute] Guid worldId)

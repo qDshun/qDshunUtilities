@@ -11,8 +11,24 @@ public class WorldObjectProfile : Profile
     {
         CreateMap<WorldObjectEntity, WorldObject>()
             ;
+
         CreateMap<WorldObjectCreate, WorldObjectEntity>()
-        ;
-        CreateMap<WorldObjectUpdate, WorldObjectEntity>();
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.World, opt => opt.Ignore())
+            .ForMember(dest => dest.WorldId, opt => opt.Ignore())
+            .ForMember(dest => dest.Template, opt => opt.Ignore())
+            .ForMember(dest => dest.ObjectFields, opt => opt.Ignore())
+            .ForMember(dest => dest.WorldObjectPermissions, opt => opt.Ignore())
+            ;
+
+        CreateMap<WorldObjectUpdate, WorldObjectEntity>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.World, opt => opt.Ignore())
+            .ForMember(dest => dest.WorldId, opt => opt.Ignore())
+            .ForMember(dest => dest.Template, opt => opt.Ignore())
+            .ForMember(dest => dest.TemplateId, opt => opt.Ignore())
+            .ForMember(dest => dest.ObjectFields, opt => opt.Ignore())
+            .ForMember(dest => dest.WorldObjectPermissions, opt => opt.Ignore())
+            ;
     }
 }
