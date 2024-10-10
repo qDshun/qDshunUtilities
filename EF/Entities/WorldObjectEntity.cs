@@ -10,4 +10,6 @@ public class WorldObjectEntity : BaseEntity
     public Guid TemplateId { get; set; }
     public TemplateEntity Template { get; set; }
     public List<ObjectFieldEntity> ObjectFields { get; set; } = [];
+    public List<WorldObjectPermissionEntity> WorldObjectPermissions { get; set; } = [];
+
 }

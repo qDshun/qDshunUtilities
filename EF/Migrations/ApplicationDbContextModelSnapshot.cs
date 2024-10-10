@@ -120,7 +120,7 @@ namespace qDshunUtilities.EF.Migrations
 
                     b.HasIndex("LootSourceId");
 
-                    b.ToTable("LootItems");
+                    b.ToTable("LootItems", (string)null);
                 });
 
             modelBuilder.Entity("qDshunUtilities.EF.Entities.LootSourceEntity", b =>
@@ -140,7 +140,7 @@ namespace qDshunUtilities.EF.Migrations
 
                     b.HasIndex("WorldId");
 
-                    b.ToTable("LootSources");
+                    b.ToTable("LootSources", (string)null);
                 });
 
             modelBuilder.Entity("qDshunUtilities.EF.Entities.ObjectFieldEntity", b =>
@@ -164,7 +164,7 @@ namespace qDshunUtilities.EF.Migrations
 
                     b.HasIndex("WorldObjectId");
 
-                    b.ToTable("ObjectFields");
+                    b.ToTable("ObjectFields", (string)null);
                 });
 
             modelBuilder.Entity("qDshunUtilities.EF.Entities.PermissionEntity", b =>
@@ -179,7 +179,7 @@ namespace qDshunUtilities.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Permissions");
+                    b.ToTable("Permissions", (string)null);
                 });
 
             modelBuilder.Entity("qDshunUtilities.EF.Entities.TemplateEntity", b =>
@@ -194,7 +194,7 @@ namespace qDshunUtilities.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Templates");
+                    b.ToTable("Templates", (string)null);
                 });
 
             modelBuilder.Entity("qDshunUtilities.EF.Entities.UserEntity", b =>
@@ -278,7 +278,7 @@ namespace qDshunUtilities.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Worlds");
+                    b.ToTable("Worlds", (string)null);
                 });
 
             modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjectEntity", b =>
@@ -307,7 +307,7 @@ namespace qDshunUtilities.EF.Migrations
 
                     b.HasIndex("WorldId");
 
-                    b.ToTable("WorldObjects");
+                    b.ToTable("WorldObjects", (string)null);
                 });
 
             modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjectPermissionEntity", b =>
@@ -333,7 +333,7 @@ namespace qDshunUtilities.EF.Migrations
 
                     b.HasIndex("WorldUserId");
 
-                    b.ToTable("WorldObjectPermissions");
+                    b.ToTable("WorldObjectPermissions", (string)null);
                 });
 
             modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldUserEntity", b =>
@@ -354,7 +354,7 @@ namespace qDshunUtilities.EF.Migrations
 
                     b.HasIndex("WorldId");
 
-                    b.ToTable("WorldUsers");
+                    b.ToTable("WorldUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>

@@ -12,12 +12,23 @@ public interface IWorldService
     Task<IEnumerable<World>> GetWorldsAsync(Guid authenticatedUser);
     Task<World> GetWorldAsync(Guid worldId, Guid authenticatedUser);
     Task CreateWorldAsync(WorldCreate worldCreate, Guid authenticatedUser);
-    Task UpdateWorldAsync(Guid worldId, WorldUpdate worldupdate, Guid authenticatedUser);
+    Task UpdateWorldAsync(Guid worldId, WorldUpdate worldUpdate, Guid authenticatedUser);
     Task DeleteWorldAsync(Guid worldId, Guid authenticatedUser);
 }
 
 public class WorldService(ApplicationDbContext dbContext, IMapper mapper, IAccessService accessService) : IWorldService
 {
+    public async Task<IEnumerable<World>> GetWorldsAsync(Guid authenticatedUser)
+    {
+        var worlds = await dbContext.Worlds
+            .Include(w => w.WorldUsers.Where(wu => wu.UserId == authenticatedUser))
+            .Include(w => w.LootSources)
+                .ThenInclude(ls => ls.LootItems)
+            .ToListAsync();
+
+        return worlds.Select(mapper.Map<World>);
+    }
+
     public async Task<World> GetWorldAsync(Guid worldId, Guid authenticatedUser)
     {
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
@@ -32,17 +43,6 @@ public class WorldService(ApplicationDbContext dbContext, IMapper mapper, IAcces
         return mapper.Map<World>(world);
     }
 
-    public async Task<IEnumerable<World>> GetWorldsAsync(Guid authenticatedUser)
-    {
-        var worlds = await dbContext.Worlds
-            .Include(w => w.WorldUsers.Where(wu => wu.UserId == authenticatedUser))
-            .Include(w => w.LootSources)
-                .ThenInclude(ls => ls.LootItems)
-            .ToListAsync();
-
-        return worlds.Select(mapper.Map<World>);
-    }
-
     public async Task CreateWorldAsync(WorldCreate worldCreate, Guid authenticatedUser)
     {
         var worldEntity = mapper.Map<WorldEntity>(worldCreate);
@@ -54,7 +54,7 @@ public class WorldService(ApplicationDbContext dbContext, IMapper mapper, IAcces
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateWorldAsync(Guid worldId, WorldUpdate worldupdate, Guid authenticatedUser)
+    public async Task UpdateWorldAsync(Guid worldId, WorldUpdate worldUpdate, Guid authenticatedUser)
     {
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
 
@@ -62,7 +62,7 @@ public class WorldService(ApplicationDbContext dbContext, IMapper mapper, IAcces
             .Include(w => w.WorldUsers.Where(wu => wu.UserId == authenticatedUser))
             .SingleAsync(w => w.Id == worldId);
 
-        mapper.Map(worldupdate, worldEntity);
+        mapper.Map(worldUpdate, worldEntity);
 
         dbContext.Worlds.Update(worldEntity);
         await dbContext.SaveChangesAsync();
