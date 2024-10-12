@@ -1,4 +1,4 @@
-<div class="row-container">
+<div class="row-container" style="gap:20px">
   <div class="column-container">
     <div class="row-container">
       <mat-icon matPrefix svgIcon="human-armor-locations-front"></mat-icon>
@@ -60,7 +60,7 @@
       </form>
     </div>
     @if (currentResult$ | async; as currentResult){
-      <table mat-table [dataSource]="currentResult" class="mat-elevation-z8">
+      <table mat-table [dataSource]="currentResult" class="table-temporary">
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef> Id </th>
           <td mat-cell *matCellDef="let armorResult">
@@ -118,7 +118,7 @@
 
 @if (armorResults$ | async; as armorResults){
 
-  <table mat-table [dataSource]="armorResults" class="mat-elevation-z8">
+  <table mat-table [dataSource]="armorResults" class="table-results">
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef> Id </th>
       <td mat-cell *matCellDef="let armorResult">

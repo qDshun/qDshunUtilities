@@ -14,7 +14,6 @@ form {
   display: flex;
   flex-direction: column;
   padding: 10px;
-  flex-grow: 1; /* Ensures the form grows to fill the available space */
 }
 
 .column-container {
@@ -24,6 +23,16 @@ form {
 
 table {
   box-shadow: none;
-  min-width: auto;
+  //min-width: auto;
   height: fit-content;
+}
+
+.table-temporary {
+  width: min-content;
+  min-width: min-content;
+}
+
+.table-results {
+  min-width: max-content;
+  width: -webkit-fill-available;
 }
