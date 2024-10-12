@@ -16,8 +16,8 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-gurps-armor-crafting',
   standalone: true,
-  imports: [ CommonModule,
-    MatIconModule, MatFormFieldModule, ReactiveFormsModule, MatCheckboxModule, MatInputModule, MatSelectModule, MatSliderModule, MatTableModule, MatButtonModule ],
+  imports: [CommonModule,
+    MatIconModule, MatFormFieldModule, ReactiveFormsModule, MatCheckboxModule, MatInputModule, MatSelectModule, MatSliderModule, MatTableModule, MatButtonModule],
   templateUrl: './gurps-armor-crafting.component.html',
   styleUrl: './gurps-armor-crafting.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -30,6 +30,7 @@ export class GurpsArmorCraftingComponent implements OnInit, OnDestroy {
   public Math = Math;
 
   public armorResults$ = new BehaviorSubject<ArmorResult[]>([]);
+  public currentResult$ = new BehaviorSubject<ArmorResult[]>([]);
   private bodyPartUpdated$ = new Subject<void>();
   private ngUnsubscribe$ = new Subject<void>();
   private initialId = 0;
@@ -59,17 +60,13 @@ export class GurpsArmorCraftingComponent implements OnInit, OnDestroy {
   )
 
   ngOnInit(): void {
-    console.log('HumanBodyParts', HumanBodyParts.reduce((acc, val) => acc + val.areaCoverage, 0))
-    console.log('HumanBodyPartsBack', HumanBodyPartsBack.reduce((acc, val) => acc + val.areaCoverage, 0))
-    console.log('HumanBodyPartsFront', HumanBodyPartsFront.reduce((acc, val) => acc + val.areaCoverage, 0))
-    console.log('HumanBodyPartsFront + HumanBodyPartsBack', HumanBodyPartsFront.reduce((acc, val) => acc + val.areaCoverage, 0) + HumanBodyPartsBack.reduce((acc, val) => acc + val.areaCoverage, 0))
-
     this.svgLoaded$.pipe(
       takeUntil(this.ngUnsubscribe$),
       tap(() => this.registerBodyPartHandlers()),
-      tap(() => this.updateTable(this.toArmorResult()))
+      tap(() => this.updateSliderValue()),
+      tap(() => this.setTemporaryArmorResult(this.toArmorResult()))
     )
-    .subscribe();
+      .subscribe();
 
     merge(
       this.form.valueChanges,
@@ -77,35 +74,15 @@ export class GurpsArmorCraftingComponent implements OnInit, OnDestroy {
     ).pipe(
       tap(() => this.updateSliderValue()),
       map(() => this.toArmorResult()),
-      tap((armorResult) => this.updateTable(armorResult)),
+      tap((armorResult) => this.setTemporaryArmorResult(armorResult)),
       takeUntil(this.ngUnsubscribe$)
     )
-    .subscribe()
+      .subscribe()
 
     this.form.controls.splitFrontAndBack.valueChanges.pipe(
       takeUntil(this.ngUnsubscribe$)
     )
-    .subscribe(shouldSplit => this.toggleBodyParts(shouldSplit))
-  }
-
-  public onBodyPartClick(event: MouseEvent) {
-    const bodyPartName = (event.target as any).id;
-    const leftRightSymmetryEnabled = this.form.controls.leftRightSelectionSymmetryEnabled.value;
-    const frontBackSymmetryEnabled = this.form.controls.frontBackSelectionSymmetryEnabled.value;
-    this.selectBodyPart(bodyPartName);
-    if (leftRightSymmetryEnabled){
-      this.selectBodyPart(this.getLeftRightSymmetricBodyPartName(bodyPartName));
-    }
-
-    if (frontBackSymmetryEnabled){
-      this.selectBodyPart(this.getFrontBackSymmetricBodyPartName(bodyPartName));
-    }
-
-    if(leftRightSymmetryEnabled && frontBackSymmetryEnabled) {
-      this.selectBodyPart(this.getLeftRightSymmetricBodyPartName(this.getFrontBackSymmetricBodyPartName(bodyPartName)));
-    }
-
-    this.bodyPartUpdated$.next();
+      .subscribe(shouldSplit => this.toggleBodyParts(shouldSplit))
   }
 
   ngOnDestroy(): void {
@@ -113,7 +90,33 @@ export class GurpsArmorCraftingComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe$.complete();
   }
 
-  registerBodyPartHandlers() {
+  public addToResults(armorResult: ArmorResult) {
+    const armorResultCopy = { ...armorResult };
+    armorResultCopy.id = this.initialId++;
+    this.armorResults$.next([...this.armorResults$.value, armorResultCopy]);
+  }
+
+  private onBodyPartClick(event: MouseEvent) {
+    const bodyPartName = (event.target as any).id;
+    const leftRightSymmetryEnabled = this.form.controls.leftRightSelectionSymmetryEnabled.value;
+    const frontBackSymmetryEnabled = this.form.controls.frontBackSelectionSymmetryEnabled.value;
+    this.selectBodyPart(bodyPartName);
+    if (leftRightSymmetryEnabled) {
+      this.selectBodyPart(this.getLeftRightSymmetricBodyPartName(bodyPartName));
+    }
+
+    if (frontBackSymmetryEnabled) {
+      this.selectBodyPart(this.getFrontBackSymmetricBodyPartName(bodyPartName));
+    }
+
+    if (leftRightSymmetryEnabled && frontBackSymmetryEnabled) {
+      this.selectBodyPart(this.getLeftRightSymmetricBodyPartName(this.getFrontBackSymmetricBodyPartName(bodyPartName)));
+    }
+
+    this.bodyPartUpdated$.next();
+  }
+
+  private registerBodyPartHandlers() {
     this.humanBodyParts.forEach(hbp => {
       const element = document.getElementById(hbp.name);
       if (!element) {
@@ -124,7 +127,7 @@ export class GurpsArmorCraftingComponent implements OnInit, OnDestroy {
     })
   }
 
-  selectBodyPart(bodyPartName: string | null) {
+  private selectBodyPart(bodyPartName: string | null) {
     const xmlPathNode = document.querySelector(`svg #${bodyPartName}`);
     const bodyPart = this.humanBodyParts.find(hbp => hbp.name == bodyPartName);
     if (!xmlPathNode || !bodyPart) {
@@ -133,6 +136,7 @@ export class GurpsArmorCraftingComponent implements OnInit, OnDestroy {
     bodyPart.isSelected = !bodyPart.isSelected
     xmlPathNode.setAttribute('style', this.getBodyPartStyle(bodyPart));
   }
+
 
   private getLeftRightSymmetricBodyPartName(bodyPartName: string | null): string | null {
     if (!bodyPartName) {
@@ -146,13 +150,13 @@ export class GurpsArmorCraftingComponent implements OnInit, OnDestroy {
       return bodyPartName.replace('right', 'left');
 
     return null;
-   }
+  }
 
-private getBodyPartStyle(bodyPart: BodyPart): string {
-  return `fill: ${bodyPart.isSelected ? this.selectedColor : this.unselectedColor}; stroke: ${this.strokeColor}; stroke-width: 4px;`;
-}
+  private getBodyPartStyle(bodyPart: BodyPart): string {
+    return `fill: ${bodyPart.isSelected ? this.selectedColor : this.unselectedColor}; stroke: ${this.strokeColor}; stroke-width: 4px;`;
+  }
 
-   private  getFrontBackSymmetricBodyPartName(bodyPartName: string | null): string | null{
+  private getFrontBackSymmetricBodyPartName(bodyPartName: string | null): string | null {
     if (!bodyPartName) {
       return null;
     }
@@ -163,36 +167,36 @@ private getBodyPartStyle(bodyPart: BodyPart): string {
       return bodyPartName.replace('back', 'front');
 
     return null;
-   }
+  }
 
-   private toggleBodyParts(shouldSplit: boolean) {
-    if (shouldSplit){
+  private toggleBodyParts(shouldSplit: boolean) {
+    if (shouldSplit) {
       this.humanBodyParts = [...HumanBodyPartsBack, ...HumanBodyPartsFront]
     }
     else {
       this.humanBodyParts = HumanBodyParts
     }
     console.log(this.humanBodyParts)
-   }
+  }
 
-  private getHpMultiplier(hp: number){
-     //(character’s weight / 150)^(2/3)
-     // character’s weight = (hp/2)^3
+  private getHpMultiplier(hp: number) {
+    //(character’s weight / 150)^(2/3)
+    // character’s weight = (hp/2)^3
 
-     const characterWeight = Math.pow(hp/2, 3)
-     return Math.pow(characterWeight/150, 2/3)
-   }
+    const characterWeight = Math.pow(hp / 2, 3)
+    return Math.pow(characterWeight / 150, 2 / 3)
+  }
 
-   updateSliderValue(){
+  private updateSliderValue() {
     const minDr = this.availibleMaterials[this.form.controls.materialIndex.value].constructionTypes[this.form.controls.constructionTypeIndex.value].minDr;
     const maxDr = this.availibleMaterials[this.form.controls.materialIndex.value].drMax;
     const currentDr = this.form.controls.selectedDr.value;
     const newDr = Math.min(Math.max(minDr, currentDr), maxDr);
-    this.form.controls.selectedDr.patchValue(newDr, {emitEvent: false});
+    this.form.controls.selectedDr.patchValue(newDr, { emitEvent: false });
     return newDr;
-   }
+  }
 
-   toArmorResult(){
+  private toArmorResult() {
     const formValue = this.form.getRawValue();
     const material = this.availibleMaterials[formValue.materialIndex];
     const selectedBodyParts = this.humanBodyParts.filter(hbp => hbp.isSelected);
@@ -210,24 +214,11 @@ private getBodyPartStyle(bodyPart: BodyPart): string {
     return new ArmorResult(-1, armorWeight, surfaceArea, constructionType, timeToEquip, damageResistance, materialCost, armorCost, workTimeInDays, selectedBodyParts);
     // Armor weight (in pounds) = LSA * WM * CW * DR.
     // Armor cost = armor weight * CM * CC
-   }
+  }
 
-   public addToTable(armorResult: ArmorResult) {
-    const armorResultCopy = {...armorResult};
-    armorResultCopy.id = this.initialId++;
-    this.armorResults$.next([...this.armorResults$.value, armorResultCopy]);
-   }
-
-   private updateTable(armorResult: ArmorResult){
-    const temporaryResultIndex = this.armorResults$.value.findIndex(ar => ar.id == -1);
-    if (temporaryResultIndex != -1){
-      this.armorResults$.value[temporaryResultIndex] = armorResult;
-    } else {
-      this.armorResults$.value.push(armorResult);
-    }
-    this.armorResults$.next([...this.armorResults$.value]);
-   }
-
+  private setTemporaryArmorResult(armorResult: ArmorResult) {
+    this.currentResult$.next([armorResult]);
+  }
 }
 
 export class ArmorCraftingForm {
@@ -238,5 +229,5 @@ export class ArmorCraftingForm {
   constructionTypeIndex!: number;
   hp!: number;
   selectedDr!: number;
-  crafterMonthlySalary!:number;
+  crafterMonthlySalary!: number;
 }

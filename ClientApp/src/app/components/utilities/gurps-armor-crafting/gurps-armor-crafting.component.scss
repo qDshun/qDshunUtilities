@@ -1,34 +1,29 @@
-mat-icon {
-  width: fit-content;
-  height: 50%;
-}
-
-:host {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
 .row-container {
   display: flex;
   flex-direction: row;
-  flex:1;
+  align-items: stretch; /* Ensures all children stretch to the same height */
 }
 
-table {
-  height: fit-content;
-  min-width: auto;
-  box-shadow: none;
-
+mat-icon {
+  width: fit-content;
+  height: 100%; /* Ensure icon takes up the full height of its container */
+  max-height: 50vh;
 }
 
 form {
   display: flex;
   flex-direction: column;
   padding: 10px;
+  flex-grow: 1; /* Ensures the form grows to fill the available space */
 }
 
-button {
-  padding: 0px;
-  padding-bottom: 2px;
+.column-container {
+  display: flex;
+  flex-direction: column;
+}
+
+table {
+  box-shadow: none;
+  min-width: auto;
+  height: fit-content;
 }
