@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { BehaviorSubject, filter, interval, map, merge, Subject, take, takeUntil, tap } from 'rxjs';
 import { ControlsOf } from '../../../helpers';
@@ -8,29 +8,42 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
-import { ArmorResult, AvailibleMaterials, HumanBodyParts } from '../../../helpers/armor-crafting';
-import { MatTableModule } from '@angular/material/table';
+import { ArmorResult, AvailibleMaterials, BodyPart, HumanBodyParts, HumanBodyPartsBack, HumanBodyPartsFront } from '../../../helpers/armor-crafting';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-gurps-armor-crafting',
   standalone: true,
-  imports: [MatIconModule, MatFormFieldModule, ReactiveFormsModule, MatCheckboxModule, MatInputModule, MatSelectModule, MatSliderModule, MatTableModule ],
+  imports: [ CommonModule,
+    MatIconModule, MatFormFieldModule, ReactiveFormsModule, MatCheckboxModule, MatInputModule, MatSelectModule, MatSliderModule, MatTableModule, MatButtonModule ],
   templateUrl: './gurps-armor-crafting.component.html',
   styleUrl: './gurps-armor-crafting.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GurpsArmorCraftingComponent implements OnInit, OnDestroy {
   private formBuilder = inject(FormBuilder);
-  private ngUnsubscribe$ = new Subject<void>();
 
-  public svgId = 'human-armor-locations-svg';
-  public armorResults$ = new BehaviorSubject<ArmorResult[]>([]);
-  public bodyPartUpdated$ = new Subject<void>();
-  public humanBodyParts = HumanBodyParts;
+  public humanBodyParts = [...HumanBodyPartsFront, ...HumanBodyPartsBack];
   public availibleMaterials = AvailibleMaterials;
   public Math = Math;
+
+  public armorResults$ = new BehaviorSubject<ArmorResult[]>([]);
+  private bodyPartUpdated$ = new Subject<void>();
+  private ngUnsubscribe$ = new Subject<void>();
+  private initialId = 0;
+  private readonly frontSvgId = 'human-armor-locations-front-svg';
+  private readonly backSvgId = 'human-armor-locations-back-svg';
+  private readonly selectedColor = '#005cbb';
+  private readonly unselectedColor = 'white';
+  private readonly strokeColor = 'black';
+
+  readonly displayedColumns = ['id', 'weight', 'surfaceArea', 'constructionType', 'timeToEquip', 'damageResistnce', 'materialCost', 'armorCost', 'workTimeInDays'];
   public form: FormGroup<ControlsOf<ArmorCraftingForm>> = this.formBuilder.nonNullable.group({
-    isSymmetric: [true, Validators.required],
+    leftRightSelectionSymmetryEnabled: [true, Validators.required],
+    frontBackSelectionSymmetryEnabled: [true, Validators.required],
+    splitFrontAndBack: [true, Validators.required],
     materialIndex: [0, Validators.required],
     constructionTypeIndex: [0, Validators.required],
     hp: [10, Validators.required],
@@ -38,19 +51,26 @@ export class GurpsArmorCraftingComponent implements OnInit, OnDestroy {
     crafterMonthlySalary: [1000, Validators.required]
   });
 
-  readonly selectedColor = '#005cbb'
-  readonly unselectedColor = 'white'
-  readonly strokeColor = 'black'
-  readonly displayedColumns = ['id', 'weight', 'surfaceArea', 'constructionType', 'timeToEquip', 'damageResistnce', 'materialCost', 'armorCost', 'workTimeInDays'];
-
   private svgLoaded$ = interval(100).pipe(
-    filter(_ => (document.getElementById(this.svgId)?.children?.length ?? 0) >= this.humanBodyParts.length),
+    filter(_ => (document.getElementById(this.frontSvgId)?.children?.length ?? 0) >= HumanBodyPartsFront.length),
+    filter(_ => (document.getElementById(this.backSvgId)?.children?.length ?? 0) >= HumanBodyPartsBack.length),
     take(1),
     takeUntil(this.ngUnsubscribe$)
   )
 
   ngOnInit(): void {
-    this.svgLoaded$.subscribe(() => this.registerBodyPartHandlers());
+    console.log('HumanBodyParts', HumanBodyParts.reduce((acc, val) => acc + val.areaCoverage, 0))
+    console.log('HumanBodyPartsBack', HumanBodyPartsBack.reduce((acc, val) => acc + val.areaCoverage, 0))
+    console.log('HumanBodyPartsFront', HumanBodyPartsFront.reduce((acc, val) => acc + val.areaCoverage, 0))
+    console.log('HumanBodyPartsFront + HumanBodyPartsBack', HumanBodyPartsFront.reduce((acc, val) => acc + val.areaCoverage, 0) + HumanBodyPartsBack.reduce((acc, val) => acc + val.areaCoverage, 0))
+
+    this.svgLoaded$.pipe(
+      takeUntil(this.ngUnsubscribe$),
+      tap(() => this.registerBodyPartHandlers()),
+      tap(() => this.updateTable(this.toArmorResult()))
+    )
+    .subscribe();
+
     merge(
       this.form.valueChanges,
       this.bodyPartUpdated$
@@ -59,18 +79,32 @@ export class GurpsArmorCraftingComponent implements OnInit, OnDestroy {
       map(() => this.toArmorResult()),
       tap((armorResult) => this.updateTable(armorResult)),
       takeUntil(this.ngUnsubscribe$)
-    ).subscribe()
+    )
+    .subscribe()
+
+    this.form.controls.splitFrontAndBack.valueChanges.pipe(
+      takeUntil(this.ngUnsubscribe$)
+    )
+    .subscribe(shouldSplit => this.toggleBodyParts(shouldSplit))
   }
 
   public onBodyPartClick(event: MouseEvent) {
     const bodyPartName = (event.target as any).id;
-    if (this.form.controls.isSymmetric.value){
-      const symmetricBodyPartName = this.getSymmetricBodyPartName(bodyPartName);
-      if (symmetricBodyPartName){
-        this.selectBodyPart(symmetricBodyPartName);
-      }
-    }
+    const leftRightSymmetryEnabled = this.form.controls.leftRightSelectionSymmetryEnabled.value;
+    const frontBackSymmetryEnabled = this.form.controls.frontBackSelectionSymmetryEnabled.value;
     this.selectBodyPart(bodyPartName);
+    if (leftRightSymmetryEnabled){
+      this.selectBodyPart(this.getLeftRightSymmetricBodyPartName(bodyPartName));
+    }
+
+    if (frontBackSymmetryEnabled){
+      this.selectBodyPart(this.getFrontBackSymmetricBodyPartName(bodyPartName));
+    }
+
+    if(leftRightSymmetryEnabled && frontBackSymmetryEnabled) {
+      this.selectBodyPart(this.getLeftRightSymmetricBodyPartName(this.getFrontBackSymmetricBodyPartName(bodyPartName)));
+    }
+
     this.bodyPartUpdated$.next();
   }
 
@@ -86,21 +120,25 @@ export class GurpsArmorCraftingComponent implements OnInit, OnDestroy {
         throw new Error(`Body part is missing: ${hbp.name}`);
       }
       element.onclick = (event) => this.onBodyPartClick(event);
-      element.setAttribute('style', `fill: ${this.selectedColor}; stroke: ${this.strokeColor}; stroke-width: 4px;`);
+      element.setAttribute('style', this.getBodyPartStyle(hbp));
     })
   }
 
-  selectBodyPart(bodyPartName: string) {
-    const xmlPathNode = document.querySelector(`#${this.svgId} #${bodyPartName}`);
-    const bodyPart = HumanBodyParts.find(hbp => hbp.name == bodyPartName);
+  selectBodyPart(bodyPartName: string | null) {
+    const xmlPathNode = document.querySelector(`svg #${bodyPartName}`);
+    const bodyPart = this.humanBodyParts.find(hbp => hbp.name == bodyPartName);
     if (!xmlPathNode || !bodyPart) {
       return;
     }
     bodyPart.isSelected = !bodyPart.isSelected
-    xmlPathNode.setAttribute('style', `fill: ${bodyPart.isSelected ? this.selectedColor : this.unselectedColor}; stroke: ${this.strokeColor}; stroke-width: 4px;`);
+    xmlPathNode.setAttribute('style', this.getBodyPartStyle(bodyPart));
   }
 
-  getSymmetricBodyPartName(bodyPartName: string): string | null{
+  private getLeftRightSymmetricBodyPartName(bodyPartName: string | null): string | null {
+    if (!bodyPartName) {
+      return null;
+    }
+
     if (bodyPartName.includes('left'))
       return bodyPartName.replace('left', 'right');
 
@@ -110,7 +148,34 @@ export class GurpsArmorCraftingComponent implements OnInit, OnDestroy {
     return null;
    }
 
-  getHpMultiplier(hp: number){
+private getBodyPartStyle(bodyPart: BodyPart): string {
+  return `fill: ${bodyPart.isSelected ? this.selectedColor : this.unselectedColor}; stroke: ${this.strokeColor}; stroke-width: 4px;`;
+}
+
+   private  getFrontBackSymmetricBodyPartName(bodyPartName: string | null): string | null{
+    if (!bodyPartName) {
+      return null;
+    }
+    if (bodyPartName.includes('front'))
+      return bodyPartName.replace('front', 'back');
+
+    if (bodyPartName.includes('back'))
+      return bodyPartName.replace('back', 'front');
+
+    return null;
+   }
+
+   private toggleBodyParts(shouldSplit: boolean) {
+    if (shouldSplit){
+      this.humanBodyParts = [...HumanBodyPartsBack, ...HumanBodyPartsFront]
+    }
+    else {
+      this.humanBodyParts = HumanBodyParts
+    }
+    console.log(this.humanBodyParts)
+   }
+
+  private getHpMultiplier(hp: number){
      //(character’s weight / 150)^(2/3)
      // character’s weight = (hp/2)^3
 
@@ -130,7 +195,7 @@ export class GurpsArmorCraftingComponent implements OnInit, OnDestroy {
    toArmorResult(){
     const formValue = this.form.getRawValue();
     const material = this.availibleMaterials[formValue.materialIndex];
-    const selectedBodyParts = this.humanBodyParts.filter(hbp => hbp.isSelected)
+    const selectedBodyParts = this.humanBodyParts.filter(hbp => hbp.isSelected);
     const surfaceArea = selectedBodyParts.reduce((partialSum, hbp) => partialSum + hbp.areaCoverage, 0) * this.getHpMultiplier(formValue.hp);
     const constructionType = material.constructionTypes[formValue.constructionTypeIndex];
     const workingDaysInMonth = 25;
@@ -147,19 +212,28 @@ export class GurpsArmorCraftingComponent implements OnInit, OnDestroy {
     // Armor cost = armor weight * CM * CC
    }
 
-   private updateTable(armorResult: ArmorResult){
-    const previousResultIndex = this.armorResults$.value.findIndex(ar => ar.id == -1);
-
-    if (previousResultIndex != -1){
-      this.armorResults$.next([armorResult]);
-    } else {
-      this.armorResults$.next([this.armorResults$.value[previousResultIndex] = armorResult]);
-    }
+   public addToTable(armorResult: ArmorResult) {
+    const armorResultCopy = {...armorResult};
+    armorResultCopy.id = this.initialId++;
+    this.armorResults$.next([...this.armorResults$.value, armorResultCopy]);
    }
+
+   private updateTable(armorResult: ArmorResult){
+    const temporaryResultIndex = this.armorResults$.value.findIndex(ar => ar.id == -1);
+    if (temporaryResultIndex != -1){
+      this.armorResults$.value[temporaryResultIndex] = armorResult;
+    } else {
+      this.armorResults$.value.push(armorResult);
+    }
+    this.armorResults$.next([...this.armorResults$.value]);
+   }
+
 }
 
 export class ArmorCraftingForm {
-  isSymmetric!: boolean;
+  leftRightSelectionSymmetryEnabled!: boolean;
+  frontBackSelectionSymmetryEnabled!: boolean;
+  splitFrontAndBack!: boolean;
   materialIndex!: number;
   constructionTypeIndex!: number;
   hp!: number;
