@@ -18,6 +18,7 @@ export class AppComponent {
   private icons = [
     "human-armor-locations-front",
     "human-armor-locations-back",
+    "star"
     ]
 
   constructor(
