@@ -18,18 +18,7 @@ export class GameScreenComponent implements AfterViewInit {
   ngAfterViewInit(): void {
 
     this.renderService.initialize(this._canvas)
-      .subscribe(() => console.log('Init done'));
-
-    fromEvent(window, 'resize')
-    .pipe(
-      tap(() => this.renderService.resizeTo(this._canvas.nativeElement.clientWidth, this._canvas.nativeElement.clientHeight))
-    )
-    .subscribe(() => console.log('resize!'));
-
-    fromEvent<WheelEvent>(this._canvas.nativeElement, 'wheel').pipe(
-      tap((e: WheelEvent) => this.renderService.zoom(e))
-    )
-      .subscribe()
+      .subscribe();
   }
 
   onCanvasClick(event: any) {

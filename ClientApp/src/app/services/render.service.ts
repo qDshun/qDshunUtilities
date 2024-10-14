@@ -1,6 +1,6 @@
 import { ElementRef, Injectable } from '@angular/core';
 import * as PIXI from 'pixi.js';
-import { defer, from, Observable, of, take, tap } from 'rxjs';
+import { defer, from, fromEvent, map, merge, Observable, of, pairwise, switchMap, take, takeUntil, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -26,18 +26,21 @@ export class RenderService {
         }))
         .pipe(
           tap(() => this.application.renderer.resize(canvasWidth, canvasHeight)),
-          tap(() => this._renderMapCells())
+          tap(() => this._renderMapCells()),
+          tap(() => this.initializeResizeHandler()),
+          tap(() => this.initializeZoomHandler()),
+          tap(() => this.initializePanHandler()),
         );
     })
 
   }
 
-  public resizeTo(width: number, height: number) {
+  private resizeTo(width: number, height: number) {
     this.application.renderer.resize(width, height);
   }
 
 
-  public zoom(event: WheelEvent) {
+  private zoom(event: WheelEvent) {
     const scaleSpeed = 0.2;
     const container = this.application.stage;
     // Determine the zoom direction (up or down)
@@ -59,6 +62,11 @@ export class RenderService {
     container.scale.set(newScale);
   }
 
+  private pan(deltaX: number, deltaY: number){
+    this.application.stage.position.x += deltaX;
+    this.application.stage.position.y += deltaY;
+  }
+
   private _renderMapCells() {
     const width = this.canvas.clientWidth;
     const height = this.canvas.clientHeight;
@@ -78,7 +86,6 @@ export class RenderService {
 
         hexGeometry.x = mapOffset + horizontalSpacingPointyTop * i + (j % 2 == 0 ? 0 : -1 * horizontalSpacingPointyTop / 2);
         hexGeometry.y = mapOffset + verticalSpacingPointyTop * j;
-        console.log(`Drawing x:${hexGeometry.x}, y:${hexGeometry.y}`)
         this.application.stage.addChild(hexGeometry);
       }
 
@@ -89,5 +96,44 @@ export class RenderService {
 
   private getRandomColor(): string {
     return "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0")
+  }
+
+  private initializeZoomHandler() {
+    fromEvent<WheelEvent>(this.canvas, 'wheel')
+      .pipe(
+        tap((e: WheelEvent) => this.zoom(e))
+      )
+      .subscribe();
+
+  }
+
+  private initializePanHandler() {
+    const onMouseDown$ = fromEvent<MouseEvent>(this.canvas, 'mousedown');
+    const onMouseLeave$ = fromEvent<MouseEvent>(this.canvas, 'mouseleave');
+    const onMouseUp$ = fromEvent<MouseEvent>(this.canvas, 'mouseup');
+    const onMouseMove$ = fromEvent<MouseEvent>(this.canvas, 'mousemove');
+    const onPanStop$ = merge(onMouseUp$, onMouseLeave$);
+    onMouseDown$.pipe(
+      switchMap((startEvent: MouseEvent) =>
+        onMouseMove$.pipe(
+          pairwise(),
+          map(([prev, curr]) => ({
+            deltaX: curr.clientX - prev.clientX,
+            deltaY: curr.clientY - prev.clientY
+          })),
+          tap(({ deltaX, deltaY }) => this.pan(deltaX, deltaY)),
+          takeUntil(onPanStop$)
+        )
+      )
+    )
+    .subscribe();
+  }
+
+  private initializeResizeHandler() {
+    fromEvent(window, 'resize')
+      .pipe(
+        tap(() => this.resizeTo(this.canvas.clientWidth, this.canvas.clientHeight))
+      )
+      .subscribe();
   }
 }
