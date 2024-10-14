@@ -1,4 +1,6 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, Inject, ViewChild } from '@angular/core';
+import { RenderService } from '../../../services/render.service';
+import { filter, fromEvent, tap } from 'rxjs';
 
 @Component({
   selector: 'app-game-screen',
@@ -11,9 +13,23 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, ViewChil
 export class GameScreenComponent implements AfterViewInit {
   @ViewChild('gameCanvas') _canvas!: ElementRef<HTMLCanvasElement>;
 
+  private renderService = inject(RenderService);
+
   ngAfterViewInit(): void {
-    const canvas = this._canvas.nativeElement;
-    //TODO: stub
+
+    this.renderService.initialize(this._canvas)
+      .subscribe(() => console.log('Init done'));
+
+    fromEvent(window, 'resize')
+    .pipe(
+      tap(() => this.renderService.resizeTo(this._canvas.nativeElement.clientWidth, this._canvas.nativeElement.clientHeight))
+    )
+    .subscribe(() => console.log('resize!'));
+
+    fromEvent<WheelEvent>(this._canvas.nativeElement, 'wheel').pipe(
+      tap((e: WheelEvent) => this.renderService.zoom(e))
+    )
+      .subscribe()
   }
 
   onCanvasClick(event: any) {
@@ -21,9 +37,5 @@ export class GameScreenComponent implements AfterViewInit {
     const canvas_x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     const canvas_y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
     //TODO: stub
-  }
-
-  private getRandomColor(): string {
-    return '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
   }
 }
