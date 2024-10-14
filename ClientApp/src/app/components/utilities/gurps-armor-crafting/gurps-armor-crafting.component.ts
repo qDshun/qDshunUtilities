@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { BehaviorSubject, filter, interval, map, merge, Subject, take, takeUntil, tap } from 'rxjs';
-import { ControlsOf } from '../../../helpers';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
@@ -12,6 +11,7 @@ import { ArmorResult, AvailibleMaterials, BodyPart, HumanBodyParts, HumanBodyPar
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
+import { ControlsOf } from '../../../helpers/controls-of.type';
 
 @Component({
   selector: 'app-gurps-armor-crafting',

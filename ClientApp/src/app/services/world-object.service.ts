@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, map, Observable, of, ReplaySubject, share, Subject, switchMap } from 'rxjs';
+import { BehaviorSubject, map, Observable, of, ReplaySubject, share, switchMap } from 'rxjs';
 import { ApiService } from './api.service';
-import { WorldObjectResponse } from '../models';
+import { WorldObjectResponse } from '../models/world-object-response';
 
 @Injectable({
   providedIn: 'root'

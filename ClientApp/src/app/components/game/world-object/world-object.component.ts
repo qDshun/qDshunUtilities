@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, Input, OnInit } from '@angular/core';
 import { NamedTreeNode } from '../../../services/tree-service';
-import { WorldObjectResponse } from '../../../models';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { WorldObjectService } from '../../../services/world-object.service';
 import { map } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { WorldObjectResponse } from '../../../models/world-object-response';
 
 @Component({
   selector: 'app-world-object[worldObjectNode]',

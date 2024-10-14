@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { WorldObjectService } from '../../../services/world-object.service';
 import { CommonModule } from '@angular/common';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { PathToNamePipe } from '../../../helpers';
+import { PathToNamePipe } from '../../../helpers/path-to-name.pipe';
 
 @Component({
   selector: 'app-game-bar-quick-access',
