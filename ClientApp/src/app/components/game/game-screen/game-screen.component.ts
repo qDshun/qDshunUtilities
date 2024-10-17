@@ -1,6 +1,5 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, Inject, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, NgZone, ViewChild } from '@angular/core';
 import { RenderService } from '../../../services/render.service';
-import { filter, fromEvent, tap } from 'rxjs';
 
 @Component({
   selector: 'app-game-screen',
@@ -14,11 +13,13 @@ export class GameScreenComponent implements AfterViewInit {
   @ViewChild('gameCanvas') _canvas!: ElementRef<HTMLCanvasElement>;
 
   private renderService = inject(RenderService);
+  private zone = inject(NgZone);
 
   ngAfterViewInit(): void {
-
-    this.renderService.initialize(this._canvas)
-      .subscribe();
+    this.zone.runOutsideAngular(() => {
+      this.renderService.initialize(this._canvas)
+        .subscribe();
+    });
   }
 
   onCanvasClick(event: any) {
@@ -26,5 +27,9 @@ export class GameScreenComponent implements AfterViewInit {
     const canvas_x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     const canvas_y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
     //TODO: stub
+  }
+
+  disableContextMenu(event: any){
+    return false;
   }
 }

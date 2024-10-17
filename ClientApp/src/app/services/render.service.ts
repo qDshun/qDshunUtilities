@@ -1,38 +1,142 @@
-import { ElementRef, Injectable } from '@angular/core';
-import * as PIXI from 'pixi.js';
-import { defer, from, fromEvent, map, merge, Observable, of, pairwise, switchMap, take, takeUntil, tap } from 'rxjs';
-
+import { effect, ElementRef, inject, Injectable, Injector } from '@angular/core';
+import { defer, filter, from, fromEvent, map, merge, Observable, pairwise, switchMap, takeUntil, tap } from 'rxjs';
+import { IMapTileConfiguration } from '../models/map-tile.model';
+import { GameMap, StateService } from './state.service';
+import { Application, Container, Graphics } from 'pixi.js';
+import { DropShadowFilter } from 'pixi-filters';
 @Injectable({
   providedIn: 'root'
 })
 export class RenderService {
   private canvas!: HTMLCanvasElement;
-  private application!: PIXI.Application;
+  private application!: Application;
+  private stateService = inject(StateService);
+  private injector = inject(Injector);
+  private _renderedMapId: string | null = null;
   constructor() { }
 
-  initialize(canvasRef: ElementRef<HTMLCanvasElement>): Observable<void> {
+  initialize(canvasRef: ElementRef<HTMLCanvasElement>): Observable<any> {
     return defer(() => {
       this.canvas = canvasRef.nativeElement;
       const canvasWidth = this.canvas.clientWidth;
       const canvasHeight = this.canvas.clientHeight;
-
-      this.application = new PIXI.Application();
+      this.application = new Application();
       return from(this.application.init(
         {
           background: '#1099bb',
-          resizeTo: undefined,
           canvas: this.canvas,
-
+          width: canvasWidth,
+          height: canvasHeight,
         }))
         .pipe(
-          tap(() => this.application.renderer.resize(canvasWidth, canvasHeight)),
-          tap(() => this._renderMapCells()),
+          tap(() => this.application.stage.setSize(canvasWidth, canvasHeight)),
           tap(() => this.initializeResizeHandler()),
           tap(() => this.initializeZoomHandler()),
           tap(() => this.initializePanHandler()),
+          map(() => this.createBoardContainer(this.stateService.map)),
+          tap((boardContainer) => effect(() => this.onMapChanged(this.stateService.currentMapId(), boardContainer), { injector: this.injector })),
         );
     })
+  }
 
+  onMapChanged(mapId: string, boardContainer: Container){
+    const previousMap = this._renderedMapId;
+    if (previousMap){
+      this.hideMap(previousMap, boardContainer);
+    }
+    const currentMap = this.stateService.maps().find(m => m.id == mapId);
+    if (!currentMap){
+      alert('Error: Map desync!');
+      return;
+    }
+    this.renderMap(currentMap, boardContainer);
+  }
+
+  hideMap(mapId: string, boardContainer: Container){
+    let mapContainer = this.getMapContainer(mapId, boardContainer);
+    if (!mapContainer){
+      alert('Error: Empty hide map called');
+      return;
+    }
+    mapContainer.visible = false;
+  }
+
+  renderMap(map: GameMap, boardContainer: Container): void {
+    this._renderedMapId = map.id;
+    let container = this.getMapContainer(map.id, boardContainer);
+    if (container) {
+      container.visible = true;
+      return;
+    }
+
+    container = this.createMapContainer(map, boardContainer);
+    this.renderMapCells(container, map.mapTileConfiguration());
+  }
+
+
+  private renderMapCells(container: Container, mapTileConfiguration: IMapTileConfiguration) {
+    const tileSize =  mapTileConfiguration.getTileSize();
+    const fitsScreenWidth = Math.floor(container.width / tileSize.x);
+    const fitsScreenHeight = Math.floor(container.height / tileSize.y);
+
+    for (let i = 0; i <= fitsScreenWidth; i++) {
+      for (let j = 0; j <= fitsScreenHeight; j++) {
+        const centerCoords = mapTileConfiguration.getCenterCoords(i, j);
+        const graphicsClone = mapTileConfiguration.mapTileGraphics.clone();
+        //TODO: Move offset (tileSize.x / 2) to mapTileConfiguration
+        graphicsClone.x = centerCoords.x + tileSize.x / 2;
+        graphicsClone.y = centerCoords.y + tileSize.y / 2;
+        container.addChild(graphicsClone);
+      }
+
+    }
+  }
+
+  private createBoardContainer(map: GameMap): Container {
+    const boardContainerTag = 'Board-layer';
+    const boardContainer = new Container({
+      width: map.mapTileConfiguration().mapWidth,
+      height: map.mapTileConfiguration().mapHeight,
+      visible: true,
+      label: boardContainerTag,
+    });
+
+    boardContainer.label = boardContainerTag;
+    this.application.stage.addChild(boardContainer);
+    var dropShadowFilter = new DropShadowFilter({color: 0x000020, alpha: 2, blur: 6, quality: 4});
+    dropShadowFilter.padding = 80;
+    boardContainer.filters = [dropShadowFilter];
+    return boardContainer;
+  }
+
+  private getMapContainer(mapId: string, boardContainer: Container) {
+    const mapLayerTag = 'Map-Layer-';
+    const mapLabel = mapLayerTag + mapId;
+    const result = boardContainer.getChildByLabel(mapLabel);
+    return result;
+  }
+
+
+  private createMapContainer(map: GameMap, parentContainer: Container) {
+    const mapLayerTag = 'Map-Layer-';
+    const mapLabel = mapLayerTag + map.id;
+    const mapContainer = new Container({
+      width: map.mapTileConfiguration().mapWidth,
+      height: map.mapTileConfiguration().mapHeight,
+      visible: true
+    });
+
+
+    mapContainer.label = mapLabel;
+    parentContainer.addChild(mapContainer);
+    const background = new Graphics().rect(0, 0, map.mapTileConfiguration().mapWidth, map.mapTileConfiguration().mapHeight).fill(map.backgroundColor())
+    mapContainer.addChild(background);
+
+    const mask = new Graphics().rect(0, 0, map.mapTileConfiguration().mapWidth, map.mapTileConfiguration().mapHeight)
+      .fill(0xFFFFFF);// The color doesn't matter here
+    mapContainer.mask = mask;
+    mapContainer.addChild(mask)
+    return mapContainer;
   }
 
   private resizeTo(width: number, height: number) {
@@ -57,45 +161,18 @@ export class RenderService {
     container.position.x -= (event.layerX - container.position.x) * (scaleRatio - 1);
     container.position.y -= (event.layerY - container.position.y) * (scaleRatio - 1);
 
-    // Apply the new scale to the container
-    console.log(newScale)
     container.scale.set(newScale);
   }
 
-  private pan(deltaX: number, deltaY: number){
+  private pan(deltaX: number, deltaY: number) {
+    const maxPan = 160;
+    const zoom = this.application.stage.scale;
+    const newPosX = this.application.stage.position.x + deltaX;
+    const newPosY = this.application.stage.position.y + deltaY;
+    // this.application.stage.position.x = (Math.abs(newPosX) < maxPan*zoom.x ) ? newPosX : this.application.stage.position.x;
+    // this.application.stage.position.y = (Math.abs(newPosY) < maxPan*zoom.y ) ? newPosY : this.application.stage.position.y;
     this.application.stage.position.x += deltaX;
     this.application.stage.position.y += deltaY;
-  }
-
-  private _renderMapCells() {
-    const width = this.canvas.clientWidth;
-    const height = this.canvas.clientHeight;
-    const hexSize = 20;
-    const mapOffset = 80;
-    const horizontalSpacingPointyTop = Math.sqrt(3) * hexSize;
-    const verticalSpacingPointyTop = 3 / 2 * hexSize;
-    const fitsScreenWidth = Math.floor((width - 2 * mapOffset) / horizontalSpacingPointyTop);
-    const fitsScreenHeight = Math.floor((height - 2 * mapOffset) / verticalSpacingPointyTop);
-
-    let strokeColor = this.getRandomColor();
-    for (let j = 0; j < fitsScreenHeight; j++) {
-      for (let i = 0; i < fitsScreenWidth; i++) {
-        const hexGeometry = new PIXI.Graphics().regularPoly(0, 0, hexSize, 6)
-          // .fill(this.getRandomColor())
-          .stroke({ color: strokeColor, width: 2 });
-
-        hexGeometry.x = mapOffset + horizontalSpacingPointyTop * i + (j % 2 == 0 ? 0 : -1 * horizontalSpacingPointyTop / 2);
-        hexGeometry.y = mapOffset + verticalSpacingPointyTop * j;
-        this.application.stage.addChild(hexGeometry);
-      }
-
-    }
-
-  }
-
-
-  private getRandomColor(): string {
-    return "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0")
   }
 
   private initializeZoomHandler() {
@@ -114,6 +191,8 @@ export class RenderService {
     const onMouseMove$ = fromEvent<MouseEvent>(this.canvas, 'mousemove');
     const onPanStop$ = merge(onMouseUp$, onMouseLeave$);
     onMouseDown$.pipe(
+      filter(event => event.button == 2),
+      tap(event => event.preventDefault()),
       switchMap((startEvent: MouseEvent) =>
         onMouseMove$.pipe(
           pairwise(),
@@ -126,7 +205,7 @@ export class RenderService {
         )
       )
     )
-    .subscribe();
+      .subscribe();
   }
 
   private initializeResizeHandler() {
@@ -135,5 +214,9 @@ export class RenderService {
         tap(() => this.resizeTo(this.canvas.clientWidth, this.canvas.clientHeight))
       )
       .subscribe();
+  }
+
+  private getRandomColor(): string {
+    return "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0")
   }
 }
