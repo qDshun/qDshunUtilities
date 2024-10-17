@@ -1,9 +1,10 @@
 import { effect, ElementRef, inject, Injectable, Injector } from '@angular/core';
-import { defer, filter, from, fromEvent, map, merge, Observable, pairwise, switchMap, takeUntil, tap, throttleTime } from 'rxjs';
+import { defer, from, map, Observable, tap } from 'rxjs';
 import { IMapTileConfiguration } from '../models/map-tile.model';
 import { GameMap, StateService } from './state.service';
-import { Application, Container, Graphics, Point } from 'pixi.js';
+import { Application, Container, Graphics } from 'pixi.js';
 import { DropShadowFilter } from 'pixi-filters';
+import { ViewService } from './view.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -11,6 +12,7 @@ export class RenderService {
   private canvas!: HTMLCanvasElement;
   private application!: Application;
   private stateService = inject(StateService);
+  private viewService = inject(ViewService);
   private injector = inject(Injector);
   private _renderedMapId: string | null = null;
   constructor() { }
@@ -31,9 +33,7 @@ export class RenderService {
         }))
         .pipe(
           tap(() => this.application.stage.setSize(canvasWidth, canvasHeight)),
-          tap(() => this.initializeResizeHandler()),
-          tap(() => this.initializeZoomHandler()),
-          tap(() => this.initializePanHandler()),
+          tap(() => this.viewService.initializeViewHandlers(this.application, this.canvas)),
           map(() => this.createBoardContainer(this.stateService.map)),
           tap((boardContainer) => effect(() => this.onMapChanged(this.stateService.currentMapId(), boardContainer), { injector: this.injector })),
         );
@@ -141,84 +141,6 @@ export class RenderService {
     return mapContainer;
   }
 
-  private resizeTo(width: number, height: number) {
-    this.application.renderer.resize(width, height);
-    this.application.renderer.render(this.application.stage);
-  }
-
-
-  private zoom(event: WheelEvent) {
-    const scaleSpeed = 0.2;
-    const container = this.application.stage;
-    // Determine the zoom direction (up or down)
-    const zoomDirection = event.deltaY > 0 ? -1 : 1;
-
-    // Adjust the scale factor by multiplying or dividing by a zoom factor
-    const scaleDifference = zoomDirection * scaleSpeed;
-    // Save the old scale and calculate the new scale
-    const oldScale = container.scale.x;
-    const newScale = Math.max(0.1, Math.min(3, oldScale + scaleDifference));
-    const scaleRatio = newScale / oldScale;
-
-    // To zoom relative to the mouse position, adjust the container's position
-    container.position.x -= (event.layerX - container.position.x) * (scaleRatio - 1);
-    container.position.y -= (event.layerY - container.position.y) * (scaleRatio - 1);
-
-    container.scale.set(newScale);
-    this.application.renderer.render(this.application.stage);
-  }
-
-  private pan(deltaX: number, deltaY: number) {
-    this.application.stage.position.x += deltaX;
-    this.application.stage.position.y += deltaY;
-    requestAnimationFrame(() => {
-      this.application.renderer.render(this.application.stage);
-    });
-  }
-
-  private initializeZoomHandler() {
-    fromEvent<WheelEvent>(this.canvas, 'wheel')
-      .pipe(
-        tap((e: WheelEvent) => this.zoom(e))
-      )
-      .subscribe();
-
-  }
-
-  private initializePanHandler() {
-    const accumulator = new Point(0, 0);
-    const onMouseDown$ = fromEvent<MouseEvent>(this.canvas, 'mousedown');
-    const onMouseLeave$ = fromEvent<MouseEvent>(this.canvas, 'mouseleave');
-    const onMouseUp$ = fromEvent<MouseEvent>(this.canvas, 'mouseup');
-    const onMouseMove$ = fromEvent<MouseEvent>(this.canvas, 'mousemove');
-    const onPanStop$ = merge(onMouseUp$, onMouseLeave$);
-    onMouseDown$.pipe(
-      filter(event => event.button == 2),
-      tap(event => event.preventDefault()),
-      switchMap((startEvent: MouseEvent) =>
-        onMouseMove$.pipe(
-          pairwise(),
-          tap(([prev, curr]) => {
-            accumulator.x += curr.clientX - prev.clientX;
-            accumulator.y += curr.clientY - prev.clientY;
-          }),
-          throttleTime(16), // Throttle to roughly 60fps (16ms)
-          tap(() => this.pan(accumulator.x, accumulator.y)),
-          tap(() => accumulator.set(0, 0)),
-          takeUntil(onPanStop$)
-        )
-      )
-    )
-      .subscribe();
-  }
-
-  private initializeResizeHandler() {
-    fromEvent(window, 'resize')
-      .pipe(
-        tap(() => this.resizeTo(this.canvas.clientWidth, this.canvas.clientHeight))
-      )
-      .subscribe();
-  }
 
   private getRandomColor(): string {
     return "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0")
