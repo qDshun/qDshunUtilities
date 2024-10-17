@@ -52,6 +52,7 @@ public static class Program
         builder.Services.AddSingleton(serviceProvider => new AutomapperConfiguration(serviceProvider, builder.Environment).GetMapper());
 
         builder.Services.AddScoped<IWorldService, WorldService>();
+        builder.Services.AddScoped<IWorldObjectService, WorldObjectService>();
         builder.Services.AddScoped<ILootItemService, LootItemService>();
         builder.Services.AddScoped<ILootSourceService, LootSourceService>();
         builder.Services.AddScoped<IAccessService, AccessService>();

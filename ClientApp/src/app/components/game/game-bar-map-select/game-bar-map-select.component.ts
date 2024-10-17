@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatRippleModule } from '@angular/material/core';
-import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
+import { MatTabsModule } from '@angular/material/tabs';
+import { GameMap, StateService } from '../../../services/state.service';
 
 @Component({
   selector: 'app-game-bar-map-select',
@@ -12,43 +13,15 @@ import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GameBarMapSelectComponent {
+  private stateService = inject(StateService);
+  public maps = this.stateService.maps;
   activeLink = "";
-  mapNamesMock = [
-    'volcano',
-    'forest',
-    'village',
-    'home',
-    'dungeon level 1',
-    'volcano',
-    'forest',
-    'village',
-    'home',
-    'dungeon level 1',
-    'volcano',
-    'forest',
-    'village',
-    'home',
-    'dungeon level 1',
-    'volcano',
-    'forest',
-    'village',
-    'home',
-    'dungeon level 1',
-    'volcano',
-    'forest',
-    'village',
-    'home',
-    'dungeon level 1',
-    'volcano',
-    'forest',
-    'village',
-    'home',
-    'dungeon level 1',
-    'volcano',
-    'forest',
-    'village',
-    'home',
-    'dungeon level 1',
-  ]
-  mapsMock = this.mapNamesMock.map((mapName, index) => {return {id:index, name: mapName}});
+
+  onSelectedTabIndexChange(event: number) {
+    this.switchToMap(this.maps()[event]);
+  }
+
+  private switchToMap(map: GameMap) {
+    this.stateService.currentMapId.set(map.id);
+  }
 }

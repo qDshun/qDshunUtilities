@@ -5,10 +5,10 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { RouterModule } from "@angular/router";
-import { ControlsOf } from "../../../helpers";
-import { LoginRequest } from "../../../models";
-import { IdentityService } from "../../../services";
 import { AuthCardComponent } from "../auth-card/auth-card.component";
+import { ControlsOf } from "../../../helpers/controls-of.type";
+import { LoginRequest } from "../../../models/login-request.model";
+import { IdentityService } from "../../../services/identity.service";
 
 
 @Component({
