@@ -1,8 +1,8 @@
 import { effect, ElementRef, inject, Injectable, Injector } from '@angular/core';
-import { defer, filter, from, fromEvent, map, merge, Observable, pairwise, switchMap, takeUntil, tap } from 'rxjs';
+import { defer, filter, from, fromEvent, map, merge, Observable, pairwise, switchMap, takeUntil, tap, throttleTime } from 'rxjs';
 import { IMapTileConfiguration } from '../models/map-tile.model';
 import { GameMap, StateService } from './state.service';
-import { Application, Container, Graphics } from 'pixi.js';
+import { Application, Container, Graphics, Point } from 'pixi.js';
 import { DropShadowFilter } from 'pixi-filters';
 @Injectable({
   providedIn: 'root'
@@ -27,6 +27,7 @@ export class RenderService {
           canvas: this.canvas,
           width: canvasWidth,
           height: canvasHeight,
+          autoStart: false
         }))
         .pipe(
           tap(() => this.application.stage.setSize(canvasWidth, canvasHeight)),
@@ -39,22 +40,23 @@ export class RenderService {
     })
   }
 
-  onMapChanged(mapId: string, boardContainer: Container){
+  onMapChanged(mapId: string, boardContainer: Container) {
     const previousMap = this._renderedMapId;
-    if (previousMap){
+    if (previousMap) {
       this.hideMap(previousMap, boardContainer);
     }
     const currentMap = this.stateService.maps().find(m => m.id == mapId);
-    if (!currentMap){
+    if (!currentMap) {
       alert('Error: Map desync!');
       return;
     }
     this.renderMap(currentMap, boardContainer);
+    this.application.renderer.render(this.application.stage)
   }
 
-  hideMap(mapId: string, boardContainer: Container){
+  hideMap(mapId: string, boardContainer: Container) {
     let mapContainer = this.getMapContainer(mapId, boardContainer);
-    if (!mapContainer){
+    if (!mapContainer) {
       alert('Error: Empty hide map called');
       return;
     }
@@ -75,7 +77,7 @@ export class RenderService {
 
 
   private renderMapCells(container: Container, mapTileConfiguration: IMapTileConfiguration) {
-    const tileSize =  mapTileConfiguration.getTileSize();
+    const tileSize = mapTileConfiguration.getTileSize();
     const fitsScreenWidth = Math.floor(container.width / tileSize.x);
     const fitsScreenHeight = Math.floor(container.height / tileSize.y);
 
@@ -103,7 +105,7 @@ export class RenderService {
 
     boardContainer.label = boardContainerTag;
     this.application.stage.addChild(boardContainer);
-    var dropShadowFilter = new DropShadowFilter({color: 0x000020, alpha: 2, blur: 6, quality: 4});
+    var dropShadowFilter = new DropShadowFilter({ color: 0x000020, alpha: 2, blur: 6, quality: 4 });
     dropShadowFilter.padding = 80;
     boardContainer.filters = [dropShadowFilter];
     return boardContainer;
@@ -141,6 +143,7 @@ export class RenderService {
 
   private resizeTo(width: number, height: number) {
     this.application.renderer.resize(width, height);
+    this.application.renderer.render(this.application.stage);
   }
 
 
@@ -162,17 +165,15 @@ export class RenderService {
     container.position.y -= (event.layerY - container.position.y) * (scaleRatio - 1);
 
     container.scale.set(newScale);
+    this.application.renderer.render(this.application.stage);
   }
 
   private pan(deltaX: number, deltaY: number) {
-    const maxPan = 160;
-    const zoom = this.application.stage.scale;
-    const newPosX = this.application.stage.position.x + deltaX;
-    const newPosY = this.application.stage.position.y + deltaY;
-    // this.application.stage.position.x = (Math.abs(newPosX) < maxPan*zoom.x ) ? newPosX : this.application.stage.position.x;
-    // this.application.stage.position.y = (Math.abs(newPosY) < maxPan*zoom.y ) ? newPosY : this.application.stage.position.y;
     this.application.stage.position.x += deltaX;
     this.application.stage.position.y += deltaY;
+    requestAnimationFrame(() => {
+      this.application.renderer.render(this.application.stage);
+    });
   }
 
   private initializeZoomHandler() {
@@ -185,6 +186,7 @@ export class RenderService {
   }
 
   private initializePanHandler() {
+    const accumulator = new Point(0, 0);
     const onMouseDown$ = fromEvent<MouseEvent>(this.canvas, 'mousedown');
     const onMouseLeave$ = fromEvent<MouseEvent>(this.canvas, 'mouseleave');
     const onMouseUp$ = fromEvent<MouseEvent>(this.canvas, 'mouseup');
@@ -196,11 +198,13 @@ export class RenderService {
       switchMap((startEvent: MouseEvent) =>
         onMouseMove$.pipe(
           pairwise(),
-          map(([prev, curr]) => ({
-            deltaX: curr.clientX - prev.clientX,
-            deltaY: curr.clientY - prev.clientY
-          })),
-          tap(({ deltaX, deltaY }) => this.pan(deltaX, deltaY)),
+          tap(([prev, curr]) => {
+            accumulator.x += curr.clientX - prev.clientX;
+            accumulator.y += curr.clientY - prev.clientY;
+          }),
+          throttleTime(16), // Throttle to roughly 60fps (16ms)
+          tap(() => this.pan(accumulator.x, accumulator.y)),
+          tap(() => accumulator.set(0, 0)),
           takeUntil(onPanStop$)
         )
       )
