@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
-import { Application, Point } from 'pixi.js';
-import { fromEvent, tap, merge, filter, switchMap, pairwise, throttleTime, takeUntil } from 'rxjs';
+import { DestroyRef, Injectable } from '@angular/core';
+import { Application } from 'pixi.js';
+import { fromEvent, tap, merge } from 'rxjs';
+import { fromDragEvent } from '../helpers/container.helper';
 
 @Injectable({
   providedIn: 'root'
@@ -8,10 +9,12 @@ import { fromEvent, tap, merge, filter, switchMap, pairwise, throttleTime, takeU
 export class ViewService {
   private _application!: Application;
   private _canvas!: HTMLCanvasElement;
+  private _destroyRef!: DestroyRef;
 
-  public initializeViewHandlers(application: Application, canvas: HTMLCanvasElement) {
+  public initializeViewHandlers(application: Application, canvas: HTMLCanvasElement, destroyRef: DestroyRef) {
     this._application = application;
     this._canvas = canvas;
+    this._destroyRef = destroyRef;
 
     merge(
       this.initializeResizeHandler(),
@@ -34,7 +37,6 @@ export class ViewService {
 
   private resizeTo(application: Application, width: number, height: number) {
     application.renderer.resize(width, height);
-    application.renderer.render(application.stage);
   }
 
   private initializeZoomHandler() {
@@ -63,7 +65,6 @@ export class ViewService {
     container.position.y -= (event.layerY - container.position.y) * (scaleRatio - 1);
 
     container.scale.set(newScale);
-    application.renderer.render(application.stage);
   }
 
   private pan(deltaX: number, deltaY: number) {
@@ -74,28 +75,8 @@ export class ViewService {
   }
 
   private initializePanHandler() {
-    const accumulator = new Point(0, 0);
-    const onMouseDown$ = fromEvent<MouseEvent>(this._canvas, 'mousedown');
-    const onMouseLeave$ = fromEvent<MouseEvent>(this._canvas, 'mouseleave');
-    const onMouseUp$ = fromEvent<MouseEvent>(this._canvas, 'mouseup');
-    const onMouseMove$ = fromEvent<MouseEvent>(this._canvas, 'mousemove');
-    const onPanStop$ = merge(onMouseUp$, onMouseLeave$);
-    return onMouseDown$.pipe(
-      filter(event => event.button == 2),
-      tap(event => event.preventDefault()),
-      switchMap((startEvent: MouseEvent) =>
-        onMouseMove$.pipe(
-          pairwise(),
-          tap(([prev, curr]) => {
-            accumulator.x += curr.clientX - prev.clientX;
-            accumulator.y += curr.clientY - prev.clientY;
-          }),
-          throttleTime(16), // Throttle to roughly 60fps (16ms)
-          tap(() => this.pan(accumulator.x, accumulator.y)),
-          tap(() => accumulator.set(0, 0)),
-          takeUntil(onPanStop$)
-        )
-      )
-    )
+    return fromDragEvent(this._canvas, this._destroyRef, 2, 60).pipe(
+      tap((diff) => this.pan(diff.x, diff.y)),
+    );
   }
 }

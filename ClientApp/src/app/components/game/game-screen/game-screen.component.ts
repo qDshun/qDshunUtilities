@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, NgZone, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, Injector, NgZone, ViewChild } from '@angular/core';
 import { RenderService } from '../../../services/render.service';
 
 @Component({
@@ -12,12 +12,14 @@ import { RenderService } from '../../../services/render.service';
 export class GameScreenComponent implements AfterViewInit {
   @ViewChild('gameCanvas') _canvas!: ElementRef<HTMLCanvasElement>;
 
+  private destroyRef = inject(DestroyRef);
+  private injector = inject(Injector);
   private renderService = inject(RenderService);
   private zone = inject(NgZone);
 
   ngAfterViewInit(): void {
     this.zone.runOutsideAngular(() => {
-      this.renderService.initialize(this._canvas)
+      this.renderService.initialize(this._canvas, this.destroyRef, this.injector)
         .subscribe();
     });
   }
