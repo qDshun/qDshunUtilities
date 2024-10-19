@@ -23,6 +23,7 @@
     "pixi-filters": "^6.0.5",
     "pixi.js": "^8.5.1",
     "rxjs": "~7.8.0",
+    "rxjs-interop": "^2.0.0",
     "three": "^0.169.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
