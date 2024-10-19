@@ -1,4 +1,4 @@
-import { inject, Injectable, Injector, signal, WritableSignal } from '@angular/core';
+import { computed, inject, Injectable, Injector, signal, WritableSignal } from '@angular/core';
 import { VerticalHexMapTileConfiguration, HorizontalHexMapTileConfiguration, SquareMapTileConfiguration, IMapTileConfiguration } from '../models/map-tile.model';
 
 @Injectable({
@@ -10,6 +10,7 @@ export class StateService {
   constructor() { }
 
   public maps = this.getMaps();
+  public currentMap = this.getCurrentMapAndThrowIfNotExists();
   public currentMapId = signal('1');
   private tokenMockCounter = 0;
 
@@ -26,6 +27,20 @@ export class StateService {
   private getRandomColor(): string {
     return "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0")
   }
+
+  private getCurrentMapAndThrowIfNotExists(){
+    return computed(() => {
+      const map = this.maps().find(m => m.id == this.currentMapId());
+      if (!map){
+        throw new UnrecoverableError(`Map with id ${this.currentMapId()} not found.`);
+      }
+      return map;
+    });
+  }
+}
+
+export class UnrecoverableError extends Error {
+
 }
 
 export class GameMap {
@@ -61,6 +76,7 @@ export class RenderableObject {
 export type SnappingOptions =
 | { type: 'tile'; i: number; j: number }
 | { type: 'free'; x: number; y: number };
+
 export class Token extends RenderableObject {
 
 }

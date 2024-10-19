@@ -1,4 +1,4 @@
-import { DestroyRef, effect, ElementRef, inject, Injectable, Injector, runInInjectionContext } from '@angular/core';
+import { DestroyRef, effect, ElementRef, inject, Injectable, Injector, runInInjectionContext, Signal } from '@angular/core';
 import { defer, from, map, Observable, tap } from 'rxjs';
 import { IMapTileConfiguration } from '../models/map-tile.model';
 import { GameMap, RenderableObject, StateService } from './state.service';
@@ -23,7 +23,6 @@ export class RenderService {
   private canvasDestroyRef!: DestroyRef;
   private boardContainer!: BoardContainer;
   private _renderedMapId: string | null = null;
-
   private readonly playerInteractableLayers = [ContainerType.Background, ContainerType.Hidden, ContainerType.Interactable];
   private readonly typesToSwapOnMapChange = [ContainerType.Map, ...this.playerInteractableLayers];
 
@@ -43,36 +42,24 @@ export class RenderService {
           canvas: this.canvas,
           width: canvasWidth,
           height: canvasHeight,
-          autoStart: false
+          autoStart: false,
         }))
         .pipe(
           tap(() => this.application.stage.setSize(canvasWidth, canvasHeight)),
           tap(() => this.viewService.initializeViewHandlers(this.application, this.canvas, this.canvasDestroyRef,)),
-          map(() => this.initBoardContainer(this.stateService.maps()[0])),
-          tap(() => effect(() => this.onMapChanged(this.stateService.currentMapId()), { injector: this.injectorRef })),
-          tap(() => effect(() => this.onRerenderableObjectsChange(this.stateService.currentMapId()), { injector: this.injectorRef }))
+          map(() => this.initBoardContainer(this.stateService.currentMap())),
+          tap(() => effect(() => this.onMapChanged(), { injector: this.injectorRef })),
+          tap(() => effect(() => this.onRerenderableObjectsChange(), { injector: this.injectorRef }))
         );
     }))
   }
 
-  onRerenderableObjectsChange(mapId: string) {
-    const currentMap = this.stateService.maps().find(m => m.id == mapId);
-    if (!currentMap) {
-      alert('Error: Map desync!');
-      return;
-    }
+  onRerenderableObjectsChange() {
+    const currentMap = this.stateService.currentMap();
 
     this.playerInteractableLayers.forEach(layerContainerName  => {
-      // getCorrespondingLayer(currentMap, layerContainerName).tokens().forEach(token => {
-      //   this.renderMapSprite(interactableLayer, token, map.mapTileConfiguration())
-      // });
       getCorrespondingLayer(currentMap, layerContainerName).renderableObjects().forEach(ro => {
-        const layerContainer = this.boardContainer.getBoardChild(layerContainerName, currentMap.id);
-        if (!layerContainer) {
-          alert('Error: Layer desync!');
-          return;
-        }
-
+        const layerContainer = this.boardContainer.getExistingBoardChild(layerContainerName, currentMap.id);
         this.updateOrCreateRenderableObject(layerContainer, ro, currentMap.mapTileConfiguration())
       });
     });
@@ -105,27 +92,19 @@ export class RenderService {
     }
   }
 
-  onMapChanged(mapId: string) {
+  onMapChanged() {
     const previousMap = this._renderedMapId;
     if (previousMap) {
       this.setMapVisability(previousMap, false);
     }
-    const currentMap = this.stateService.maps().find(m => m.id == mapId);
-    if (!currentMap) {
-      alert('Error: Map desync!');
-      return;
-    }
+    const currentMap = this.stateService.currentMap();
     this.renderMap(currentMap);
     this.application.renderer.render(this.application.stage);
   }
 
   setMapVisability(mapId: string, visibility: boolean) {
     this.typesToSwapOnMapChange.forEach(type => {
-      let container = this.boardContainer.getBoardChild(type, mapId);
-      if (!container) {
-        alert(`Error: trying set visibility on missing container with type ${type}`);
-        return;
-      }
+      let container = this.boardContainer.getExistingBoardChild(type, mapId);
       container.visible = visibility;
     });
   }

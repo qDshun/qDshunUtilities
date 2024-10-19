@@ -1,5 +1,6 @@
 import { ContainerChild, Container, Graphics } from "pixi.js";
 import { ContainerType } from "./container-type.enum";
+import { UnrecoverableError } from "../services/state.service";
 
 export class BoardContainer<T extends ContainerChild = ContainerChild> extends Container<T> {
 
@@ -11,6 +12,14 @@ export class BoardContainer<T extends ContainerChild = ContainerChild> extends C
     target = new Container({ width: this.width, height: this.height, label: containerType + id });
     this.addChild(target);
     return target;
+  }
+
+  getExistingBoardChild(this: Container, containerType: ContainerType, id: string) {
+    const child = this.getChildByLabel(containerType + id);
+    if (!child){
+      throw new UnrecoverableError(`Missing container with id ${containerType + id} that should exist`);
+    }
+    return child;
   }
 
   getBoardChild(this: Container, containerType: ContainerType, id: string) {
