@@ -5,7 +5,8 @@ import { GameMap, RenderableObject, StateService } from './state.service';
 import { Application, Container, Graphics, Sprite, Texture } from 'pixi.js';
 import { DropShadowFilter } from 'pixi-filters';
 import { ViewService } from './view.service';
-import { BoardContainer, ContainerType, Draggable, getCorrespondingLayer } from '../helpers/container.helper';
+import { BoardContainer, ContainerType, getCorrespondingLayer } from '../helpers/container.helper';
+import { DraggableService } from './draggable.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,7 @@ import { BoardContainer, ContainerType, Draggable, getCorrespondingLayer } from 
 export class RenderService {
   private stateService = inject(StateService);
   private viewService = inject(ViewService);
+  private draggableService = inject(DraggableService);
   private canvas!: HTMLCanvasElement;
   private application!: Application;
   private injectorRef!: Injector;
@@ -79,8 +81,8 @@ export class RenderService {
     let existingSprite = (layerContainer.getChildByLabel(label) as Sprite);
     if (!existingSprite){
       existingSprite = new Sprite({ texture: Texture.WHITE, width: 20, height: 20, anchor: 0.5, interactive: true, cursor: 'pointer', label});
-      //TODO: this is bullshit, refactor it to be just a function
-      const draggableSprite = new Draggable<Sprite>(existingSprite, layerContainer, this.canvasDestroyRef, true, renderableObject, this.application, mapTileConfiguration);
+      this.draggableService.makeDraggable({source: existingSprite, dragContainer: layerContainer, destroyRef: this.canvasDestroyRef, renderableObject, application: this.application, mapTileConfiguration, allowDrag: true})
+      // const draggableSprite = new Draggable<Sprite>(existingSprite, layerContainer, this.canvasDestroyRef, true, renderableObject, this.application, mapTileConfiguration);
       layerContainer.addChild(existingSprite);
     }
 
