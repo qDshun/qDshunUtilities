@@ -1,7 +1,8 @@
 import { DestroyRef, Injectable } from '@angular/core';
-import { Application } from 'pixi.js';
-import { fromEvent, tap, merge } from 'rxjs';
-import { fromDragEvent } from '../helpers/container.helper';
+import { Application, Point } from 'pixi.js';
+import { fromEvent, tap, merge, filter, map, Observable, pairwise, switchMap, takeUntil, throttleTime } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HasEventTargetAddRemove } from 'rxjs/internal/observable/fromEvent';
 
 @Injectable({
   providedIn: 'root'
@@ -75,8 +76,35 @@ export class ViewService {
   }
 
   private initializePanHandler() {
-    return fromDragEvent(this._canvas, this._destroyRef, 2, 60).pipe(
+    return this.fromDragEvent(this._canvas, this._destroyRef, 2, 60).pipe(
       tap((diff) => this.pan(diff.x, diff.y)),
     );
   }
+
+  private fromDragEvent(target: HasEventTargetAddRemove<Event>, destroyRef: DestroyRef, buttonToDrag: 2, fps = 60): Observable<Point> {
+    const accumulator = new Point(0, 0);
+    const onMouseDown$ = fromEvent<PointerEvent>(target, 'mousedown');
+    const onMouseLeave$ = fromEvent<MouseEvent>(target, 'mouseleave');
+    const onMouseUp$ = fromEvent<MouseEvent>(target, 'mouseup');
+    const onMouseMove$ = fromEvent<MouseEvent>(target, 'mousemove');
+    const onDragStop$ = merge(onMouseUp$, onMouseLeave$);
+    return onMouseDown$.pipe(
+      filter(event => event.button == buttonToDrag),
+      tap(event => event.preventDefault()),
+      switchMap(() => onMouseMove$.pipe(
+        pairwise(),
+        tap(([prev, curr]) => {
+          accumulator.x += curr.clientX - prev.clientX;
+          accumulator.y += curr.clientY - prev.clientY;
+        }),
+        throttleTime(1000 / fps), // Throttle to roughly 60fps (16ms)
+        map(() => accumulator.clone()),
+        tap(() => accumulator.set(0, 0)),
+        takeUntil(onDragStop$),
+        takeUntilDestroyed(destroyRef)
+      )
+      ),
+    );
+  }
+
 }

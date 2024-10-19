@@ -5,8 +5,10 @@ import { GameMap, RenderableObject, StateService } from './state.service';
 import { Application, Container, Graphics, Sprite, Texture } from 'pixi.js';
 import { DropShadowFilter } from 'pixi-filters';
 import { ViewService } from './view.service';
-import { BoardContainer, ContainerType, getCorrespondingLayer } from '../helpers/container.helper';
 import { DraggableService } from './draggable.service';
+import { BoardContainer } from '../graphics/board-container';
+import { ContainerType } from '../graphics/container-type.enum';
+import { getCorrespondingLayer } from '../graphics/get-corresponding-layer.function';
 
 @Injectable({
   providedIn: 'root'
