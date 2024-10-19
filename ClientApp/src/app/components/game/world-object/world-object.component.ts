@@ -24,7 +24,7 @@ export class WorldObjectComponent implements OnInit{
   )
 
   ngOnInit(): void {
-      console.log(this.worldObjectNode)
+
   }
 
   private getStyle(node: NamedTreeNode<WorldObjectResponse>, favouriteIds: string[]){

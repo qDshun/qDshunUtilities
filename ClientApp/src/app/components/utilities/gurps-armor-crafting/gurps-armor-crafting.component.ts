@@ -176,7 +176,6 @@ export class GurpsArmorCraftingComponent implements OnInit, OnDestroy {
     else {
       this.humanBodyParts = HumanBodyParts
     }
-    console.log(this.humanBodyParts)
   }
 
   private getHpMultiplier(hp: number) {
