@@ -1,5 +1,5 @@
-import { DestroyRef, effect, ElementRef, inject, Injectable, Injector, runInInjectionContext, Signal } from '@angular/core';
-import { defer, from, map, Observable, tap } from 'rxjs';
+import { DestroyRef, effect, ElementRef, inject, Injectable, Injector, OnDestroy, runInInjectionContext } from '@angular/core';
+import { defer, delayWhen, from, map, Observable, tap } from 'rxjs';
 import { IMapTileConfiguration } from '../models/map-tile.model';
 import { GameMap, RenderableObject, StateService } from './state.service';
 import { Application, Container, Graphics, Sprite, Texture } from 'pixi.js';
@@ -9,33 +9,41 @@ import { DraggableService } from './draggable.service';
 import { BoardContainer } from '../graphics/board-container';
 import { ContainerType } from '../graphics/container-type.enum';
 import { getCorrespondingLayer } from '../graphics/get-corresponding-layer.function';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { GameComponent } from '../components/game/game/game.component';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: GameComponent,
 })
-export class RenderService {
+export class RenderService implements OnDestroy {
   private stateService = inject(StateService);
   private viewService = inject(ViewService);
   private draggableService = inject(DraggableService);
   private canvas!: HTMLCanvasElement;
   private application!: Application;
-  private injectorRef!: Injector;
+  private injectorRef = inject(Injector);
   private canvasDestroyRef!: DestroyRef;
   private boardContainer!: BoardContainer;
   private _renderedMapId: string | null = null;
   private readonly playerInteractableLayers = [ContainerType.Background, ContainerType.Hidden, ContainerType.Interactable];
   private readonly typesToSwapOnMapChange = [ContainerType.Map, ...this.playerInteractableLayers];
 
-  constructor() { }
+  ngOnDestroy(): void {
+    this.application.destroy({}, { children: true, texture: true });
+    this.boardContainer = null!;
+  }
 
-  initialize(canvasRef: ElementRef<HTMLCanvasElement>, canvasDestroyRef: DestroyRef, injectorRef: Injector): Observable<any> {
-    return runInInjectionContext(injectorRef, () => defer(() => {
+  initialize(canvasRef: ElementRef<HTMLCanvasElement>, canvasDestroyRef: DestroyRef): Observable<any> {
+    return runInInjectionContext((this.injectorRef), () => defer(() => {
       this.canvas = canvasRef.nativeElement;
       this.canvasDestroyRef = canvasDestroyRef;
-      this.injectorRef = injectorRef
       const canvasWidth = this.canvas.clientWidth;
       const canvasHeight = this.canvas.clientHeight;
       this.application = new Application();
+
+      //TODO: Enabled pixi devtools, disable in prod build
+      (globalThis as any).__PIXI_APP__ = this.application;
+
       return from(this.application.init(
         {
           background: '#1099bb',
@@ -46,7 +54,8 @@ export class RenderService {
         }))
         .pipe(
           tap(() => this.application.stage.setSize(canvasWidth, canvasHeight)),
-          tap(() => this.viewService.initializeViewHandlers(this.application, this.canvas, this.canvasDestroyRef,)),
+          tap(() => this.viewService.initializeViewHandlers(this.application, this.canvas, this.canvasDestroyRef)),
+          delayWhen(() => toObservable(this.stateService.currentMap, { injector: this.injectorRef })),
           map(() => this.initBoardContainer(this.stateService.currentMap())),
           tap(() => effect(() => this.onMapChanged(), { injector: this.injectorRef })),
           tap(() => effect(() => this.onRerenderableObjectsChange(), { injector: this.injectorRef }))
@@ -57,7 +66,7 @@ export class RenderService {
   onRerenderableObjectsChange() {
     const currentMap = this.stateService.currentMap();
 
-    this.playerInteractableLayers.forEach(layerContainerName  => {
+    this.playerInteractableLayers.forEach(layerContainerName => {
       getCorrespondingLayer(currentMap, layerContainerName).renderableObjects().forEach(ro => {
         const layerContainer = this.boardContainer.getExistingBoardChild(layerContainerName, currentMap.id);
         this.updateOrCreateRenderableObject(layerContainer, ro, currentMap.mapTileConfiguration())
@@ -68,23 +77,22 @@ export class RenderService {
   private updateOrCreateRenderableObject(layerContainer: Container, renderableObject: RenderableObject, mapTileConfiguration: IMapTileConfiguration) {
     const label = 'Renderable-' + renderableObject.id;
     let existingSprite = (layerContainer.getChildByLabel(label) as Sprite);
-    if (!existingSprite){
-      existingSprite = new Sprite({ texture: Texture.WHITE, width: 20, height: 20, anchor: 0.5, interactive: true, cursor: 'pointer', label});
-      this.draggableService.makeDraggable({source: existingSprite, dragContainer: layerContainer, destroyRef: this.canvasDestroyRef, renderableObject, application: this.application, mapTileConfiguration, allowDrag: true})
-      // const draggableSprite = new Draggable<Sprite>(existingSprite, layerContainer, this.canvasDestroyRef, true, renderableObject, this.application, mapTileConfiguration);
+    if (!existingSprite) {
+      existingSprite = new Sprite({ texture: Texture.WHITE, width: 20, height: 20, anchor: 0.5, interactive: true, cursor: 'pointer', label });
+      this.draggableService.makeDraggable({ source: existingSprite, dragContainer: layerContainer, destroyRef: this.canvasDestroyRef, renderableObject, application: this.application, mapTileConfiguration, allowDrag: true })
       layerContainer.addChild(existingSprite);
     }
 
     this.onSnapUpdated(existingSprite, renderableObject, mapTileConfiguration);
   }
 
-  onSnapUpdated(sprite: Sprite, renderableObject: RenderableObject, mapTileConfiguration: IMapTileConfiguration){
+  onSnapUpdated(sprite: Sprite, renderableObject: RenderableObject, mapTileConfiguration: IMapTileConfiguration) {
     const snap = renderableObject.snap();
     if (snap) {
       if (snap.type == 'tile') {
         sprite.position = mapTileConfiguration.getCenterCoords(snap.i, snap.j);
       }
-      if (snap.type == 'free'){
+      if (snap.type == 'free') {
         sprite.position.x = snap.x;
         sprite.position.y = snap.y;
       }
@@ -134,9 +142,8 @@ export class RenderService {
         //TODO: Move offset (tileSize.x / 2) to mapTileConfiguration
         graphicsClone.x = centerCoords.x + tileSize.x / 2;
         graphicsClone.y = centerCoords.y + tileSize.y / 2;
-        container.addChild(graphicsClone);
+        container.addChild(graphicsClone)
       }
-
     }
   }
 
@@ -153,7 +160,7 @@ export class RenderService {
       height: map.mapTileConfiguration().mapHeight,
       visible: true,
       label: boardContainerTag,
-      position: {x: 80, y: 80} //TODO: this of offset, refactor it
+      position: { x: 80, y: 80 } //TODO: this of offset, refactor it
     });
 
     boardContainer.label = boardContainerTag;
@@ -174,7 +181,6 @@ export class RenderService {
       .fill(0xFFFFFF);// The color doesn't matter here
     mapContainer.mask = mask;
     mapContainer.addChild(mask);
-
     this.renderMapCells(mapContainer, map.mapTileConfiguration());
   }
 

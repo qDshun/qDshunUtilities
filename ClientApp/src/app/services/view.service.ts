@@ -3,9 +3,10 @@ import { Application, Point } from 'pixi.js';
 import { fromEvent, tap, merge, filter, map, Observable, pairwise, switchMap, takeUntil, throttleTime } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HasEventTargetAddRemove } from 'rxjs/internal/observable/fromEvent';
+import { GameComponent } from '../components/game/game/game.component';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: GameComponent
 })
 export class ViewService {
   private _application!: Application;
@@ -22,11 +23,14 @@ export class ViewService {
       this.initializeZoomHandler(),
       this.initializePanHandler(),
     )
-    .subscribe(event => {
-      requestAnimationFrame(() => {
-        application.renderer.render(application.stage);
-      });
-    })
+      .pipe(
+        takeUntilDestroyed(this._destroyRef)
+      )
+      .subscribe(event => {
+        requestAnimationFrame(() => {
+          application.renderer.render(application.stage);
+        });
+      })
   }
 
   private initializeResizeHandler() {
@@ -71,8 +75,6 @@ export class ViewService {
   private pan(deltaX: number, deltaY: number) {
     this._application.stage.position.x += deltaX;
     this._application.stage.position.y += deltaY;
-
-
   }
 
   private initializePanHandler() {
