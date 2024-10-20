@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, ReplaySubject, share, switchMap, tap } from 'rxjs';
 import { ApiService } from './api.service';
-import { EditWorldRequest } from '../models/edit-world-request';
-import { WorldResponse } from '../models/world-response';
-import { CreateWorldRequest } from '../models/create-world-request';
+import { CreateWorldRequest } from '../models/request/create-world-request';
+import { EditWorldRequest } from '../models/request/edit-world-request';
+import { WorldResponse } from '../models/response/world-response';
 
 @Injectable({
   providedIn: 'root'

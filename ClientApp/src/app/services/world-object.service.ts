@@ -1,7 +1,8 @@
-import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, map, Observable, of, ReplaySubject, share, switchMap } from 'rxjs';
+import { Injectable, WritableSignal, inject, signal } from '@angular/core';
+import { Observable, of } from 'rxjs';
 import { ApiService } from './api.service';
-import { WorldObjectResponse } from '../models/world-object-response';
+import { WorldObjectResponse } from '../models/response/world-object-response';
+import { WorldObject } from '../models/world-object.model';
 
 @Injectable({
   providedIn: 'root'
@@ -9,23 +10,11 @@ import { WorldObjectResponse } from '../models/world-object-response';
 export class WorldObjectService {
   private apiService = inject(ApiService);
   private readonly favouriteKey = 'FavouriteWorldObjects';
-  private _worldObjectsUpdated$ = new BehaviorSubject<null>(null);
-  private _favouriteUpdated$ =  new BehaviorSubject<string[]>(this.getFavourites());
-  //TODO: find other ways of doing this
+  public worldObjects: WritableSignal<WorldObject[]> = signal([]);
 
-  public worldsOrbjects$ = this._worldObjectsUpdated$.pipe(
-    switchMap(() => this.getWorldObjects()),
-    share({ connector: () => new ReplaySubject(1) })
-  );
-
-  public favouriteUpdated$ = this._favouriteUpdated$.asObservable();
-
-  public favouriteWorldObjects$ = this._favouriteUpdated$.pipe(
-    switchMap(() => this.worldsOrbjects$.pipe(
-      map(worldObjects => worldObjects.filter(wo => this.getFavourites().includes(wo.id)))
-    )),
-    share({ connector: () => new ReplaySubject(1) })
-  );
+  constructor(){
+    this.getWorldObjects().subscribe(worldObjectDtos => this.worldObjects.set(worldObjectDtos.map(wod => new WorldObject(wod, this.getFavourites()))));
+  }
 
   private getWorldObjects(): Observable<WorldObjectResponse[]> {
     return of([
@@ -42,6 +31,7 @@ export class WorldObjectService {
   }
 
   toggleFavourite(id: string){
+    //TODO: use it when updating signal
     const favourites = this.getFavourites();
     if (favourites.includes(id)){
       const index = favourites.indexOf(id);
@@ -50,7 +40,6 @@ export class WorldObjectService {
       favourites.push(id);
     }
     localStorage.setItem(this.favouriteKey, JSON.stringify(favourites));
-    this._favouriteUpdated$.next(favourites);
   }
 
   getFavourites(): string[]{

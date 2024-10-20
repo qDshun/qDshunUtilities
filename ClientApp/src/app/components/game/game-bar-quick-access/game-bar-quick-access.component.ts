@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { WorldObjectService } from '../../../services/world-object.service';
 import { CommonModule } from '@angular/common';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
@@ -14,8 +14,7 @@ import { PathToNamePipe } from '../../../helpers/path-to-name.pipe';
 })
 export class GameBarQuickAccessComponent {
   private worldObjectService = inject(WorldObjectService);
-  favouriteWorldObjects$ = this.worldObjectService.favouriteWorldObjects$;
-
+  public favouriteWorldObjects = computed(() => this.worldObjectService.worldObjects().filter(wo => wo.isFavourite()))
 
   drop(event: CdkDragDrop<string[]>, array: any[]) {
     moveItemInArray(array, event.previousIndex, event.currentIndex);

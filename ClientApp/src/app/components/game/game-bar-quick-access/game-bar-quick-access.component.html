@@ -1,8 +1,5 @@
-@if (favouriteWorldObjects$ | async; as worldObjects) {
-  <div cdkDropList (cdkDropListDropped)="drop($event, worldObjects)">
-    @for (worldObject of worldObjects; track worldObject.id) {
-      <div class="example-box" cdkDrag>{{worldObject.path | name}}</div>
-    }
-  </div>
-
-}
+<div cdkDropList (cdkDropListDropped)="drop($event, favouriteWorldObjects())">
+  @for (worldObject of favouriteWorldObjects(); track worldObject.id) {
+    <div class="example-box" cdkDrag>{{worldObject.path() | name}}</div>
+  }
+</div>

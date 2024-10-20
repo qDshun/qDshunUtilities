@@ -1,18 +1,17 @@
 import { Injectable } from '@angular/core';
-import { WorldObjectResponse } from '../models/world-object-response';
+import { WorldObject } from '../models/world-object.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TreeService<T extends WorldObjectResponse>  {
+export class TreeService<T extends WorldObject>  {
   constructor( ) { }
 
   toTree(objects: T[]): NamedTreeNode<T>[] {
-    this.formatPaths(objects);
     const root: NamedTreeNode<T>[] = [];
 
     objects.forEach(object => {
-      const parts = object.path.split('/');
+      const parts = object.path().split('/');
       let currentLevel = root;
 
       parts.forEach((part, index) => {
@@ -39,16 +38,6 @@ export class TreeService<T extends WorldObjectResponse>  {
     return root;
   }
 
-  private formatPaths(objects: T[]): void {
-    objects.forEach(o => o.path = this.removeLeadingSlash(o.path))
-  }
-
-  private removeLeadingSlash(str: string): string {
-    if (str.startsWith('/')) {
-      return str.substring(1);
-    }
-    return str;
-  }
 }
 
 export interface NamedTreeNode<T> {

@@ -7,8 +7,8 @@ import { MatInputModule } from "@angular/material/input";
 import { RouterModule } from "@angular/router";
 import { AuthCardComponent } from "../auth-card/auth-card.component";
 import { ControlsOf } from "../../../helpers/controls-of.type";
-import { LoginRequest } from "../../../models/login-request.model";
 import { IdentityService } from "../../../services/identity.service";
+import { LoginRequest } from "../../../models/request/login-request.model";
 
 
 @Component({
