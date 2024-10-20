@@ -23,6 +23,14 @@ export class WorldObjectComponent implements OnInit{
     map(favouriteIds => this.getStyle(this.worldObjectNode, favouriteIds))
   )
 
+  toggleFavourite(worldObjectNode: NamedTreeNode<WorldObjectResponse>): void {
+    if (!worldObjectNode?.value) {
+      return;
+    };
+
+    this.worldObjectService.toggleFavourite(worldObjectNode.value.id);
+  }
+
   ngOnInit(): void {
 
   }

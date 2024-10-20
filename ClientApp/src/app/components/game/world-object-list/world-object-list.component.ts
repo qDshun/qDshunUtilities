@@ -27,14 +27,6 @@ export class WorldObjectListComponent {
     map(worldObjects => this.treeService.toTree(worldObjects)),
   )
 
-  toggleFavourite(worldObjectNode: NamedTreeNode<WorldObjectResponse>): void {
-    if (!worldObjectNode?.value) {
-      return;
-    };
-
-    this.worldObjectService.toggleFavourite(worldObjectNode.value.id);
-  }
-
   childrenAccessor = (node: NamedTreeNode<WorldObjectResponse>) => node.children ?? [];
 
   hasChild = (_: number, node: NamedTreeNode<WorldObjectResponse>) => !!node.children && node.children.length > 0;

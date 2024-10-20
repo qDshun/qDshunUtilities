@@ -9,7 +9,7 @@
 </div>
 
 @if (favouriteIconStyle$ | async; as favouriteIconStyle) {
-  <button mat-icon-button>
+  <button mat-icon-button (click)="toggleFavourite(worldObjectNode)">
     <mat-icon [svgIcon]="'star'" [style]="favouriteIconStyle"></mat-icon>
   </button>
 }
