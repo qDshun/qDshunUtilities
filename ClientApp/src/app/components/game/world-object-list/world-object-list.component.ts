@@ -62,7 +62,7 @@ export class WorldObjectListComponent implements AfterViewInit {
     event.preventDefault();
     const lwos = this.linkedWorldObjects();
     const dwo = this.draggedWorldObject();
-    if (!dwo) {
+    if (!dwo || !this.previewedWorldObjectId) {
       return;
     }
     const previewItem = lwos.find(lwo => lwo.id.startsWith('preview'))!;
