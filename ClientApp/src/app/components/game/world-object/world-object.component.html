@@ -4,7 +4,7 @@
   <button mat-icon-button disabled class="world-object-icon"
   [style]= "backgroundImageStyle()">
   </button>
-  {{worldObjectNode.name}}
+  {{worldObjectNode.value.name()}}
 </div>
 
   <button mat-icon-button (click)="toggleFavourite(worldObjectNode)">

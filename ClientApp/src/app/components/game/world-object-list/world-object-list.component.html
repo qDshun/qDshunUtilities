@@ -1,22 +1,22 @@
-
 <mat-tree #tree [dataSource]="treeData()" [childrenAccessor]="childrenAccessor">
   <!-- This is the tree node template for leaf nodes -->
-  <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
-    <app-world-object [worldObjectNode]="node" draggable="true" (dragstart)="handleDragStart($event, node);"
-      (dragover)="handleDragOver($event);" (drop)="handleDrop($event, node);"
-      (dragend)="handleDragEnd($event, node);">
+  <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding (dragenter)="onItemDragEnter($event, node)"
+    (drop)="onDrop($event, node)" (dragover)="onDragOver($event)">
+    <app-world-object
+    draggable="true" (dragstart)="handleDragStart($event, node);" (dragend)="onDragEnd($event)"
+    [worldObjectNode]="node" [dragged]="node.value.id == draggedWorldObjectId" [preview]="node.value.id == previewedWorldObjectId">
     </app-world-object>
+
   </mat-tree-node>
 
   <!-- This is the tree node template for expandable nodes -->
-  <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding matTreeNodeToggle (dragenter)="handleDragEnter($event)" (dragover)="handleDragOver($event)"
-    [cdkTreeNodeTypeaheadLabel]="node.name">
+  <mat-tree-node *matTreeNodeDef="let node;when: isFolder" matTreeNodePadding matTreeNodeToggle
+    (dragenter)="onItemDragEnter($event, node)" (drop)="onDrop($event, node)" (dragover)="onDragOver($event)" [cdkTreeNodeTypeaheadLabel]="node.name">
     <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
       <mat-icon class="mat-icon-rtl-mirror">
-        {{tree.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+        {{tree.isExpanded(node) ? 'folder_open' : 'folder'}}
       </mat-icon>
     </button>
     {{node.name}}
   </mat-tree-node>
-
 </mat-tree>

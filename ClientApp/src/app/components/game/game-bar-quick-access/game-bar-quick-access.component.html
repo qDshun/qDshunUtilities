@@ -1,5 +1,5 @@
 <div cdkDropList (cdkDropListDropped)="drop($event, favouriteWorldObjects())">
   @for (worldObject of favouriteWorldObjects(); track worldObject.id) {
-    <div class="example-box" cdkDrag>{{worldObject.path() | name}}</div>
+    <div class="example-box" cdkDrag>{{worldObject.name()}}</div>
   }
 </div>

@@ -1,47 +1,35 @@
 import { Injectable } from '@angular/core';
-import { WorldObject } from '../models/world-object.model';
+import { WorldObject, WorldObjectFolder, WorldObjectItem } from '../models/world-object.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TreeService<T extends WorldObject>  {
-  constructor( ) { }
+export class TreeService {
+  constructor() { }
 
-  toTree(objects: T[]): NamedTreeNode<T>[] {
-    const root: NamedTreeNode<T>[] = [];
+  toTree(worldObjects: AnyWorldObject[]): TreeNode<AnyWorldObject>[] {
+    const folders = worldObjects.filter(wo => wo.type == 'folder').map(wo => ({ worldObject: wo, pathFragments: wo.path().split('/') })).sort(wo => wo.pathFragments.length);
+    const items = worldObjects.filter(wo => wo.type == 'item').map(wo => ({ worldObject: wo, pathFragments: wo.path().split('/') })).sort(wo => wo.pathFragments.length);
+    const objectsWithDepth = [...folders, ...items];
 
-    objects.forEach(object => {
-      const parts = object.path().split('/');
-      let currentLevel = root;
+    const result: TreeNode<AnyWorldObject>[] = [];
+    const pathMap = new Map<string, TreeNode<AnyWorldObject>>();
 
-      parts.forEach((part, index) => {
-        // Check if this part of the path already exists at the current level
-        let existingNode = currentLevel.find(node => node.name === part);
+    objectsWithDepth.forEach(({ worldObject, pathFragments }) => {
+      var parent = pathMap.get(worldObject.path());
 
-        if (!existingNode) {
-          // If it doesn't exist, create a new node (folder or item)
-          existingNode = { name: part, children: [], value: null };
-          currentLevel.push(existingNode);
-        }
+      const node = { children: [], value: worldObject, name: worldObject.name() };
 
-        // If this is the last part, it's an item, not a folder
-        if (index === parts.length - 1) {
-          existingNode.children = [];  // Item node won't have children
-          existingNode.value = object;
-        } else {
-          // Move to the next level (folder)
-          currentLevel = existingNode.children!;
-        }
-      });
+      pathMap.set(worldObject.fullPath, node);
+      (parent?.children ?? result).push(node);
     });
-
-    return root;
+    return result;
   }
-
 }
 
-export interface NamedTreeNode<T> {
+export type AnyWorldObject = WorldObjectFolder | WorldObjectItem;
+export interface TreeNode<T extends WorldObject> {
   name: string;
-  value: T | null;
-  children: NamedTreeNode<T>[];
+  children: TreeNode<T>[];
+  value: T;
 }
