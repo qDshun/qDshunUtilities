@@ -37,7 +37,6 @@ export class WorldObjectListComponent implements AfterViewInit {
   treeData: Signal<TreeNode<AnyWorldObject>[]> = computed(() => this.treeService.toTree(this.linkedWorldObjects()));
 
   constructor() {
-    console.error('world objects changed')
     effect(() => this.linkedWorldObjects.set([...this.worldObjectService.worldObjects()]), { allowSignalWrites: true });
   }
 
@@ -50,7 +49,7 @@ export class WorldObjectListComponent implements AfterViewInit {
     this.draggedWorldObjectId = node.value.id;
     this.draggedWorldObject.set(node.value);
 
-    const dataTransfer = event.dataTransfer!.effectAllowed = "copyMove";
+    event.dataTransfer!.effectAllowed = "copyMove";
   }
 
   onDrop(event: DragEvent, node: TreeNode<WorldObject>) {
@@ -62,7 +61,6 @@ export class WorldObjectListComponent implements AfterViewInit {
     const previewItem = lwos[this.previewedWorldObjectIndex];
     lwos.splice(this.previewedWorldObjectIndex, 1);
 
-    console.log(`Setting path to  object ${dwo.name()} from ${dwo.path()} to ${previewItem.path()} from preview ${previewItem.name()}`)
     dwo.path.set(previewItem.path());
     this.linkedWorldObjects.set([...lwos]);
 
