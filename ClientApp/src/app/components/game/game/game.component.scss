@@ -47,3 +47,7 @@ app-game-bar-quick-access {
 app-game-screen {
   top: calc(var(--map-select-height)*-1);
 }
+
+app-game-bar-right {
+  flex: 1;
+}

@@ -5,4 +5,9 @@ mat-tree-node {
 :host {
   display: flex;
   flex-direction: column;
+  height: 100%;
+}
+
+mat-tree {
+  height: 100%;
 }
