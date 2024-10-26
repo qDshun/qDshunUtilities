@@ -7,6 +7,7 @@ using qDshunUtilities.EF;
 using qDshunUtilities.EF.Entities;
 using qDshunUtilities.Services;
 
+
 namespace qDshunUtilities;
 
 public static class Program
@@ -56,11 +57,11 @@ public static class Program
         builder.Services.AddScoped<ILootItemService, LootItemService>();
         builder.Services.AddScoped<ILootSourceService, LootSourceService>();
         builder.Services.AddScoped<IAccessService, AccessService>();
+        builder.Services.AddScoped<IObjectFieldService, ObjectFieldService>();
         builder.Services.AddSingleton<IDiceService, DiceService>();
 
         builder.Services.AddCors();
         var app = builder.Build();
-
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
@@ -78,7 +79,7 @@ public static class Program
         app.UseHttpsRedirection();
 
         app.UseAuthorization();
-        
+
 
         app.MapControllers();
         app.MapGroup("/api/identity").WithTags("Identity").MapIdentityApi<UserEntity>();
