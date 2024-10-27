@@ -1,8 +1,9 @@
 export class WorldObjectResponse {
   type!: 'folder' | 'item';
-  path!: string;
   id!: string;
   name!: string;
+  parentId?: string;
+  previousId?: string;
 }
 
 export class WorldObjectFolderResponse extends WorldObjectResponse {

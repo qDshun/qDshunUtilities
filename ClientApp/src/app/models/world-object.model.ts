@@ -4,19 +4,15 @@ import { WorldObjectItemResponse, WorldObjectFolderResponse, WorldObjectResponse
 export class WorldObject {
   type!: 'folder' | 'item';
   id: string;
-  path: WritableSignal<string>;
   name: WritableSignal<string>;
-
-  get fullPath() {
-    let fullPath = `${this.path()}/${this.name()}`;
-    fullPath = fullPath.startsWith('/') ? fullPath.slice(1) : fullPath;
-    return fullPath;
-  }
+  parentId: WritableSignal<string | undefined>;
+  previousId: WritableSignal<string | undefined>;
 
   constructor(worldObjectDto: WorldObjectResponse, favouriteIds: string[]) {
     this.id = worldObjectDto.id;
-    this.path = signal(this.removeLeadingSlash(worldObjectDto.path));
     this.name = signal(worldObjectDto.name);
+    this.parentId = signal(worldObjectDto.parentId)
+    this.previousId = signal(worldObjectDto.previousId);
   }
 
   private removeLeadingSlash(str: string): string {
@@ -34,7 +30,7 @@ export class WorldObjectFolder extends WorldObject {
   }
 
   public Copy(id: string) {
-    return new WorldObjectFolder({ type: this.type, path: this.path(), name: this.name(), id }, []);
+    return new WorldObjectFolder({ type: this.type, name: this.name(), id, parentId: this.parentId(), previousId: this.previousId() }, []);
   }
 }
 
@@ -50,6 +46,8 @@ export class WorldObjectItem extends WorldObject {
   }
 
   public Copy(id: string) {
-    return new WorldObjectItem({ type: this.type, path: this.path(), name: this.name(), id, url: this.url() }, []);
+    return new WorldObjectItem({ type: this.type, name: this.name(), id, url: this.url(), parentId: this.parentId(), previousId: this.previousId() }, []);
   }
 }
+
+export type AnyWorldObject = WorldObjectFolder | WorldObjectItem;

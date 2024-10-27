@@ -1,12 +1,15 @@
 <!-- use a disabled button to provide padding for tree leaf -->
+<div class="world-object-row-container">
 
 <div class="icon-name-container">
   <button mat-icon-button disabled class="world-object-icon"
   [style]= "backgroundImageStyle()">
   </button>
-  {{worldObjectNode.value.name()}}
+  {{worldObjectNode.name()}}
 </div>
 
   <button mat-icon-button (click)="toggleFavourite(worldObjectNode)">
     <mat-icon [svgIcon]="'star'" [style]="isFavouriteStyle()"></mat-icon>
   </button>
+
+</div>
