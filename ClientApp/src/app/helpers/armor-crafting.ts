@@ -36,7 +36,7 @@ export class ConstructionType {
 
 export class CT {
   static Fabric = new ConstructionType('Fabric', 0, 1, 1, 2.14, 1, '-1 DR vs. impaling.')
-  static LayeredFabric = new ConstructionType('Layered Fabric', 0, 1.2, 1.5, 4.28, 2, '')
+  static LayeredFabric = new ConstructionType('Layered Fabric', 0, 1.2, 1, 4.28, 2, '')
   static Scales = new ConstructionType('Scales', 1, 1.1, 0.8, 4.28, 2, '-1 DR vs. crushing unless armor is DR 5+')
   static Mail = new ConstructionType('Mail', 2, 0.9, 1.2, 2.14, 2, '-2 DR vs. crushing. If mail has DR 10 or more, it has -20% DR vs. crushing damage instead of subtracting 2')
   static SegmentedPlate = new ConstructionType('Segmented Plate', 2, 1.45, 1.5, 6.42, 3, '')
