@@ -6,6 +6,7 @@ using qDshunUtilities.Automapper;
 using qDshunUtilities.EF;
 using qDshunUtilities.EF.Entities;
 using qDshunUtilities.Services;
+using SignalRWebpack.Hubs;
 
 
 namespace qDshunUtilities;
@@ -60,11 +61,17 @@ public static class Program
         builder.Services.AddScoped<IObjectFieldService, ObjectFieldService>();
         builder.Services.AddSingleton<IDiceService, DiceService>();
 
+
+        builder.Services.AddSignalR();
         builder.Services.AddCors();
         var app = builder.Build();
+
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
+            //app.AddEfDiagrams<ApplicationDbContext>();
             app.UseSwagger();
             app.UseSwaggerUI();
             app.UseCors(options =>
@@ -80,6 +87,7 @@ public static class Program
 
         app.UseAuthorization();
 
+        app.MapHub<ChatHub>("/hub");
 
         app.MapControllers();
         app.MapGroup("/api/identity").WithTags("Identity").MapIdentityApi<UserEntity>();
