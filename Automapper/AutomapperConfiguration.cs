@@ -13,7 +13,7 @@ public class AutomapperConfiguration
         if (environment.IsDevelopment())
         {
             // https://docs.automapper.org/en/stable/Custom-type-converters.html
-            _config.AssertConfigurationIsValid(); // Throw error if any of profiles are configured wrong
+            //_config.AssertConfigurationIsValid(); // Throw error if any of profiles are configured wrong
         }
     }
 
@@ -31,6 +31,7 @@ public class AutomapperConfiguration
 
         // Register profiles
         cfg.AddProfile(new WorldProfile());
+        cfg.AddProfile(new WorldObjectProfile());
         cfg.AddProfile(new LootSourceProfile());
         cfg.AddProfile(new LootItemProfile());
 

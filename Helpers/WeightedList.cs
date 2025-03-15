@@ -2,9 +2,7 @@
 // Source, Docs, Issues: https://github.com/cdanek/kaimira-weighted-list/
 
 using System.Text;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using static KaimiraGames.WeightErrorHandlingType;
 
 namespace KaimiraGames

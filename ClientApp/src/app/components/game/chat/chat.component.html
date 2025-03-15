@@ -1,4 +1,4 @@
 
 @for (chatEntry of messages$ | async; track chatEntry) {
-  <div class="chat-entry">{{chatEntry}}</div>
+  <div class="chat-entry" (click)="sendMessage()">{{chatEntry}}</div>
 }

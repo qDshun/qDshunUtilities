@@ -1,6 +1,15 @@
 <!-- use a disabled button to provide padding for tree leaf -->
-<button mat-icon-button disabled class="world-object-icon"
-[style]="'background: linear-gradient(rgba(35, 36, 39, 0.4), rgba(35, 36, 39, 0.4)), url('+ worldObjectNode.value?.url +');
-background-position: center center; background-size: cover;'">
-</button>
-{{worldObjectNode.name}}
+
+<div class="icon-name-container">
+  <button mat-icon-button disabled class="world-object-icon"
+  [style]="'background: linear-gradient(rgba(35, 36, 39, 0.4), rgba(35, 36, 39, 0.4)), url('+ worldObjectNode.value?.url +');
+  background-position: center center; background-size: cover;'">
+  </button>
+  {{worldObjectNode.name}}
+</div>
+
+@if (favouriteIconStyle$ | async; as favouriteIconStyle) {
+  <button mat-icon-button>
+    <mat-icon [svgIcon]="'star'" [style]="favouriteIconStyle"></mat-icon>
+  </button>
+}

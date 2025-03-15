@@ -16,7 +16,9 @@ export class AppComponent {
   title = 'qDshunWebUtilities';
 
   private icons = [
-    "human-armor-locations"
+    "human-armor-locations-front",
+    "human-armor-locations-back",
+    "star"
     ]
 
   constructor(

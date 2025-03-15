@@ -2,7 +2,7 @@
   <mat-tree #tree [dataSource]="treeData" [childrenAccessor]="childrenAccessor">
     <!-- This is the tree node template for leaf nodes -->
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
-      <app-world-object [worldObjectNode]="node"></app-world-object>
+      <app-world-object [worldObjectNode]="node" (click)="toggleFavourite(node)"></app-world-object>
     </mat-tree-node>
 
     <!-- This is the tree node template for expandable nodes -->
