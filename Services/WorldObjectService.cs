@@ -11,18 +11,19 @@ namespace qDshunUtilities.Services;
 public interface IWorldObjectService
 {
     Task<IEnumerable<WorldObject>> GetWorldObjectsAsync(Guid worldId, Guid authenticatedUser);
-    Task<WorldObject> GetWorldObjectAsync(Guid worldObjectId, Guid authenticatedUser);
-    Task CreateWorldObjectAsync(Guid worldId, Guid authenticatedUser, WorldObjectCreate worldObjectCreate);
-    Task UpdateWorldObjectAsync(Guid worldObjectId, Guid authenticatedUser, WorldObjectUpdate worldObjectUpdate);
-    Task DeleteWorldObjectAsync(Guid worldObjectId, Guid authenticatedUser);
+    Task CreateWorldObjectAsync(Guid worldId, WorldObjectCreate worldObjectCreate, Guid authenticatedUser);
+    Task<WorldObject> GetWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser);
+    Task UpdateWorldObjectAsync(Guid worldId, WorldObjectUpdate worldObjectUpdate, Guid authenticatedUser);
+    Task DeleteWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser);
 }
 
 public class WorldObjectService(ApplicationDbContext dbContext, IMapper mapper, IAccessService accessService) : IWorldObjectService
 {
     public async Task<IEnumerable<WorldObject>> GetWorldObjectsAsync(Guid worldId, Guid authenticatedUser)
     {
+        await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
+
         List<WorldObjectEntity> worldObjects = await dbContext.WorldObjects
-            .Where(wo => wo.WorldObjectPermissions.Any(wop => wop.WorldUser.UserId == authenticatedUser))
             .Where(wo => wo.WorldId == worldId)
             .Include(wo => wo.WorldObjectPermissions)
                 .ThenInclude(w => w.WorldUser)
@@ -30,12 +31,13 @@ public class WorldObjectService(ApplicationDbContext dbContext, IMapper mapper, 
         return worldObjects.Select(mapper.Map<WorldObject>);
     }
 
-    public async Task<WorldObject> GetWorldObjectAsync(Guid worldObjectId, Guid authenticatedUser)
+    public async Task<WorldObject> GetWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser)
     {
+        await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
+
         await accessService.AssertHasWorldObjectPermissionAsync(worldObjectId, authenticatedUser, Perms.AllowRead);
 
         var worldObject = await dbContext.WorldObjects
-         .Where(wo => wo.WorldObjectPermissions.Any(wop => wop.WorldUser.UserId == authenticatedUser))
          .Where(wo => wo.Id == worldObjectId)
          .Include(wo => wo.WorldObjectPermissions)
              .ThenInclude(w => w.WorldUser)
@@ -44,7 +46,7 @@ public class WorldObjectService(ApplicationDbContext dbContext, IMapper mapper, 
         return mapper.Map<WorldObject>(worldObject);
     }
 
-    public async Task CreateWorldObjectAsync(Guid worldId, Guid authenticatedUser, WorldObjectCreate worldObjectCreate)
+    public async Task CreateWorldObjectAsync(Guid worldId, WorldObjectCreate worldObjectCreate, Guid authenticatedUser)
     {
         var worldObjectEntity = mapper.Map<WorldObjectEntity>(worldObjectCreate);
         var worldUser = await dbContext.WorldUsers.SingleAsync(wu => wu.UserId == authenticatedUser && wu.WorldId == worldId);
@@ -58,17 +60,25 @@ public class WorldObjectService(ApplicationDbContext dbContext, IMapper mapper, 
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateWorldObjectAsync(Guid worldObjectId, Guid authenticatedUser, WorldObjectUpdate worldObjectUpdate)
+    public async Task UpdateWorldObjectAsync(Guid worldId, WorldObjectUpdate worldObjectUpdate, Guid authenticatedUser)
     {
-        await accessService.AssertHasWorldObjectPermissionAsync(worldObjectId, authenticatedUser, Perms.AllowEdit);
+        //var worldObjectEntity = mapper.Map<WorldObjectEntity>(worldObjectUpdate);
+        await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
 
-        var worldObjectEntity = await dbContext.WorldObjects.SingleAsync(wo => wo.Id == worldObjectId);
-        //TODO: implement updating
+        await accessService.AssertHasWorldObjectPermissionAsync(worldObjectUpdate.Id, authenticatedUser, Perms.AllowRead);
 
+        var worldObjectEntity = await dbContext.WorldObjects.SingleAsync(w => w.Id == worldObjectUpdate.Id);
+        mapper.Map(worldObjectUpdate, worldObjectEntity);
+
+        dbContext.WorldObjects.Update(worldObjectEntity);
+        await dbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteWorldObjectAsync(Guid worldObjectId, Guid authenticatedUser)
+    public async Task DeleteWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser)
     {
+        // Todo: Set onDelete : Cascade 
+        await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
+
         await accessService.AssertHasWorldObjectPermissionAsync(worldObjectId, authenticatedUser, Perms.AllowEdit);
 
         var worldObjectEntity = await dbContext.WorldObjects.SingleAsync(wo => wo.Id == worldObjectId);
