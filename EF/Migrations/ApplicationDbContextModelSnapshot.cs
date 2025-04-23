@@ -93,10 +93,9 @@ namespace qDshunUtilities.EF.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .IsConcurrencyToken()
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("MessageText")
+                    b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -107,7 +106,7 @@ namespace qDshunUtilities.EF.Migrations
 
                     b.HasIndex("WorldUserId");
 
-                    b.ToTable("ChatLines");
+                    b.ToTable("ChatMessages");
                 });
 
             modelBuilder.Entity("qDshunUtilities.EF.Entities.LootItemEntity", b =>

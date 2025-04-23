@@ -16,15 +16,15 @@ namespace qDshunUtilities.Services
         public async Task<ChatMessageEntity> CreateChatMessageAsync(string chatMessage, Guid worldId, Guid authenticatedUser)
         {
             var worldUser = await dbContext.WorldUsers.SingleAsync(wu => wu.UserId == authenticatedUser && wu.WorldId == worldId);
-            ChatMessageEntity chatLineEntity = new ChatMessageEntity { WorldUserId = worldUser.Id, MessageText = chatMessage, CreatedAt = DateTime.Now };
-            dbContext.ChatLines.Add(chatLineEntity);
+            ChatMessageEntity chatLineEntity = new ChatMessageEntity { WorldUserId = worldUser.Id, Text = chatMessage, CreatedAt = DateTime.Now };
+            dbContext.ChatMessages.Add(chatLineEntity);
             await dbContext.SaveChangesAsync();
             return chatLineEntity;
         }
 
         public async Task<List<ChatMessage>> GetLastChatMessagesAsync(int numberOfLastMesssages, Guid worldId, Guid authenticatedUser)
         {
-            List<ChatMessage> chatLines = await dbContext.ChatLines
+            List<ChatMessage> chatLines = await dbContext.ChatMessages
             .Include(cl => cl.WorldUser)
             .Where(cl => cl.WorldUser.WorldId == worldId)
             .OrderBy(cl => cl.CreatedAt)

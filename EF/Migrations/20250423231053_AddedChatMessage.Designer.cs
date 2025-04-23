@@ -12,8 +12,8 @@ using qDshunUtilities.EF;
 namespace qDshunUtilities.EF.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250416192158_AddedChatLine")]
-    partial class AddedChatLine
+    [Migration("20250423231053_AddedChatMessage")]
+    partial class AddedChatMessage
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -89,27 +89,27 @@ namespace qDshunUtilities.EF.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.ChatLineEntity", b =>
+            modelBuilder.Entity("qDshunUtilities.EF.Entities.ChatMessageEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<Guid>("WorldUserId")
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("lineText")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("WorldUserId");
 
-                    b.ToTable("ChatLines");
+                    b.ToTable("ChatMessages");
                 });
 
             modelBuilder.Entity("qDshunUtilities.EF.Entities.LootItemEntity", b =>
@@ -410,15 +410,15 @@ namespace qDshunUtilities.EF.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.ChatLineEntity", b =>
+            modelBuilder.Entity("qDshunUtilities.EF.Entities.ChatMessageEntity", b =>
                 {
-                    b.HasOne("qDshunUtilities.EF.Entities.UserEntity", "User")
+                    b.HasOne("qDshunUtilities.EF.Entities.WorldUserEntity", "WorldUser")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("WorldUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("WorldUser");
                 });
 
             modelBuilder.Entity("qDshunUtilities.EF.Entities.LootItemEntity", b =>

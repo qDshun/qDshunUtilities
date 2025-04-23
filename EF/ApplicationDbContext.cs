@@ -8,7 +8,7 @@ namespace qDshunUtilities.EF;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
     : IdentityUserContext<UserEntity, Guid>(options)
 {
-    public DbSet<ChatMessageEntity> ChatLines { get; set; }
+    public DbSet<ChatMessageEntity> ChatMessages { get; set; }
     public DbSet<LootItemEntity> LootItems { get; set; }
     public DbSet<LootSourceEntity> LootSources { get; set; }
     public DbSet<ObjectFieldEntity> ObjectFields { get; set; }
