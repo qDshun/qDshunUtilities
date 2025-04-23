@@ -1,4 +1,19 @@
 
+<div>
 @for (chatEntry of messages$ | async; track chatEntry) {
-  <div class="chat-entry" (click)="sendMessage()">{{chatEntry}}</div>
+  <div class="chat-entry">{{chatEntry.userName}} : {{chatEntry.message}}</div>
 }
+</div>
+<mat-form-field> 
+  <mat-label>Write message</mat-label>
+  <input matInput type="text" [(ngModel)]="inputValue">
+  @if (inputValue) {
+    <button matSuffix mat-icon-button aria-label="Clear" (click)="inputValue=''">
+      <mat-icon>close</mat-icon>
+    </button>
+  }
+  <button
+  mat-raised-button
+  matTooltip="Send Message" (click)="sendMessage()">Send</button>
+</mat-form-field>
+
