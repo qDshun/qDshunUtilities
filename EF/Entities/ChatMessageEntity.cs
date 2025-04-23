@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.ComponentModel.DataAnnotations;
-
-namespace qDshunUtilities.EF.Entities;
+﻿namespace qDshunUtilities.EF.Entities;
 
 public class ChatMessageEntity: BaseEntity
 {

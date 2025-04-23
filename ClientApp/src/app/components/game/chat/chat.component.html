@@ -4,10 +4,7 @@
   <div class="chat-entry">{{chatEntry.userName}} : {{chatEntry.message}}</div>
 }
 </div>
-<!-- <cdk-virtual-scroll-viewport appendOnly itemSize="50">
-  <div @for="chatEntry of messages$" class="chat-entry">{{chatEntry}}</div>
-</cdk-virtual-scroll-viewport>-->
-<mat-form-field class="example-form-field"> 
+<mat-form-field> 
   <mat-label>Write message</mat-label>
   <input matInput type="text" [(ngModel)]="inputValue">
   @if (inputValue) {

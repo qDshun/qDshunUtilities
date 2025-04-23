@@ -1,4 +1,4 @@
-export class GetLastMessages {
+export class GetLastMessagesRequest {
     constructor(msgCount: number,  worldId: string)
     {
         this.msgCount = msgCount;

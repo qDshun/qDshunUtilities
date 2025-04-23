@@ -14,6 +14,6 @@ public class ChatController(ILogger<ChatController> logger, IChatService chatSer
     [HttpPost]
     public async Task<ActionResult<IEnumerable<ChatMessage>>> GetLastChatMessages([FromBody] GetLastMessages request)
     {
-        return Ok(await chatService.GetLastChatMessagesAsync(request.msgCount, request.worldId, AuthenticatedUser));
+        return Ok(await chatService.GetLastChatMessagesAsync(request.MsgCount, request.WorldId, AuthenticatedUser));
     }
 }

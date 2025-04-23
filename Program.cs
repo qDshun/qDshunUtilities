@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using qDshunUtilities.Automapper;
 using qDshunUtilities.EF;
 using qDshunUtilities.EF.Entities;
+using qDshunUtilities.Hubs;
 using qDshunUtilities.Services;
 
 
@@ -64,7 +65,7 @@ public static class Program
 
         builder.Services.AddSignalR(options =>
         {
-            //if (Environment.IsDevelopment())
+            if (builder.Environment.IsDevelopment())
             {
                 options.EnableDetailedErrors = true;
             }

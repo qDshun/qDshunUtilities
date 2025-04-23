@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using qDshunUtilities;
 using qDshunUtilities.Models.Outbound;
 using qDshunUtilities.Services;
-using System.Security.Claims;
 
-namespace qDshunUtilities;
+namespace qDshunUtilities.Hubs;
 
 [Authorize]
 public class ChatHub(IChatService chatService) : AuthorizedHub

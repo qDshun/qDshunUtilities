@@ -2,6 +2,6 @@
 
 public class GetLastMessages
 {
-    public int msgCount { get; set; }
-    public Guid worldId { get; set; }
+    public int MsgCount { get; set; }
+    public Guid WorldId { get; set; }
 }
