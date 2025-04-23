@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using qDshunUtilities.EF;
 
@@ -11,9 +12,11 @@ using qDshunUtilities.EF;
 namespace qDshunUtilities.EF.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250417224602_AddedChatLine2")]
+    partial class AddedChatLine2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,22 +89,18 @@ namespace qDshunUtilities.EF.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.ChatMessageEntity", b =>
+            modelBuilder.Entity("qDshunUtilities.EF.Entities.ChatLineEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .IsConcurrencyToken()
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("MessageText")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<Guid>("WorldUserId")
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("lineText")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -408,7 +407,7 @@ namespace qDshunUtilities.EF.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.ChatMessageEntity", b =>
+            modelBuilder.Entity("qDshunUtilities.EF.Entities.ChatLineEntity", b =>
                 {
                     b.HasOne("qDshunUtilities.EF.Entities.WorldUserEntity", "WorldUser")
                         .WithMany()

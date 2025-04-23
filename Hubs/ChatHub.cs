@@ -1,11 +1,18 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
+using qDshunUtilities;
+using qDshunUtilities.Models.Outbound;
+using qDshunUtilities.Services;
+using System.Security.Claims;
 
-namespace SignalRWebpack.Hubs;
+namespace qDshunUtilities;
 
-public class ChatHub : Hub
+[Authorize]
+public class ChatHub(IChatService chatService) : AuthorizedHub
 {
-    public async Task NewMessage(string username, string message)
+    public async Task NewMessage(string message, Guid worldId)
     {
-        await Clients.All.SendAsync("messageReceived", username, message);
+        var entity = await chatService.CreateChatMessageAsync(message, worldId, AuthenticatedUser);
+        await Clients.All.SendAsync("messageReceived", new ChatMessage(entity));
     }
 }

@@ -1,4 +1,22 @@
 
+<div>
 @for (chatEntry of messages$ | async; track chatEntry) {
-  <div class="chat-entry" (click)="sendMessage()">{{chatEntry}}</div>
+  <div class="chat-entry">{{chatEntry.userName}} : {{chatEntry.message}}</div>
 }
+</div>
+<!-- <cdk-virtual-scroll-viewport appendOnly itemSize="50">
+  <div @for="chatEntry of messages$" class="chat-entry">{{chatEntry}}</div>
+</cdk-virtual-scroll-viewport>-->
+<mat-form-field class="example-form-field"> 
+  <mat-label>Write message</mat-label>
+  <input matInput type="text" [(ngModel)]="inputValue">
+  @if (inputValue) {
+    <button matSuffix mat-icon-button aria-label="Clear" (click)="inputValue=''">
+      <mat-icon>close</mat-icon>
+    </button>
+  }
+  <button
+  mat-raised-button
+  matTooltip="Send Message" (click)="sendMessage()">Send</button>
+</mat-form-field>
+

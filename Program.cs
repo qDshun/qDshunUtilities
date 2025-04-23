@@ -6,7 +6,6 @@ using qDshunUtilities.Automapper;
 using qDshunUtilities.EF;
 using qDshunUtilities.EF.Entities;
 using qDshunUtilities.Services;
-using SignalRWebpack.Hubs;
 
 
 namespace qDshunUtilities;
@@ -59,10 +58,17 @@ public static class Program
         builder.Services.AddScoped<ILootSourceService, LootSourceService>();
         builder.Services.AddScoped<IAccessService, AccessService>();
         builder.Services.AddScoped<IObjectFieldService, ObjectFieldService>();
+        builder.Services.AddScoped<IChatService, ChatService>();
         builder.Services.AddSingleton<IDiceService, DiceService>();
 
 
-        builder.Services.AddSignalR();
+        builder.Services.AddSignalR(options =>
+        {
+            //if (Environment.IsDevelopment())
+            {
+                options.EnableDetailedErrors = true;
+            }
+        });
         builder.Services.AddCors();
         var app = builder.Build();
 
