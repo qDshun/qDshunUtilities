@@ -29,9 +29,17 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         builder.Entity<WorldObjectEntity>().UseTphMappingStrategy();
         builder.Entity<WorldObjectEntity>()
-         .HasOne(u => u.Parent);
+            .HasOne(u => u.Parent)
+            .WithMany()
+            .HasForeignKey(e => e.ParentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.Entity<WorldObjectEntity>()
-         .HasOne(u => u.Previous);
+            .HasOne(e => e.Previous)
+            .WithMany()
+            .HasForeignKey(e => e.PreviousId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.Entity<CharacterSheetEntity>().HasBaseType<TemplatedWorldObjectEntity>();
         builder.Entity<FolderEntity>().HasBaseType<WorldObjectEntity>();
         builder.Entity<HandoutEntity>().HasBaseType<TemplatedWorldObjectEntity>();

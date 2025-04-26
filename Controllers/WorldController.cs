@@ -30,6 +30,15 @@ public class WorldController(ILogger<WorldController> logger, IWorldService worl
         return Ok();
     }
 
+    [HttpPost("{worldId}/invite")]
+    public async Task<ActionResult> InviteUserToWorldAsync(
+        [FromRoute] Guid worldId,
+        [FromBody] InviteUserToWorldRequest request)
+    {
+        await worldService.InviteUserToWorldAsync(worldId, request, AuthenticatedUser);
+        return Ok();
+    }
+
     [HttpPut("{worldId}")]
     public async Task<ActionResult> UpdateWorld(
         [FromRoute] Guid worldId,
