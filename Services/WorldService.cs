@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using qDshunUtilities.EF;
 using qDshunUtilities.EF.Entities;
+using qDshunUtilities.Exceptions;
 using qDshunUtilities.Models.Inbound;
 using qDshunUtilities.Models.Outbound;
 
@@ -14,6 +15,7 @@ public interface IWorldService
     Task CreateWorldAsync(WorldCreate worldCreate, Guid authenticatedUser);
     Task UpdateWorldAsync(Guid worldId, WorldUpdate worldUpdate, Guid authenticatedUser);
     Task DeleteWorldAsync(Guid worldId, Guid authenticatedUser);
+    Task InviteUserToWorldAsync(Guid worldId, InviteUserToWorldRequest request, Guid authenticatedUser);
 }
 
 public class WorldService(ApplicationDbContext dbContext, IMapper mapper, IAccessService accessService) : IWorldService
@@ -77,6 +79,26 @@ public class WorldService(ApplicationDbContext dbContext, IMapper mapper, IAcces
             .SingleAsync(w => w.Id == worldId);
 
         dbContext.Worlds.Remove(worldEntity);
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task InviteUserToWorldAsync(Guid worldId, InviteUserToWorldRequest request, Guid authenticatedUser)
+    {
+        await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
+
+        var targetUserEntity = await dbContext.Users
+            .Where(u => u.Id == request.UserId)
+            .Include(u => u.WorldUsers.Where(wu => wu.WorldId == worldId))
+            .FirstOrDefaultAsync() ?? throw new BadRequestException($"User {request.UserId} does not exist");
+
+        if (targetUserEntity.WorldUsers.Count != 0)
+        {
+            throw new BadRequestException($"User {request.UserId} is already a member of world {worldId}");
+        }
+
+        var worldUserEntity = new WorldUserEntity { WorldId = worldId};
+
+        targetUserEntity.WorldUsers.Add(worldUserEntity);
         await dbContext.SaveChangesAsync();
     }
 }

@@ -16,12 +16,11 @@ public static class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        var connectionString = builder.Configuration["qDshunUtilitiesConnectionString"];
+        var connectionString = builder.Configuration["connectionString"];
         builder.Services
             .AddDbContext<ApplicationDbContext>(options =>
             {
-                var serverVersion = new MariaDbServerVersion(ServerVersion.AutoDetect(connectionString));
-                options.UseMySql(connectionString, serverVersion);
+                options.UseSqlServer(connectionString, options => options.EnableRetryOnFailure());
 
                 if (builder.Environment.IsDevelopment())
                 {
@@ -73,12 +72,9 @@ public static class Program
         builder.Services.AddCors();
         var app = builder.Build();
 
-        app.UseDefaultFiles();
-        app.UseStaticFiles();
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
-            //app.AddEfDiagrams<ApplicationDbContext>();
             app.UseSwagger();
             app.UseSwaggerUI();
             app.UseCors(options =>
