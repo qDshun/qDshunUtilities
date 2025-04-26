@@ -25,5 +25,6 @@ public class WorldObjectDto(WorldObjectEntity wo)
     public Guid Id { get; set; } = wo.Id;
     public string Name { get; set; } = wo.Name;
     public Guid? ParentId { get; set; } = wo.ParentId;
+    public Guid? PreviousId { get; set; } = wo.PreviousId;
     public string PreviewImageUrl { get; set; } = wo?.PreviewImageUrl;
 }

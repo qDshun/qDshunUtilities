@@ -30,14 +30,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         builder.Entity<WorldObjectEntity>().UseTphMappingStrategy();
         builder.Entity<WorldObjectEntity>()
          .HasOne(u => u.Parent);
+        builder.Entity<WorldObjectEntity>()
+         .HasOne(u => u.Previous);
         builder.Entity<CharacterSheetEntity>().HasBaseType<TemplatedWorldObjectEntity>();
         builder.Entity<FolderEntity>().HasBaseType<WorldObjectEntity>();
         builder.Entity<HandoutEntity>().HasBaseType<TemplatedWorldObjectEntity>();
-        //builder.Entity<WorldObjectEntity>().HasDiscriminator<string>("Discriminator")
-        //    .HasValue<WorldObjectEntity>("WorldObject")
-        //    .HasValue<CharacterSheetEntity>("CharacterSheet")
-        //    .HasValue<HandoutEntity>("Handout")
-        //    .HasValue<FolderEntity>("Folder");
         base.OnModelCreating(builder);
     }
 }
