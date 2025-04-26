@@ -26,7 +26,7 @@ public class ObjectFieldService(ApplicationDbContext dbContext, IMapper mapper, 
         await accessService.AssertHasWorldObjectPermissionAsync(worldObjectId, authenticatedUser, Perms.AllowRead);
 
         List<ObjectFieldEntity> objectFields = await dbContext.ObjectFields
-            .Where(of => of.WorldObjectId == worldObjectId)
+            .Where(of => of.TemplatedWorldObjectId == worldObjectId)
             .ToListAsync();
         return objectFields.Select(mapper.Map<ObjectField>);
     }
@@ -38,7 +38,7 @@ public class ObjectFieldService(ApplicationDbContext dbContext, IMapper mapper, 
         await accessService.AssertHasWorldObjectPermissionAsync(worldObjectId, authenticatedUser, Perms.AllowRead);
         ObjectFieldEntity objectField = await dbContext.ObjectFields
             .Where(of => of.Id == objectFieldId)
-            .Where(of => of.WorldObjectId == worldObjectId)
+            .Where(of => of.TemplatedWorldObjectId == worldObjectId)
             .FirstAsync();
 
         return mapper.Map<ObjectField>(objectField);
@@ -51,7 +51,7 @@ public class ObjectFieldService(ApplicationDbContext dbContext, IMapper mapper, 
 
         var objectFieldEntity = mapper.Map<ObjectFieldEntity>(objectFieldCreate);
 
-        objectFieldEntity.WorldObjectId = worldObjectId;
+        objectFieldEntity.TemplatedWorldObjectId = worldObjectId;
 
         dbContext.ObjectFields.Add(objectFieldEntity);
         await dbContext.SaveChangesAsync();

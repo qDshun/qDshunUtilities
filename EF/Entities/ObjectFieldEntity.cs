@@ -1,10 +1,12 @@
-﻿namespace qDshunUtilities.EF.Entities;
+﻿using qDshunUtilities.EF.Entities.WorldObjects;
+
+namespace qDshunUtilities.EF.Entities;
 
 public class ObjectFieldEntity : BaseEntity
 {
     public string Name { get; set; }
     public string Value { get; set; }
 
-    public Guid WorldObjectId { get; set; }
-    public WorldObjectEntity WorldObject { get; set; }
+    public Guid TemplatedWorldObjectId { get; set; }
+    public TemplatedWorldObjectEntity TemplatedWorldObject { get; set; }
 }

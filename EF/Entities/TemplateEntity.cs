@@ -1,8 +1,10 @@
-﻿namespace qDshunUtilities.EF.Entities
+﻿using qDshunUtilities.EF.Entities.WorldObjects;
+
+namespace qDshunUtilities.EF.Entities
 {
     public class TemplateEntity : BaseEntity
     {
         public string HTMLTemplate { get; set; }
-        public List<WorldObjectEntity> WorldObjects { get; set; } = [];
+        public List<TemplatedWorldObjectEntity> TemplatedWorldObjects { get; set; } = [];
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using qDshunUtilities.EF.Entities;
+using qDshunUtilities.EF.Entities.WorldObjects;
+using System.Reflection.Emit;
 
 namespace qDshunUtilities.EF;
 
@@ -25,6 +27,14 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasMany(u => u.WorldUsers)
             .WithOne(u => u.User);
 
+        builder.Entity<WorldObjectEntity>().UseTphMappingStrategy();
+        builder.Entity<WorldObjectEntity>()
+         .HasOne(u => u.Parent);
+        builder.Entity<WorldObjectEntity>()
+         .HasOne(u => u.Previous);
+        builder.Entity<CharacterSheetEntity>().HasBaseType<TemplatedWorldObjectEntity>();
+        builder.Entity<FolderEntity>().HasBaseType<WorldObjectEntity>();
+        builder.Entity<HandoutEntity>().HasBaseType<TemplatedWorldObjectEntity>();
         base.OnModelCreating(builder);
     }
 }

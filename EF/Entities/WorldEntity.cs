@@ -1,4 +1,6 @@
-﻿namespace qDshunUtilities.EF.Entities;
+﻿using qDshunUtilities.EF.Entities.WorldObjects;
+
+namespace qDshunUtilities.EF.Entities;
 
 public class WorldEntity: BaseEntity
 {

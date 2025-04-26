@@ -6,6 +6,5 @@ public class WorldUserEntity: BaseEntity
     public UserEntity User { get; set; }
     public Guid WorldId { get; set; }
     public WorldEntity World { get; set; }
-
     public List<WorldObjectPermissionEntity> WorldObjectPermissions { get; set; } = [];
 }
