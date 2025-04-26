@@ -10,13 +10,13 @@ namespace qDshunUtilities.Controllers
     public class WorldObjectController(ILogger<WorldObjectController> logger, IWorldObjectService worldObjectService) : AuthorizedController
     {
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<WorldObject>>> GetWorldObjects([FromRoute] Guid worldId)
+        public async Task<ActionResult<GetWorldObjectResponse>> GetWorldObjects([FromRoute] Guid worldId)
         {
             return Ok(await worldObjectService.GetWorldObjectsAsync(worldId, AuthenticatedUser));
         }
 
         [HttpGet("{worldObjectId}")]
-        public async Task<ActionResult<WorldObject>> GetWorldObject([FromRoute] Guid worldId, [FromRoute] Guid worldObjectId)
+        public async Task<ActionResult<WorldObjectDto>> GetWorldObject([FromRoute] Guid worldId, [FromRoute] Guid worldObjectId)
         {
             return Ok(await worldObjectService.GetWorldObjectAsync(worldId, worldObjectId, AuthenticatedUser));
         }

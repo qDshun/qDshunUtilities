@@ -2,36 +2,39 @@
 using Microsoft.EntityFrameworkCore;
 using qDshunUtilities.EF;
 using qDshunUtilities.EF.Entities;
+using qDshunUtilities.EF.Entities.WorldObjects;
 using qDshunUtilities.Helpers;
 using qDshunUtilities.Models.Inbound;
 using qDshunUtilities.Models.Outbound;
+using System.Linq;
 
 namespace qDshunUtilities.Services;
 
 public interface IWorldObjectService
 {
-    Task<IEnumerable<WorldObject>> GetWorldObjectsAsync(Guid worldId, Guid authenticatedUser);
+    Task<GetWorldObjectResponse> GetWorldObjectsAsync(Guid worldId, Guid authenticatedUser);
     Task CreateWorldObjectAsync(Guid worldId, WorldObjectCreate worldObjectCreate, Guid authenticatedUser);
-    Task<WorldObject> GetWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser);
+    Task<WorldObjectDto> GetWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser);
     Task UpdateWorldObjectAsync(Guid worldId, WorldObjectUpdate worldObjectUpdate, Guid authenticatedUser);
     Task DeleteWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser);
 }
 
 public class WorldObjectService(ApplicationDbContext dbContext, IMapper mapper, IAccessService accessService) : IWorldObjectService
 {
-    public async Task<IEnumerable<WorldObject>> GetWorldObjectsAsync(Guid worldId, Guid authenticatedUser)
+    public async Task<GetWorldObjectResponse> GetWorldObjectsAsync(Guid worldId, Guid authenticatedUser)
     {
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
 
-        List<WorldObjectEntity> worldObjects = await dbContext.WorldObjects
+        List<WorldObjectDto> worldObjects = await dbContext.WorldObjects
             .Where(wo => wo.WorldId == worldId)
             .Include(wo => wo.WorldObjectPermissions)
-                .ThenInclude(w => w.WorldUser)
+            .ThenInclude(w => w.WorldUser)
+            .Select(wo => new WorldObjectDto(wo))
             .ToListAsync();
-        return worldObjects.Select(mapper.Map<WorldObject>);
+        return new GetWorldObjectResponse(worldObjects);
     }
 
-    public async Task<WorldObject> GetWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser)
+    public async Task<WorldObjectDto> GetWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser)
     {
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
 
@@ -40,10 +43,11 @@ public class WorldObjectService(ApplicationDbContext dbContext, IMapper mapper, 
         var worldObject = await dbContext.WorldObjects
          .Where(wo => wo.Id == worldObjectId)
          .Include(wo => wo.WorldObjectPermissions)
-             .ThenInclude(w => w.WorldUser)
+         .ThenInclude(w => w.WorldUser)
+         .Select(wo => new WorldObjectDto(wo))
          .FirstAsync();
 
-        return mapper.Map<WorldObject>(worldObject);
+        return worldObject;
     }
 
     public async Task CreateWorldObjectAsync(Guid worldId, WorldObjectCreate worldObjectCreate, Guid authenticatedUser)
@@ -62,9 +66,7 @@ public class WorldObjectService(ApplicationDbContext dbContext, IMapper mapper, 
 
     public async Task UpdateWorldObjectAsync(Guid worldId, WorldObjectUpdate worldObjectUpdate, Guid authenticatedUser)
     {
-        //var worldObjectEntity = mapper.Map<WorldObjectEntity>(worldObjectUpdate);
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
-
         await accessService.AssertHasWorldObjectPermissionAsync(worldObjectUpdate.Id, authenticatedUser, Perms.AllowRead);
 
         var worldObjectEntity = await dbContext.WorldObjects.SingleAsync(w => w.Id == worldObjectUpdate.Id);
@@ -89,12 +91,12 @@ public class WorldObjectService(ApplicationDbContext dbContext, IMapper mapper, 
 
     private async Task<IEnumerable<WorldObjectPermissionEntity>> CreateWorldObjectPermissionEntitiesAsync(List<string> permissions, Guid worldId, Guid worldUserId)
     {
-        List<WorldObjectPermissionEntity> entities = new List<WorldObjectPermissionEntity>();
+        List<WorldObjectPermissionEntity> entities = [];
         foreach (var permission in permissions)
         {
             var PermissionEntity = await dbContext.Permissions.SingleAsync(p => p.Name == permission);
 
-            WorldObjectPermissionEntity worldObjectPermissionEntity = new WorldObjectPermissionEntity
+            WorldObjectPermissionEntity worldObjectPermissionEntity = new()
             {
                 WorldObjectId = worldId,
                 WorldUserId = worldUserId,
