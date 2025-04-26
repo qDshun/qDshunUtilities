@@ -2,21 +2,21 @@
 
 namespace qDshunUtilities.Exceptions;
 
-public class UnautorizedRequestException : Exception
+public class UnauthorizedRequestException : Exception
 {
-    public UnautorizedRequestException()
+    public UnauthorizedRequestException()
     {
     }
 
-    public UnautorizedRequestException(string message) : base(message)
+    public UnauthorizedRequestException(string message) : base(message)
     {
     }
 
-    public UnautorizedRequestException(string message, Exception innerException) : base(message, innerException)
+    public UnauthorizedRequestException(string message, Exception innerException) : base(message, innerException)
     {
     }
 
-    protected UnautorizedRequestException(SerializationInfo info, StreamingContext context) : base(info, context)
+    protected UnauthorizedRequestException(SerializationInfo info, StreamingContext context) : base(info, context)
     {
     }
 }
