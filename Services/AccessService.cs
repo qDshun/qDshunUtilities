@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using qDshunUtilities.EF;
+using qDshunUtilities.Exceptions;
 
 namespace qDshunUtilities.Services;
 
@@ -25,7 +26,7 @@ public class AccessService(ApplicationDbContext dbContext, IMapper mapper) : IAc
     {
         if (!await HasAccessToWorldAsync(worldId, authenticatedUser))
         {
-            throw new UnauthorizedAccessException($"User {authenticatedUser} does not have access to world {worldId}");
+            throw new UnauthorizedRequestException($"User {authenticatedUser} does not have access to world {worldId}");
         }
     }
 
@@ -44,7 +45,7 @@ public class AccessService(ApplicationDbContext dbContext, IMapper mapper) : IAc
     {
         if (!await HasWorldObjectPermission(worldObjectId, authenticatedUser, permission))
         {
-            throw new UnauthorizedAccessException($"User {authenticatedUser} does not have access to world object {worldObjectId}");
+            throw new UnauthorizedRequestException($"User {authenticatedUser} does not have access to world object {worldObjectId}");
         }
     }
 }
