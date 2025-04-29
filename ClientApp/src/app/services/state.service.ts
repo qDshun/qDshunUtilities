@@ -1,11 +1,14 @@
 import { computed, Injectable, OnDestroy, signal, WritableSignal } from '@angular/core';
 import { VerticalHexMapTileConfiguration, HorizontalHexMapTileConfiguration, SquareMapTileConfiguration, IMapTileConfiguration } from '../models/map-tile.model';
 import { GameComponent } from '../components/game/game/game.component';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: GameComponent
 })
 export class StateService implements OnDestroy {
+  private _currentMapId: string | null = null;
+  public currentMapId = signal('1');
   constructor() { }
 
   ngOnDestroy(): void {
@@ -14,8 +17,18 @@ export class StateService implements OnDestroy {
 
   public maps = this.getMaps();
   public currentMap = this.getCurrentMapAndThrowIfNotExists();
-  public currentMapId = signal('1');
   private tokenMockCounter = 0;
+
+  public onBeforeMapDestroyed$ = new Subject<string>();
+  public onAfterMapInit$ = new Subject<string>();
+  public changeMap(mapId: string){
+    if (this._currentMapId){
+      this.onBeforeMapDestroyed$.next(this._currentMapId);
+    }
+    this.currentMapId.set(mapId);
+    this.onAfterMapInit$.next(mapId);
+    this._currentMapId = mapId;
+  }
 
   private getMaps(): WritableSignal<GameMap[]> {
     const values = signal([
@@ -27,7 +40,7 @@ export class StateService implements OnDestroy {
   }
 
 
-  private getRandomColor(): string {
+  public getRandomColor(): string {
     return "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0")
   }
 

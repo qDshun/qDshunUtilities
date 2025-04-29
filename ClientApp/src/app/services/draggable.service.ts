@@ -1,7 +1,6 @@
-import { DestroyRef, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Application, Container, FederatedPointerEvent, Sprite, ViewContainer } from 'pixi.js';
-import { fromEvent, tap, merge, filter, switchMap, take, takeUntil, throttleTime } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { fromEvent, tap, merge, filter, switchMap, take, takeUntil, throttleTime, Observable } from 'rxjs';
 import { HasEventTargetAddRemove } from 'rxjs/internal/observable/fromEvent';
 import { IMapTileConfiguration } from '../models/map-tile.model';
 import { RenderableObject } from './state.service';
@@ -10,7 +9,7 @@ import { RenderableObject } from './state.service';
   providedIn: 'root'
 })
 export class DraggableService {
-
+  //TODO: move it to subsystem
   public makeDraggable<T extends ViewContainer & HasEventTargetAddRemove<any>>({
     source,
     dragContainer,
@@ -55,7 +54,7 @@ export class DraggableService {
           tap(() => snap(isAltPressed, copyToDrag)),
           tap(() => destroyCopyToDrag(copyToDrag))
         )),
-        takeUntilDestroyed(destroyRef)
+        takeUntil(destroyRef)
       ).subscribe();
     };
 
@@ -103,7 +102,7 @@ export class DraggableService {
 type DraggableFunctionArgs<T> = {
   source: T;
   dragContainer: Container;
-  destroyRef: DestroyRef;
+  destroyRef: Observable<void>;
   allowDrag: boolean;
   renderableObject: RenderableObject;
   application: Application;
