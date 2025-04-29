@@ -43,9 +43,6 @@ export class GameService implements OnDestroy {
           tap(subsystemManager => subsystemManager.registerPerMapSubsystem(this.layerRenderingSubsystem)),
           tap(subsystemManager => subsystemManager.registerPerMapSubsystem(this.tokenRenderingSubsystem)),
           tap(() => this.viewService.initializeViewHandlers(this.application, this.canvas, this.canvasDestroyRef)),
-          delayWhen(() => toObservable(this.stateService.currentMap, { injector: this.injectorRef })),
-          // tap(() => effect(() => this.onMapChanged(), { injector: this.injectorRef })),
-          // tap(() => effect(() => this.onRerenderableObjectsChange(), { injector: this.injectorRef }))
         );
     }))
   }
