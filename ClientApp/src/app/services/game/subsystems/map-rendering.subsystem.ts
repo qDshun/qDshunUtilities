@@ -5,7 +5,7 @@ import { EffectRef, inject, Injectable, Injector } from "@angular/core";
 import { GameMap, StateService } from "../../state.service";
 import { GameApplication } from "./game-application";
 import { ContainerType } from "../../../graphics/container-type.enum";
-import { IMapTileConfiguration } from "../../../models/map-tile.model";
+import { IGridConfiguration } from "../../../models/grid-configuration.model";
 import { GameComponent } from "../../../components/game/game/game.component";
 
 @Injectable({
@@ -88,7 +88,7 @@ export class MapRenderingSubsystem implements IPerMapSubsystem {
     return mapContainer;
   }
 
-  private resizeMapContainer(mapContainer: Container, mapTileConfiguration: IMapTileConfiguration){
+  private resizeMapContainer(mapContainer: Container, mapTileConfiguration: IGridConfiguration){
     const size: Size = { height: mapTileConfiguration.mapHeight, width: mapTileConfiguration.mapWidth };
     mapContainer.setSize(size);
 
@@ -104,7 +104,7 @@ export class MapRenderingSubsystem implements IPerMapSubsystem {
     background.fill(backgroundColor);
   }
 
-  private changeTilesConfiguration(mapContainer: Container, mapTileConfiguration: IMapTileConfiguration): void {
+  private changeTilesConfiguration(mapContainer: Container, mapTileConfiguration: IGridConfiguration): void {
     this.destroyMapCells(mapContainer);
     this.createMapCells(mapContainer, mapTileConfiguration);
   }
@@ -119,7 +119,7 @@ export class MapRenderingSubsystem implements IPerMapSubsystem {
 
   }
 
-  private createMapCells(mapContainer: Container, mapTileConfiguration: IMapTileConfiguration) {
+  private createMapCells(mapContainer: Container, mapTileConfiguration: IGridConfiguration) {
     const tileSize = mapTileConfiguration.getTileSize();
     const fitsScreenWidth = Math.floor(mapContainer.width / tileSize.x);
     const fitsScreenHeight = Math.floor(mapContainer.height / tileSize.y);
@@ -127,7 +127,7 @@ export class MapRenderingSubsystem implements IPerMapSubsystem {
     for (let i = 0; i <= fitsScreenWidth; i++) {
       for (let j = 0; j <= fitsScreenHeight; j++) {
         const centerCoords = mapTileConfiguration.getTopLeftCoords(i, j);
-        const graphicsClone = mapTileConfiguration.mapTileGraphics.clone();
+        const graphicsClone = mapTileConfiguration.tileGraphics.clone();
         graphicsClone.label = MapInternalContainers.Cell;
         //TODO: Move offset (tileSize.x / 2) to mapTileConfiguration
         graphicsClone.x = centerCoords.x + tileSize.x / 2;

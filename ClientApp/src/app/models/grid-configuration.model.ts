@@ -1,17 +1,17 @@
 import * as PIXI from 'pixi.js';
 
-export interface IMapTileConfiguration {
+export interface IGridConfiguration {
   cellSize: number;
   mapWidth: number;
   mapHeight: number;
   getTopLeftCoords: (i: number, j: number) => ({ x: number, y: number });
   getCenterCoords: (i: number, j: number) => ({ x: number, y: number });
-  mapTileGraphics: PIXI.Graphics;
+  tileGraphics: PIXI.Graphics;
   getTileSize: () => ({ x: number, y: number });
   getTileCoordinatesByPoint: (width: number, height: number) => ([i: number, j: number]);
 }
 
-export abstract class BaseMapTileConfiguration implements IMapTileConfiguration {
+export abstract class BaseGridConfiguration implements IGridConfiguration {
   constructor(
     public cellSize: number,
     public strokeColor: string,
@@ -21,7 +21,7 @@ export abstract class BaseMapTileConfiguration implements IMapTileConfiguration 
 
   abstract getTileCoordinatesByPoint: (width: number, height: number) => ([i: number, j: number]);
   abstract getTopLeftCoords: (i: number, j: number) => ({ x: number, y: number });
-  abstract mapTileGraphics: PIXI.Graphics;
+  abstract tileGraphics: PIXI.Graphics;
 
   getTileSize = () => {
     const tileWidth = this.getTopLeftCoords(1, 0).x - this.getTopLeftCoords(0, 0).x;
@@ -37,7 +37,7 @@ export abstract class BaseMapTileConfiguration implements IMapTileConfiguration 
   };
 }
 
-export class VerticalHexMapTileConfiguration extends BaseMapTileConfiguration {
+export class VerticalHexGridConfiguration extends BaseGridConfiguration {
   getTopLeftCoords: (i: number, j: number) => ({ x: number; y: number; }) = (i, j) => {
     const horizontalSpacingPointyTop = Math.sqrt(3) * this.cellSize;
     const verticalSpacingPointyTop = 3 / 2 * this.cellSize;
@@ -57,11 +57,11 @@ export class VerticalHexMapTileConfiguration extends BaseMapTileConfiguration {
     return [i, j];
   }
 
-  mapTileGraphics: PIXI.Graphics = new PIXI.Graphics().regularPoly(0, 0, this.cellSize, 6)
+  tileGraphics: PIXI.Graphics = new PIXI.Graphics().regularPoly(0, 0, this.cellSize, 6)
     .stroke({ color: this.strokeColor, width: 2 });
 }
 
-export class HorizontalHexMapTileConfiguration extends BaseMapTileConfiguration {
+export class HorizontalHexGridConfiguration extends BaseGridConfiguration {
   getTopLeftCoords: (i: number, j: number) => ({ x: number; y: number; }) = (i, j) => {
 
     const horizontalFlatPointyTop = 3 / 2 * this.cellSize;
@@ -82,11 +82,11 @@ export class HorizontalHexMapTileConfiguration extends BaseMapTileConfiguration 
     return [i, j];
   }
 
-  mapTileGraphics: PIXI.Graphics = new PIXI.Graphics().regularPoly(0, 0, this.cellSize, 6, Math.PI / 2)
+  tileGraphics: PIXI.Graphics = new PIXI.Graphics().regularPoly(0, 0, this.cellSize, 6, Math.PI / 2)
     .stroke({ color: this.strokeColor, width: 2 });
 }
 
-export class SquareMapTileConfiguration extends BaseMapTileConfiguration {
+export class SquareGridConfiguration extends BaseGridConfiguration {
   getTopLeftCoords: (i: number, j: number) => ({ x: number; y: number; }) = (i, j) => {
     const halfSide = Math.sqrt(2) * this.cellSize;
 
@@ -104,6 +104,6 @@ export class SquareMapTileConfiguration extends BaseMapTileConfiguration {
     return [i, j];
   }
 
-  mapTileGraphics: PIXI.Graphics = new PIXI.Graphics().regularPoly(0, 0, this.cellSize, 4, Math.PI / 4)
+  tileGraphics: PIXI.Graphics = new PIXI.Graphics().regularPoly(0, 0, this.cellSize, 4, Math.PI / 4)
     .stroke({ color: this.strokeColor, width: 2 });
 }

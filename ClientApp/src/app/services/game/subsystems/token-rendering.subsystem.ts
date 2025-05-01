@@ -9,7 +9,7 @@ import { DraggableService } from "../../draggable.service";
 import { ContainerType } from "../../../graphics/container-type.enum";
 import { Container, Sprite, Texture } from "pixi.js";
 import { getCorrespondingLayer } from "../../../graphics/get-corresponding-layer.function";
-import { IMapTileConfiguration } from "../../../models/map-tile.model";
+import { IGridConfiguration } from "../../../models/grid-configuration.model";
 import { Subject } from "rxjs";
 
 @Injectable({
@@ -81,7 +81,7 @@ export class TokenRenderingSubsystem implements IPerMapSubsystem {
       });
     }
 
-    private updateOrCreateRenderableObject(layerContainer: Container, renderableObject: RenderableObject, mapTileConfiguration: IMapTileConfiguration) {
+    private updateOrCreateRenderableObject(layerContainer: Container, renderableObject: RenderableObject, mapTileConfiguration: IGridConfiguration) {
       const label = 'Renderable-' + renderableObject.id;
       let existingSprite = (layerContainer.getChildByLabel(label) as Sprite);
       if (!existingSprite) {
@@ -93,7 +93,7 @@ export class TokenRenderingSubsystem implements IPerMapSubsystem {
       this.onSnapUpdated(existingSprite, renderableObject, mapTileConfiguration);
     }
 
-    private onSnapUpdated(sprite: Sprite, renderableObject: RenderableObject, mapTileConfiguration: IMapTileConfiguration) {
+    private onSnapUpdated(sprite: Sprite, renderableObject: RenderableObject, mapTileConfiguration: IGridConfiguration) {
       const snap = renderableObject.snap();
       if (snap) {
         if (snap.type == 'tile') {

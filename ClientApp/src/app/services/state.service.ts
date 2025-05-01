@@ -1,5 +1,5 @@
 import { computed, Injectable, OnDestroy, signal, WritableSignal } from '@angular/core';
-import { VerticalHexMapTileConfiguration, HorizontalHexMapTileConfiguration, SquareMapTileConfiguration, IMapTileConfiguration } from '../models/map-tile.model';
+import { VerticalHexGridConfiguration, HorizontalHexGridConfiguration, SquareGridConfiguration, IGridConfiguration } from '../models/grid-configuration.model';
 import { GameComponent } from '../components/game/game/game.component';
 import { Subject } from 'rxjs';
 
@@ -32,9 +32,9 @@ export class StateService implements OnDestroy {
 
   private getMaps(): WritableSignal<GameMap[]> {
     const values = signal([
-      new GameMap('1', signal('Forest'), signal(new VerticalHexMapTileConfiguration(20, this.getRandomColor())), signal(this.getRandomColor()), new Layer(signal([]), signal([])), new Layer(signal([]), signal([])), new Layer(signal([]), signal([new Token('0', `Token ${(this.tokenMockCounter++).toString()}`, 'https://media.istockphoto.com/id/1973365581/vector/sample-ink-rubber-stamp.jpg?s=612x612&w=0&k=20&c=_m6hNbFtLdulg3LK5LRjJiH6boCb_gcxPvRLytIz0Ws=', { type: 'tile', i: 10, j: 10 })]))),
-      new GameMap('2', signal('Village'), signal(new HorizontalHexMapTileConfiguration(20, this.getRandomColor(), 1200, 800)), signal(this.getRandomColor()), new Layer(signal([]), signal([])), new Layer(signal([]), signal([])), new Layer(signal([]), signal([new Token('0', `Token ${(this.tokenMockCounter++).toString()}`, 'https://media.istockphoto.com/id/1973365581/vector/sample-ink-rubber-stamp.jpg?s=612x612&w=0&k=20&c=_m6hNbFtLdulg3LK5LRjJiH6boCb_gcxPvRLytIz0Ws=', { type: 'tile', i: 8, j: 8 }), new Token('1', `Token ${(this.tokenMockCounter++).toString()}`, 'https://media.istockphoto.com/id/1973365581/vector/sample-ink-rubber-stamp.jpg?s=612x612&w=0&k=20&c=_m6hNbFtLdulg3LK5LRjJiH6boCb_gcxPvRLytIz0Ws=', { type: 'tile', i: 10, j: 10 })]))),
-      new GameMap('3', signal('Volcano'), signal(new SquareMapTileConfiguration(20, this.getRandomColor(), 900, 200)), signal(this.getRandomColor()), new Layer(signal([]), signal([])), new Layer(signal([]), signal([])), new Layer(signal([]), signal([new Token('0', `Token ${(this.tokenMockCounter++).toString()}`, 'https://media.istockphoto.com/id/1973365581/vector/sample-ink-rubber-stamp.jpg?s=612x612&w=0&k=20&c=_m6hNbFtLdulg3LK5LRjJiH6boCb_gcxPvRLytIz0Ws=', { type: 'tile', i: 7, j: 7 }), new Token('1', `Token ${(this.tokenMockCounter++).toString()}`, 'https://media.istockphoto.com/id/1973365581/vector/sample-ink-rubber-stamp.jpg?s=612x612&w=0&k=20&c=_m6hNbFtLdulg3LK5LRjJiH6boCb_gcxPvRLytIz0Ws=', { type: 'tile', i: 9, j: 9 }), new Token('2', `Token ${(this.tokenMockCounter++).toString()}`, 'https://media.istockphoto.com/id/1973365581/vector/sample-ink-rubber-stamp.jpg?s=612x612&w=0&k=20&c=_m6hNbFtLdulg3LK5LRjJiH6boCb_gcxPvRLytIz0Ws=', { type: 'tile', i: 10, j: 10 })]))),
+      new GameMap('1', signal('Forest'), signal(new VerticalHexGridConfiguration(20, this.getRandomColor())), signal(this.getRandomColor()), new Layer(signal([]), signal([])), new Layer(signal([]), signal([])), new Layer(signal([]), signal([new Token('0', `Token ${(this.tokenMockCounter++).toString()}`, 'https://media.istockphoto.com/id/1973365581/vector/sample-ink-rubber-stamp.jpg?s=612x612&w=0&k=20&c=_m6hNbFtLdulg3LK5LRjJiH6boCb_gcxPvRLytIz0Ws=', { type: 'tile', i: 10, j: 10 })]))),
+      new GameMap('2', signal('Village'), signal(new HorizontalHexGridConfiguration(20, this.getRandomColor(), 1200, 800)), signal(this.getRandomColor()), new Layer(signal([]), signal([])), new Layer(signal([]), signal([])), new Layer(signal([]), signal([new Token('0', `Token ${(this.tokenMockCounter++).toString()}`, 'https://media.istockphoto.com/id/1973365581/vector/sample-ink-rubber-stamp.jpg?s=612x612&w=0&k=20&c=_m6hNbFtLdulg3LK5LRjJiH6boCb_gcxPvRLytIz0Ws=', { type: 'tile', i: 8, j: 8 }), new Token('1', `Token ${(this.tokenMockCounter++).toString()}`, 'https://media.istockphoto.com/id/1973365581/vector/sample-ink-rubber-stamp.jpg?s=612x612&w=0&k=20&c=_m6hNbFtLdulg3LK5LRjJiH6boCb_gcxPvRLytIz0Ws=', { type: 'tile', i: 10, j: 10 })]))),
+      new GameMap('3', signal('Volcano'), signal(new SquareGridConfiguration(20, this.getRandomColor(), 900, 200)), signal(this.getRandomColor()), new Layer(signal([]), signal([])), new Layer(signal([]), signal([])), new Layer(signal([]), signal([new Token('0', `Token ${(this.tokenMockCounter++).toString()}`, 'https://media.istockphoto.com/id/1973365581/vector/sample-ink-rubber-stamp.jpg?s=612x612&w=0&k=20&c=_m6hNbFtLdulg3LK5LRjJiH6boCb_gcxPvRLytIz0Ws=', { type: 'tile', i: 7, j: 7 }), new Token('1', `Token ${(this.tokenMockCounter++).toString()}`, 'https://media.istockphoto.com/id/1973365581/vector/sample-ink-rubber-stamp.jpg?s=612x612&w=0&k=20&c=_m6hNbFtLdulg3LK5LRjJiH6boCb_gcxPvRLytIz0Ws=', { type: 'tile', i: 9, j: 9 }), new Token('2', `Token ${(this.tokenMockCounter++).toString()}`, 'https://media.istockphoto.com/id/1973365581/vector/sample-ink-rubber-stamp.jpg?s=612x612&w=0&k=20&c=_m6hNbFtLdulg3LK5LRjJiH6boCb_gcxPvRLytIz0Ws=', { type: 'tile', i: 10, j: 10 })]))),
     ]);
     return values;
   }
@@ -63,7 +63,7 @@ export class GameMap {
   constructor(
     public id: string,
     public name: WritableSignal<string>,
-    public mapTileConfiguration: WritableSignal<IMapTileConfiguration>,
+    public mapTileConfiguration: WritableSignal<IGridConfiguration>,
     public backgroundColor: WritableSignal<string>,
 
     public backgroundLayer: Layer,
