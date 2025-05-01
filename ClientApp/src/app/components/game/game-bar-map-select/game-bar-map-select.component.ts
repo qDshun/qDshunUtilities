@@ -22,6 +22,6 @@ export class GameBarMapSelectComponent {
   }
 
   private switchToMap(map: GameMap) {
-    this.stateService.currentMapId.set(map.id);
+    this.stateService.changeMap(map.id);
   }
 }

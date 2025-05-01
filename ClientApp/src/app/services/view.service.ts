@@ -9,6 +9,7 @@ import { GameComponent } from '../components/game/game/game.component';
   providedIn: GameComponent
 })
 export class ViewService {
+  //TODO: move to subsystem
   private _application!: Application;
   private _canvas!: HTMLCanvasElement;
   private _destroyRef!: DestroyRef;

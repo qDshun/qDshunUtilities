@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, ViewChild } from '@angular/core';
-import { RenderService } from '../../../services/render.service';
+import { GameService } from '../../../services/game.service';
 
 @Component({
   selector: 'app-game-screen',
@@ -13,10 +13,10 @@ export class GameScreenComponent implements AfterViewInit {
   @ViewChild('gameCanvas') _canvas!: ElementRef<HTMLCanvasElement>;
 
   private destroyRef = inject(DestroyRef);
-  private renderService = inject(RenderService);
+  private gameService = inject(GameService);
 
   ngAfterViewInit(): void {
-    this.renderService.initialize(this._canvas, this.destroyRef)
+    this.gameService.initialize(this._canvas, this.destroyRef)
       .subscribe();
   }
 

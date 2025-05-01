@@ -1,16 +1,15 @@
-import { DestroyRef, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Application, Container, FederatedPointerEvent, Sprite, ViewContainer } from 'pixi.js';
-import { fromEvent, tap, merge, filter, switchMap, take, takeUntil, throttleTime } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { fromEvent, tap, merge, filter, switchMap, take, takeUntil, throttleTime, Observable } from 'rxjs';
 import { HasEventTargetAddRemove } from 'rxjs/internal/observable/fromEvent';
-import { IMapTileConfiguration } from '../models/map-tile.model';
+import { IGridConfiguration } from '../models/grid-configuration.model';
 import { RenderableObject } from './state.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DraggableService {
-
+  //TODO: move it to subsystem
   public makeDraggable<T extends ViewContainer & HasEventTargetAddRemove<any>>({
     source,
     dragContainer,
@@ -36,14 +35,10 @@ export class DraggableService {
       source.interactive = true
 
       let copyToDrag: T;
-      let widthCopy: number;
-      let heightCopy: number;
 
-      const dragStop$ = merge(fromEvent(dragContainer, 'mouseup'))
+      const dragStop$ = fromEvent(dragContainer, 'mouseup')
       fromEvent(source, 'mousedown').pipe(
         tap(() => copyToDrag = createCopyToDrag(source)),
-        tap(() => widthCopy = dragContainer.width),
-        tap(() => heightCopy = dragContainer.height),
         switchMap(() => fromEvent<FederatedPointerEvent>(dragContainer, 'mousemove').pipe(
           takeUntil(dragStop$)
         )),
@@ -55,12 +50,11 @@ export class DraggableService {
           tap(() => snap(isAltPressed, copyToDrag)),
           tap(() => destroyCopyToDrag(copyToDrag))
         )),
-        takeUntilDestroyed(destroyRef)
+        takeUntil(destroyRef)
       ).subscribe();
     };
 
     const snap = (isAltPressed: boolean, copy: T) => {
-      const newPosition = dragContainer.toLocal(copy.position, application.stage);
       //TODO: Rewrite so it will be allowed to drag outside, but snap/delete token if mouseup happened outside dragContainer
       if (isAltPressed) {
         renderableObject.snap.set({ type: 'free', x: copy.position.x, y: copy.position.y });
@@ -103,9 +97,9 @@ export class DraggableService {
 type DraggableFunctionArgs<T> = {
   source: T;
   dragContainer: Container;
-  destroyRef: DestroyRef;
+  destroyRef: Observable<void>;
   allowDrag: boolean;
   renderableObject: RenderableObject;
   application: Application;
-  mapTileConfiguration: IMapTileConfiguration;
+  mapTileConfiguration: IGridConfiguration;
 };
