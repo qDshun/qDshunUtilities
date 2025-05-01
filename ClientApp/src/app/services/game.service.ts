@@ -1,14 +1,11 @@
-import { DestroyRef, ElementRef, inject, Injectable, Injector, OnDestroy, runInInjectionContext } from '@angular/core';
-import { defer, delayWhen, from, map, Observable, tap } from 'rxjs';
-import { StateService } from './state.service';
-import { ViewService } from './view.service';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { GameComponent } from '../components/game/game/game.component';
-import { GameApplication } from './game/subsystems/game-application';
-import { MapRenderingSubsystem } from './game/subsystems/map-rendering.subsystem';
-import { SusbsystemManager } from './game/subsystems/subsystem-manager';
-import { LayerRenderingSubsystem } from './game/subsystems/layer-rendering.subsystem';
-import { TokenRenderingSubsystem } from './game/subsystems/token-rendering.subsystem';
+import { Injectable, OnDestroy, inject, Injector, DestroyRef, ElementRef, runInInjectionContext } from "@angular/core";
+import { GameComponent } from "@components/game/game/game.component";
+import { Observable, defer, from, map, tap } from "rxjs";
+import { MapRenderingSubsystem, LayerRenderingSubsystem, TokenRenderingSubsystem, SusbsystemManager } from "./game/subsystems";
+import { StateService } from "./state.service";
+import { ViewService } from "./view.service";
+import { GameApplication } from "@models/business";
+
 
 @Injectable({
   providedIn: GameComponent,

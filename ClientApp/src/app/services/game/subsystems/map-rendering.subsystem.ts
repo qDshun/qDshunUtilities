@@ -1,12 +1,11 @@
+import { Injectable, inject, EffectRef } from "@angular/core";
+import { GameComponent } from "@components/game/game/game.component";
+import { ContainerType, GameApplication, IGridConfiguration } from "@models/business";
+import { StateService, GameMap } from "app/services/state.service";
 import { Container, Graphics, Size } from "pixi.js";
 import { Observable, of } from "rxjs";
 import { IPerMapSubsystem } from "./subsystem";
-import { EffectRef, inject, Injectable, Injector } from "@angular/core";
-import { GameMap, StateService } from "../../state.service";
-import { GameApplication } from "./game-application";
-import { ContainerType } from "../../../graphics/container-type.enum";
-import { IGridConfiguration } from "../../../models/grid-configuration.model";
-import { GameComponent } from "../../../components/game/game/game.component";
+
 
 @Injectable({
   providedIn: GameComponent

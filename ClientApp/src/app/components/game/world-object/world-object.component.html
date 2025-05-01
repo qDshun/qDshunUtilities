@@ -12,4 +12,9 @@
     <mat-icon [svgIcon]="'star'" [style]="isFavouriteStyle()"></mat-icon>
   </button>
 
+  @if (worldObjectNode.type == 'item'){
+    <button mat-icon-button (click)="toggleCharacterSheet()">
+      <mat-icon [fontIcon]="'menu_book'"></mat-icon>
+    </button>
+  }
 </div>

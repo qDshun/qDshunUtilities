@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, ViewChild } from '@angular/core';
-import { GameService } from '../../../services/game.service';
+import { GameService } from '@services';
 
 @Component({
   selector: 'app-game-screen',

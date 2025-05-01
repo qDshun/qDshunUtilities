@@ -1,14 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { WorldObjectService } from '../../../services/world-object.service';
-import { CommonModule } from '@angular/common';
-import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { PathToNamePipe } from '../../../helpers/path-to-name.pipe';
-import { WorldObjectItem } from '../../../models/world-object.model';
+import { DragDropModule, CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
+import { CommonModule } from "@angular/common";
+import { Component, ChangeDetectionStrategy, inject, computed } from "@angular/core";
+import { WorldObjectItem } from "@models/business";
+import { WorldObjectService } from "@services";
 
 @Component({
   selector: 'app-game-bar-quick-access',
   standalone: true,
-  imports: [CommonModule, DragDropModule, PathToNamePipe],
+  imports: [CommonModule, DragDropModule],
   templateUrl: './game-bar-quick-access.component.html',
   styleUrl: './game-bar-quick-access.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

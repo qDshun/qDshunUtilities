@@ -1,9 +1,10 @@
-import { DestroyRef, Injectable } from '@angular/core';
-import { Application, Point } from 'pixi.js';
-import { fromEvent, tap, merge, filter, map, Observable, pairwise, switchMap, takeUntil, throttleTime } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HasEventTargetAddRemove } from 'rxjs/internal/observable/fromEvent';
-import { GameComponent } from '../components/game/game/game.component';
+import { Injectable, DestroyRef } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { GameComponent } from "@components/game/game/game.component";
+import { Application, Point } from "pixi.js";
+import { merge, fromEvent, tap, Observable, filter, switchMap, pairwise, throttleTime, map, takeUntil } from "rxjs";
+import { HasEventTargetAddRemove } from "rxjs/internal/observable/fromEvent";
+
 
 @Injectable({
   providedIn: GameComponent

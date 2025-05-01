@@ -1,10 +1,10 @@
-import { Injectable, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { ApiService } from './api.service';
-import { tap } from 'rxjs';
-import { LoginRequest } from '../models/request/login-request.model';
-import { RegisterRequest } from '../models/request/register-request.model';
-import { TokenResponse } from '../models/response/token-response.model';
+import { Injectable, inject } from "@angular/core";
+import { Router } from "@angular/router";
+import { RegisterRequest, LoginRequest } from "@models/request";
+import { TokenResponse } from "@models/response";
+import { tap } from "rxjs";
+import { ApiService } from "./api.service";
+
 
 @Injectable({
   providedIn: 'root'

@@ -1,4 +1,4 @@
-export class ChatMessage {
+export class ChatMessageResponse {
   userName!: string;
   message!: string;
   createdAt!: Date;

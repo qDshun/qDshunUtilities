@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { WorldService } from '../../../services/world.service';
-import { WorldCardComponent } from '../world-card/world-card.component';
 import { CommonModule } from '@angular/common';
+import { WorldService } from '@services';
+import { WorldCardComponent } from '../world-card/world-card.component';
 
 @Component({
   selector: 'app-world-select',

@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable, ReplaySubject } from 'rxjs';
 import * as signalR from "@microsoft/signalr";
-import { ChatMessage } from '../models/chat-message';
+import { GetLastMessagesRequest } from '../models/request/get-last-messages-request.model';
+import { ChatMessageResponse } from '../models/response/chat-message-reponse.model';
 import { ApiService } from './api.service';
-import { GetLastMessagesRequest } from '../models/request/get-last-messages-request';
 
 @Injectable({
   providedIn: 'root'
@@ -11,16 +11,16 @@ import { GetLastMessagesRequest } from '../models/request/get-last-messages-requ
 export class ChatService {
   private apiService = inject(ApiService);
   private connection!: signalR.HubConnection;
-  public lastMsg$ : ReplaySubject<ChatMessage>;
+  public lastMsg$ : ReplaySubject<ChatMessageResponse>;
 
-  chatEntries!: ChatMessage[];
-  constructor() { 
+  chatEntries!: ChatMessageResponse[];
+  constructor() {
     this.connection = new signalR.HubConnectionBuilder()
     .withUrl("https://localhost:7297/hub")
     .build();
     this.lastMsg$ = new ReplaySubject();
     this.chatEntries = [];
-    this.connection.on("messageReceived", (line : ChatMessage) => {
+    this.connection.on("messageReceived", (line : ChatMessageResponse) => {
       this.chatEntries.push(line);
       this.lastMsg$.next(line);
 
@@ -41,7 +41,8 @@ export class ChatService {
     }
   }
 
-  getLastMessages(numberOfMessage: number, worldId: string): Observable<ChatMessage[]> {
-    return this.apiService.post<ChatMessage[]>("Chat", new GetLastMessagesRequest(numberOfMessage, worldId));
+  getLastMessages(numberOfMessage: number, worldId: string): Observable<ChatMessageResponse[]> {
+    const request: GetLastMessagesRequest = {worldId, msgCount: numberOfMessage}
+    return this.apiService.post<ChatMessageResponse[]>("Chat", request);
   }
 }
