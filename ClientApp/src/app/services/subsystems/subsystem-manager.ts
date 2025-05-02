@@ -2,7 +2,7 @@ import { DestroyRef, Injector, runInInjectionContext } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ISubsystem, IPerMapSubsystem } from "./subsystem";
 import { GameApplication } from "@models/business";
-import { StateService } from "@services";
+import { StateService } from "app/services/state.service";
 
 
 export class SusbsystemManager {

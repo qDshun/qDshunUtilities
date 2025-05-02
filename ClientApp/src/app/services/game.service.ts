@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy, inject, Injector, DestroyRef, ElementRef, runInInjectionContext } from "@angular/core";
 import { GameComponent } from "@components/game/game/game.component";
 import { Observable, defer, from, map, tap } from "rxjs";
-import { MapRenderingSubsystem, LayerRenderingSubsystem, TokenRenderingSubsystem, SusbsystemManager } from "./game/subsystems";
+import { MapRenderingSubsystem, LayerRenderingSubsystem, TokenRenderingSubsystem, SusbsystemManager } from "./subsystems";
 import { StateService } from "./state.service";
 import { ViewService } from "./view.service";
 import { GameApplication } from "@models/business";

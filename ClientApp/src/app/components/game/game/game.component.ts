@@ -1,11 +1,11 @@
 import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { GameService, StateService, ViewService } from "@services";
-import { MapRenderingSubsystem, LayerRenderingSubsystem, TokenRenderingSubsystem } from "app/services/game/subsystems";
 import { GameBarMapSelectComponent } from "../game-bar-map-select/game-bar-map-select.component";
 import { GameBarQuickAccessComponent } from "../game-bar-quick-access/game-bar-quick-access.component";
 import { GameBarRightComponent } from "../game-bar-right/game-bar-right.component";
 import { GameBarToolsComponent } from "../game-bar-tools/game-bar-tools.component";
 import { GameScreenComponent } from "../game-screen/game-screen.component";
+import { LayerRenderingSubsystem, MapRenderingSubsystem, TokenRenderingSubsystem } from "@subsystems";
 
 
 @Component({
