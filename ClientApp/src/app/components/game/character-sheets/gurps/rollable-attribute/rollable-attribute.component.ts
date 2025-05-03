@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { GurpsAttribute, MultidependantGurpsAttribute } from '@models/business';
+import { IGurpsAttribute } from '@models/business';
 
 @Component({
   selector: 'app-rollable-attribute',
@@ -11,5 +11,5 @@ import { GurpsAttribute, MultidependantGurpsAttribute } from '@models/business';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RollableAttributeComponent {
-  @Input({required: true}) attribute!: GurpsAttribute | MultidependantGurpsAttribute;
+  @Input({required: true}) attribute!: IGurpsAttribute;
 }

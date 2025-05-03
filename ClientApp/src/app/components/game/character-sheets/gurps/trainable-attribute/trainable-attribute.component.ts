@@ -3,7 +3,7 @@ import { FormsModule, ReactiveFormsModule, FormControl, Validators } from "@angu
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
-import { GurpsAttribute, MultidependantGurpsAttribute } from "@models/business";
+import { IGurpsAttribute } from "@models/business";
 
 
 @Component({
@@ -15,7 +15,7 @@ import { GurpsAttribute, MultidependantGurpsAttribute } from "@models/business";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TrainableAttributeComponent implements OnInit {
-  @Input({required: true}) attribute!: GurpsAttribute | MultidependantGurpsAttribute;
+  @Input({required: true}) attribute!: IGurpsAttribute;
   expFormControl!: FormControl<number | null>;
 
   ngOnInit(): void {
