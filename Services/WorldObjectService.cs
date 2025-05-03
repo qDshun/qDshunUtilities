@@ -52,7 +52,13 @@ public class WorldObjectService(ApplicationDbContext dbContext, IMapper mapper, 
 
     public async Task CreateWorldObjectAsync(Guid worldId, WorldObjectCreate worldObjectCreate, Guid authenticatedUser)
     {
-        var worldObjectEntity = mapper.Map<WorldObjectEntity>(worldObjectCreate);
+        WorldObjectEntity worldObjectEntity = worldObjectCreate.Type switch
+        {
+            WorldObjectType.Folder => new FolderEntity(worldObjectCreate),
+            WorldObjectType.Handout => new HandoutEntity(worldObjectCreate),
+            WorldObjectType.CharacterSheet => new CharacterSheetEntity(worldObjectCreate),
+            _ => throw new NotImplementedException(),
+        };
         var worldUser = await dbContext.WorldUsers.SingleAsync(wu => wu.UserId == authenticatedUser && wu.WorldId == worldId);
         worldObjectEntity.WorldId = worldId;
 
