@@ -9,22 +9,43 @@ public enum WorldObjectType
     CharacterSheet,
     Handout
 }
-public class GetWorldObjectResponse(IEnumerable<WorldObjectDto> objects)
+public class GetWorldObjectResponse
 {
-    public IEnumerable<WorldObjectDto> Objects = objects;
+    public IEnumerable<WorldObjectDto> Objects { get; set; }
+
+    public GetWorldObjectResponse()
+    {
+    }
+    public GetWorldObjectResponse(IEnumerable<WorldObjectDto> objects)
+    {
+        Objects = objects;
+    }
 }
-public class WorldObjectDto(WorldObjectEntity wo)
+public class WorldObjectDto
 {
-    public WorldObjectType Type { get; set; } = wo switch
+    public WorldObjectDto()
+    {
+    }
+    public WorldObjectType Type { get; set; }
+    public Guid Id { get; set; }
+    public string Name { get; set; }
+    public Guid? ParentId { get; set; }
+    public Guid? PreviousId { get; set; }
+    public string PreviewImageUrl { get; set; }
+
+    public WorldObjectDto(WorldObjectEntity wo)
+    {
+        Type = wo switch
     {
         FolderEntity => WorldObjectType.Folder,
         CharacterSheetEntity => WorldObjectType.CharacterSheet,
         HandoutEntity => WorldObjectType.Handout,
         _ => throw new NotImplementedException(),
     };
-    public Guid Id { get; set; } = wo.Id;
-    public string Name { get; set; } = wo.Name;
-    public Guid? ParentId { get; set; } = wo.ParentId;
-    public Guid? PreviousId { get; set; } = wo.PreviousId;
-    public string PreviewImageUrl { get; set; } = wo?.PreviewImageUrl;
+        Id = wo.Id;
+        Name = wo.Name;
+        ParentId = wo.ParentId;
+        PreviousId = wo.PreviousId;
+        PreviewImageUrl = wo?.PreviewImageUrl;
+    }
 }
