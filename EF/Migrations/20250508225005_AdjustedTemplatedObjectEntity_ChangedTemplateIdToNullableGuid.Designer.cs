@@ -12,8 +12,8 @@ using qDshunUtilities.EF;
 namespace qDshunUtilities.EF.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250508223603_adjustedTemplatedObjectEntity")]
-    partial class adjustedTemplatedObjectEntity
+    [Migration("20250508225005_AdjustedTemplatedObjectEntity_ChangedTemplateIdToNullableGuid")]
+    partial class AdjustedTemplatedObjectEntity_ChangedTemplateIdToNullableGuid
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

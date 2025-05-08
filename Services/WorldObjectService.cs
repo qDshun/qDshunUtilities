@@ -14,7 +14,7 @@ public interface IWorldObjectService
 {
     Task<GetWorldObjectResponse> GetWorldObjectsAsync(Guid worldId, Guid authenticatedUser);
     Task CreateWorldObjectAsync(Guid worldId, WorldObjectCreateRequest worldObjectCreate, Guid authenticatedUser);
-    Task<WorldObjectDto> GetWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser);
+    Task<WorldObjectResponse> GetWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser);
     Task UpdateCharacterSheetAsync(Guid worldId, CharacterSheetUpdateRequest request, Guid authenticatedUser);
     Task DeleteWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser);
 }
@@ -25,16 +25,16 @@ public class WorldObjectService(ApplicationDbContext dbContext, IMapper mapper, 
     {
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
 
-        List<WorldObjectDto> worldObjects = await dbContext.WorldObjects
+        List<WorldObjectResponse> worldObjects = await dbContext.WorldObjects
             .Where(wo => wo.WorldId == worldId)
             .Include(wo => wo.WorldObjectPermissions)
             .ThenInclude(w => w.WorldUser)
-            .Select(wo => new WorldObjectDto(wo))
+            .Select(wo => new WorldObjectResponse(wo))
             .ToListAsync();
         return new GetWorldObjectResponse(worldObjects);
     }
 
-    public async Task<WorldObjectDto> GetWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser)
+    public async Task<WorldObjectResponse> GetWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser)
     {
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
 
@@ -44,7 +44,7 @@ public class WorldObjectService(ApplicationDbContext dbContext, IMapper mapper, 
          .Where(wo => wo.Id == worldObjectId)
          .Include(wo => wo.WorldObjectPermissions)
          .ThenInclude(w => w.WorldUser)
-         .Select(wo => new WorldObjectDto(wo))
+         .Select(wo => new WorldObjectResponse(wo))
          .FirstAsync();
 
         return worldObject;

@@ -5,7 +5,7 @@
 namespace qDshunUtilities.EF.Migrations
 {
     /// <inheritdoc />
-    public partial class adjustedTemplatedObjectEntity : Migration
+    public partial class AdjustedTemplatedObjectEntity_ChangedTemplateIdToNullableGuid : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

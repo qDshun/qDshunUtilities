@@ -16,7 +16,7 @@ namespace qDshunUtilities.Controllers
         }
 
         [HttpGet("{worldObjectId}")]
-        public async Task<ActionResult<WorldObjectDto>> GetWorldObject([FromRoute] Guid worldId, [FromRoute] Guid worldObjectId)
+        public async Task<ActionResult<WorldObjectResponse>> GetWorldObject([FromRoute] Guid worldId, [FromRoute] Guid worldObjectId)
         {
             return Ok(await worldObjectService.GetWorldObjectAsync(worldId, worldObjectId, AuthenticatedUser));
         }

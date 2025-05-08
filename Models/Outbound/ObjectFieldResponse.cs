@@ -3,7 +3,7 @@ using qDshunUtilities.EF.Entities;
 
 namespace qDshunUtilities.Models.Outbound;
 
-public class ObjectFieldDto(ObjectFieldEntity of)
+public class ObjectFieldResponse(ObjectFieldEntity of)
 {
     public Guid Id { get; set; } = of.Id;
     public Guid? ParentId { get; set; } = of.ParentId;
@@ -14,9 +14,9 @@ public class ObjectFieldDto(ObjectFieldEntity of)
 
 public class GetObjectFieldsResponse
 {
-    public IEnumerable<ObjectFieldDto> Fields { get; set; }
+    public IEnumerable<ObjectFieldResponse> Fields { get; set; }
 }
 public class GetSingleObjectFieldResponse
 {
-    public ObjectFieldDto Field { get; set; }
+    public ObjectFieldResponse Field { get; set; }
 }

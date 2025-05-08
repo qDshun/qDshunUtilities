@@ -11,7 +11,7 @@ public class MapObjectEntity : BaseEntity
     public double X { get; set; }
     public double Y { get; set; }
     SnappingOption SnappingOption { get; set; }
-    public ushort Snapping_i { get; set; }
-    public ushort Snapping_j { get; set; }
+    public ushort SnappingI { get; set; }
+    public ushort SnappingJ { get; set; }
 
 }

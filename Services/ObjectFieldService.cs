@@ -11,8 +11,8 @@ namespace qDshunUtilities.Services;
 
 public interface IObjectFieldService
 {
-    Task<IEnumerable<ObjectFieldDto>> GetObjectFieldsAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser);
-    Task<ObjectFieldDto> GetObjectFieldAsync(Guid worldId, Guid worldObjectId, Guid objectFieldId, Guid authenticatedUser);
+    Task<IEnumerable<ObjectFieldResponse>> GetObjectFieldsAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser);
+    Task<ObjectFieldResponse> GetObjectFieldAsync(Guid worldId, Guid worldObjectId, Guid objectFieldId, Guid authenticatedUser);
     Task CreateObjectFieldAsync(Guid worldId, Guid worldObjectId, ObjectFieldCreateRequest objectFieldCreate, Guid authenticatedUser);
     Task UpdateObjectFieldAsync(Guid worldId, Guid worldObjectId, ObjectFieldUpdateRequest objectFieldUpdate, Guid authenticatedUser);
     Task DeleteObjectFieldAsync(Guid worldId, Guid worldObjectId, Guid objectFieldId, Guid authenticatedUser);
@@ -22,18 +22,18 @@ public interface IObjectFieldService
 public class ObjectFieldService(ApplicationDbContext dbContext, IMapper mapper, IAccessService accessService) : IObjectFieldService
 {
 
-    public async Task<IEnumerable<ObjectFieldDto>> GetObjectFieldsAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser)
+    public async Task<IEnumerable<ObjectFieldResponse>> GetObjectFieldsAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser)
     {
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
         await accessService.AssertHasWorldObjectPermissionAsync(worldObjectId, authenticatedUser, Perms.AllowRead);
 
         return await dbContext.ObjectFields
             .Where(of => of.TemplatedWorldObjectId == worldObjectId)
-            .Select(of => new ObjectFieldDto(of))
+            .Select(of => new ObjectFieldResponse(of))
             .ToListAsync();
     }
 
-    public async Task<ObjectFieldDto> GetObjectFieldAsync(Guid worldId, Guid worldObjectId, Guid objectFieldId, Guid authenticatedUser)
+    public async Task<ObjectFieldResponse> GetObjectFieldAsync(Guid worldId, Guid worldObjectId, Guid objectFieldId, Guid authenticatedUser)
     {
         // Todo: Possible bypass of the access by using unrelated to object fields  worldObjectId and WorldId
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
@@ -41,7 +41,7 @@ public class ObjectFieldService(ApplicationDbContext dbContext, IMapper mapper, 
         return await dbContext.ObjectFields
             .Where(of => of.Id == objectFieldId)
             .Where(of => of.TemplatedWorldObjectId == worldObjectId)
-            .Select(of => new ObjectFieldDto(of))
+            .Select(of => new ObjectFieldResponse(of))
             .FirstAsync();
     }
 
