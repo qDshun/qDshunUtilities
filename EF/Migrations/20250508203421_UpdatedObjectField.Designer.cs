@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using qDshunUtilities.EF;
 
 #nullable disable
 
-namespace qDshunUtilities.Migrations
+namespace qDshunUtilities.EF.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250508203421_UpdatedObjectField")]
+    partial class UpdatedObjectField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -398,7 +401,7 @@ namespace qDshunUtilities.Migrations
                 {
                     b.HasBaseType("qDshunUtilities.EF.Entities.WorldObjects.WorldObjectEntity");
 
-                    b.Property<Guid?>("TemplateId")
+                    b.Property<Guid>("TemplateId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasIndex("TemplateId");
@@ -574,7 +577,9 @@ namespace qDshunUtilities.Migrations
                 {
                     b.HasOne("qDshunUtilities.EF.Entities.TemplateEntity", "Template")
                         .WithMany("TemplatedWorldObjects")
-                        .HasForeignKey("TemplateId");
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Template");
                 });
