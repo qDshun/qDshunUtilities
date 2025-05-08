@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 import { ArmorResult, AvailibleMaterials, BodyPart, HumanBodyParts, HumanBodyPartsBack, HumanBodyPartsFront } from '../../../helpers/armor-crafting';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { ControlsOf } from '../../../helpers/controls-of.type';

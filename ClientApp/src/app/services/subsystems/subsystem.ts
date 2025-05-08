@@ -1,5 +1,4 @@
-import { Observable } from "rxjs";
-import { GameApplication } from "./game-application";
+import { GameApplication } from "@models/business";
 
 export interface ISubsystem {
   register(app: GameApplication): void;

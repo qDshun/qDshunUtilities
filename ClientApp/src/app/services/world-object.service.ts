@@ -1,8 +1,9 @@
-import { Injectable, WritableSignal, effect, inject, signal } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { ApiService } from './api.service';
-import { WorldObjectFolderResponse, WorldObjectItemResponse } from '../models/response/world-object-response';
-import { AnyWorldObject, WorldObject, WorldObjectFolder, WorldObjectItem } from '../models/world-object.model';
+import { Injectable, inject, WritableSignal, signal, effect } from "@angular/core";
+import { AnyWorldObject, WorldObject, WorldObjectItem, WorldObjectFolder } from "@models/business";
+import { WorldObjectItemResponse, WorldObjectFolderResponse } from "@models/response";
+import { Observable, of } from "rxjs";
+import { ApiService } from "./api.service";
+
 
 @Injectable({
   providedIn: 'root'

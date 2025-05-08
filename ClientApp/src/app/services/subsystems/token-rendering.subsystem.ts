@@ -1,16 +1,14 @@
-import { EffectRef, inject, Injectable } from "@angular/core";
-import { GameComponent } from "../../../components/game/game/game.component";
-import { IPerMapSubsystem } from "./subsystem";
-import { GameApplication } from "./game-application";
-import { MapRenderingSubsystem } from "./map-rendering.subsystem";
-import { LayerRenderingSubsystem } from "./layer-rendering.subsystem";
-import { GameMap, RenderableObject, StateService } from "../../state.service";
-import { DraggableService } from "../../draggable.service";
-import { ContainerType } from "../../../graphics/container-type.enum";
+import { Injectable, inject, EffectRef } from "@angular/core";
+import { GameComponent } from "@components/game/game/game.component";
+import { GameApplication, ContainerType, IGridConfiguration } from "@models/business";
 import { Container, Sprite, Texture } from "pixi.js";
-import { getCorrespondingLayer } from "../../../graphics/get-corresponding-layer.function";
-import { IGridConfiguration } from "../../../models/grid-configuration.model";
 import { Subject } from "rxjs";
+import { LayerRenderingSubsystem } from "./layer-rendering.subsystem";
+import { MapRenderingSubsystem } from "./map-rendering.subsystem";
+import { IPerMapSubsystem } from "./subsystem";
+import { DraggableService, GameMap, RenderableObject, StateService } from "@services";
+
+
 
 @Injectable({
   providedIn: GameComponent
@@ -74,7 +72,7 @@ export class TokenRenderingSubsystem implements IPerMapSubsystem {
     private onRerenderableObjectsChange(map: GameMap) {
       //TODO: Rewrite this completely, since it is kinda wrong (doesnt delete renderables for example)
       this.playerInteractableLayers.forEach(layerContainerName => {
-        getCorrespondingLayer(map, layerContainerName).renderableObjects().forEach(ro => {
+        this.getCorrespondingLayer(map, layerContainerName).renderableObjects().forEach(ro => {
           const layerContainer = this.appRef.board.getExistingBoardChild(layerContainerName, map.id);
           this.updateOrCreateRenderableObject(layerContainer, ro, map.mapTileConfiguration())
         });
@@ -111,5 +109,18 @@ export class TokenRenderingSubsystem implements IPerMapSubsystem {
       requestAnimationFrame(() => {
         this.appRef.render();
       });
+}
+
+private getCorrespondingLayer(map: GameMap, containerType: ContainerType) {
+  switch (containerType) {
+    case ContainerType.Background:
+      return map.backgroundLayer;
+    case ContainerType.Hidden:
+      return map.hiddenLayer;
+    case ContainerType.Interactable:
+      return map.interactableLayer;
+    default:
+      throw new Error(`Container type ${containerType} not allowed`);
+  }
 }
 }

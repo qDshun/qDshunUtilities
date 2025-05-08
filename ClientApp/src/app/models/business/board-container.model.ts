@@ -1,6 +1,6 @@
+import { UnrecoverableError } from "@services";
 import { ContainerChild, Container, Graphics } from "pixi.js";
-import { ContainerType } from "./container-type.enum";
-import { UnrecoverableError } from "../services/state.service";
+import { ContainerType } from ".";
 
 export class BoardContainer<T extends ContainerChild = ContainerChild> extends Container<T> {
 

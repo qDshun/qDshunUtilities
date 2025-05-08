@@ -1,5 +1,5 @@
 import { signal, WritableSignal } from "@angular/core";
-import { WorldObjectItemResponse, WorldObjectFolderResponse, WorldObjectResponse } from "./response/world-object-response";
+import { WorldObjectResponse, WorldObjectFolderResponse, WorldObjectItemResponse } from "@models/response";
 
 export class WorldObject {
   type!: 'folder' | 'item';

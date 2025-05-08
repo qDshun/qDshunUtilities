@@ -1,11 +1,10 @@
+import { Injectable, inject, EffectRef } from "@angular/core";
+import { GameComponent } from "@components/game/game/game.component";
+import { StateService, GameMap } from "app/services/state.service";
 import { Observable, of } from "rxjs";
-import { IPerMapSubsystem } from "./subsystem";
-import { EffectRef, inject, Injectable } from "@angular/core";
-import { GameMap, StateService } from "../../state.service";
-import { GameApplication } from "./game-application";
-import { ContainerType } from "../../../graphics/container-type.enum";
-import { GameComponent } from "../../../components/game/game/game.component";
 import { MapRenderingSubsystem } from "./map-rendering.subsystem";
+import { IPerMapSubsystem } from "./subsystem";
+import { ContainerType, GameApplication } from "@models/business";
 
 @Injectable({
   providedIn: GameComponent

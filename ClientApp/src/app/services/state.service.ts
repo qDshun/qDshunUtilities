@@ -1,7 +1,8 @@
-import { computed, Injectable, OnDestroy, signal, WritableSignal } from '@angular/core';
-import { VerticalHexGridConfiguration, HorizontalHexGridConfiguration, SquareGridConfiguration, IGridConfiguration } from '../models/grid-configuration.model';
-import { GameComponent } from '../components/game/game/game.component';
-import { Subject } from 'rxjs';
+import { Injectable, OnDestroy, signal, WritableSignal, computed } from "@angular/core";
+import { GameComponent } from "@components/game/game/game.component";
+import { VerticalHexGridConfiguration, HorizontalHexGridConfiguration, SquareGridConfiguration, IGridConfiguration } from "@models/business";
+import { Subject } from "rxjs";
+
 
 @Injectable({
   providedIn: GameComponent

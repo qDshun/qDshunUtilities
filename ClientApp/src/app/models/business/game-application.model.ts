@@ -1,8 +1,8 @@
-import { Application, ApplicationOptions, DestroyOptions, Renderer, RendererDestroyOptions } from "pixi.js";
-import { BoardContainer } from "../../../graphics/board-container";
+import { Injector, CreateEffectOptions, EffectRef, effect } from "@angular/core";
+import { Application, RendererDestroyOptions, DestroyOptions } from "pixi.js";
+import { Observable, from, tap } from "rxjs";
 import { DropShadowFilter } from "pixi-filters";
-import { from, Observable, of, tap } from "rxjs";
-import { CreateEffectOptions, effect, EffectRef, Injector } from "@angular/core";
+import { BoardContainer } from "@models/business";
 
 export class GameApplication extends Application {
   public board!: BoardContainer;

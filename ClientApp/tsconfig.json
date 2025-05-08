@@ -3,6 +3,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
+    "baseUrl": "src",
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
@@ -19,6 +20,16 @@
     "module": "ES2022",
     "useDefineForClassFields": false,
     "paths": {
+      "@services": ["app/services/index.ts"],
+      "@subsystems": ["app/services/subsystems/index.ts"],
+      "@guards": ["app/guards/index.ts"],
+      "@interceptors": ["app/interceptors/index.ts"],
+      "@models/business": ["app/models/business/index.ts"],
+      "@models/request": ["app/models/request/index.ts"],
+      "@models/response": ["app/models/response/index.ts"],
+      "@components/game/*": ["app/components/game/*"],
+      "@components/auth/*": ["app/components/auth/*"],
+      "@components/portal/*": ["app/components/portal/*"],
     },
     "lib": [
       "ES2022",

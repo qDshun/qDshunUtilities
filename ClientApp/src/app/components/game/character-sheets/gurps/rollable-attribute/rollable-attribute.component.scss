@@ -1,0 +1,13 @@
+:host {
+  display: flex;
+  flex-direction: row;
+
+  .attribute-text {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  .attribute-name {
+    margin-left: 12px;
+  }
+}

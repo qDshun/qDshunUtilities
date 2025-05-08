@@ -3,12 +3,12 @@ import { CommonModule } from "@angular/common";
 import { Component, ChangeDetectionStrategy, inject, WritableSignal, signal, ViewChild, effect, ViewChildren, untracked } from "@angular/core";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTree, MatTreeModule } from "@angular/material/tree";
-import { WorldObjectService } from "../../../services/world-object.service";
 import { MatButtonModule } from "@angular/material/button";
-import { WorldObjectComponent } from "../world-object/world-object.component";
-import { AnyWorldObject } from "../../../models/world-object.model";
 import { fromEvent, Subject, takeUntil } from "rxjs";
 import { CdkTreeModule } from "@angular/cdk/tree";
+import { WorldObjectComponent } from "../world-object/world-object.component";
+import { AnyWorldObject } from "@models/business";
+import { WorldObjectService } from "@services";
 
 @Component({
   selector: 'app-world-object-list',
