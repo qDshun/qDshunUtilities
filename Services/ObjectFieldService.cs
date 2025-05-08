@@ -4,34 +4,37 @@ using qDshunUtilities.EF;
 using qDshunUtilities.EF.Entities;
 using qDshunUtilities.Helpers;
 using qDshunUtilities.Models.Inbound;
+using qDshunUtilities.Models.Outbound;
+using System.Collections.Generic;
 
 namespace qDshunUtilities.Services;
 
 public interface IObjectFieldService
 {
-    Task<IEnumerable<ObjectField>> GetObjectFieldsAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser);
-    Task<ObjectField> GetObjectFieldAsync(Guid worldId, Guid worldObjectId, Guid objectFieldId, Guid authenticatedUser);
+    Task<IEnumerable<ObjectFieldDto>> GetObjectFieldsAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser);
+    Task<ObjectFieldDto> GetObjectFieldAsync(Guid worldId, Guid worldObjectId, Guid objectFieldId, Guid authenticatedUser);
     Task CreateObjectFieldAsync(Guid worldId, Guid worldObjectId, ObjectFieldCreate objectFieldCreate, Guid authenticatedUser);
     Task UpdateObjectFieldAsync(Guid worldId, Guid worldObjectId, ObjectFieldUpdate objectFieldUpdate, Guid authenticatedUser);
+    Task DeleteObjectFieldAsync(Guid worldId, Guid worldObjectId, Guid objectFieldId, Guid authenticatedUser);
 
-    Task UpdateObjectFieldsAsync(Guid worldId, Guid worldObjectId, List<ObjectFieldUpdate> ObjectFieldUpdates, Guid authenticatedUser);
 }
 
 public class ObjectFieldService(ApplicationDbContext dbContext, IMapper mapper, IAccessService accessService) : IObjectFieldService
 {
 
-    public async Task<IEnumerable<ObjectField>> GetObjectFieldsAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser)
+    public async Task<IEnumerable<ObjectFieldDto>> GetObjectFieldsAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser)
     {
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
         await accessService.AssertHasWorldObjectPermissionAsync(worldObjectId, authenticatedUser, Perms.AllowRead);
 
-        List<ObjectFieldEntity> objectFields = await dbContext.ObjectFields
+        List<ObjectFieldDto> objectFields = await dbContext.ObjectFields
             .Where(of => of.TemplatedWorldObjectId == worldObjectId)
+            .Select(of => new ObjectFieldDto(of))
             .ToListAsync();
-        return objectFields.Select(mapper.Map<ObjectField>);
+        return objectFields;
     }
 
-    public async Task<ObjectField> GetObjectFieldAsync(Guid worldId, Guid worldObjectId, Guid objectFieldId, Guid authenticatedUser)
+    public async Task<ObjectFieldDto> GetObjectFieldAsync(Guid worldId, Guid worldObjectId, Guid objectFieldId, Guid authenticatedUser)
     {
         // Todo: Possible bypass of the access by using unrelated to object fields  worldObjectId and WorldId
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
@@ -41,7 +44,7 @@ public class ObjectFieldService(ApplicationDbContext dbContext, IMapper mapper, 
             .Where(of => of.TemplatedWorldObjectId == worldObjectId)
             .FirstAsync();
 
-        return mapper.Map<ObjectField>(objectField);
+        return new ObjectFieldDto(objectField);
     }
 
     public async Task CreateObjectFieldAsync(Guid worldId, Guid worldObjectId, ObjectFieldCreate objectFieldCreate, Guid authenticatedUser)
@@ -49,9 +52,7 @@ public class ObjectFieldService(ApplicationDbContext dbContext, IMapper mapper, 
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
         await accessService.AssertHasWorldObjectPermissionAsync(worldObjectId, authenticatedUser, Perms.AllowRead);
 
-        var objectFieldEntity = mapper.Map<ObjectFieldEntity>(objectFieldCreate);
-
-        objectFieldEntity.TemplatedWorldObjectId = worldObjectId;
+        var objectFieldEntity = objectFieldCreate.ToEntity();
 
         dbContext.ObjectFields.Add(objectFieldEntity);
         await dbContext.SaveChangesAsync();
@@ -59,21 +60,24 @@ public class ObjectFieldService(ApplicationDbContext dbContext, IMapper mapper, 
 
     public async Task UpdateObjectFieldAsync(Guid worldId, Guid worldObjectId, ObjectFieldUpdate objectFieldUpdate, Guid authenticatedUser)
     {
-        //var worldObjectEntity = mapper.Map<WorldObjectEntity>(worldObjectUpdate);
+        await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
+        await accessService.AssertHasWorldObjectPermissionAsync(worldObjectId, authenticatedUser, Perms.AllowEdit);
 
         var objectFieldEntity = await dbContext.ObjectFields.SingleAsync(of => of.Id == objectFieldUpdate.Id);
-        mapper.Map(objectFieldUpdate, objectFieldEntity);
-
+        objectFieldEntity.ParentId = objectFieldUpdate.ParentId;
+        objectFieldEntity.Name = objectFieldUpdate.Name;
+        objectFieldEntity.Value = objectFieldUpdate.Value;
+        
         dbContext.ObjectFields.Update(objectFieldEntity);
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateObjectFieldsAsync(Guid worldId, Guid worldObjectId, List<ObjectFieldUpdate> ObjectFieldUpdates, Guid authenticatedUser)
+    public async Task DeleteObjectFieldAsync(Guid worldId, Guid worldObjectId, Guid objectFieldId, Guid authenticatedUser)
     {
-        var objectFieldEntities = mapper.Map<List<ObjectFieldUpdate>, List<ObjectFieldEntity>>(ObjectFieldUpdates);
+        await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
 
-        dbContext.ObjectFields.UpdateRange(objectFieldEntities);
-        await dbContext.SaveChangesAsync();
+        await accessService.AssertHasWorldObjectPermissionAsync(worldObjectId, authenticatedUser, Perms.AllowEdit);
+
+        await dbContext.ObjectFields.Where(of => of.Id == objectFieldId).ExecuteDeleteAsync();
     }
-
 }

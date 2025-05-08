@@ -22,7 +22,6 @@ public class WorldObjectEntity : BaseEntity
         WorldId = obj.WorldId;
         PreviewImageUrl = obj.PreviewImageUrl;
     }
-
     public WorldObjectEntity()
     {
     }

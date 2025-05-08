@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using qDshunUtilities.EF.Entities;
+using qDshunUtilities.EF.Entities.MapObjects;
 using qDshunUtilities.EF.Entities.WorldObjects;
 using System.Reflection.Emit;
 
@@ -29,6 +30,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         builder.Entity<WorldObjectEntity>().UseTphMappingStrategy();
         builder.Entity<WorldObjectEntity>()
+            .HasOne(u => u.Parent)
+            .WithMany()
+            .HasForeignKey(e => e.ParentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<ObjectFieldEntity>()
             .HasOne(u => u.Parent)
             .WithMany()
             .HasForeignKey(e => e.ParentId)

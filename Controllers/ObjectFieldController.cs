@@ -9,26 +9,26 @@ namespace qDshunUtilities.Controllers
     public class ObjectFieldController(ILogger<ObjectFieldController> logger, IObjectFieldService objectFieldService) : AuthorizedController
     {
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ObjectField>>> GetObjectFields([FromRoute] Guid worldId, [FromRoute] Guid worldObjectId)
+        public async Task<ActionResult<IEnumerable<ObjectFieldDto>>> GetObjectFields([FromRoute] Guid worldId, [FromRoute] Guid worldObjectId)
         {
             return Ok(await objectFieldService.GetObjectFieldsAsync(worldId, worldObjectId, AuthenticatedUser));
         }
 
         [HttpGet("{objectFieldId}")]
-        public async Task<ActionResult<ObjectField>> GetObjectField([FromRoute] Guid worldId, [FromRoute] Guid worldObjectId, [FromRoute] Guid objectFieldId)
+        public async Task<ActionResult<ObjectFieldDto>> GetObjectField([FromRoute] Guid worldId, [FromRoute] Guid worldObjectId, [FromRoute] Guid objectFieldId)
         {
             return Ok(await objectFieldService.GetObjectFieldAsync(worldId, worldObjectId, objectFieldId, AuthenticatedUser));
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateWorldObject([FromRoute] Guid worldId, [FromRoute] Guid worldObjectId, [FromBody] ObjectFieldCreate objectFieldCreate)
+        public async Task<ActionResult> CreateObjectField([FromRoute] Guid worldId, [FromRoute] Guid worldObjectId, [FromBody] ObjectFieldCreate objectFieldCreate)
         {
             await objectFieldService.CreateObjectFieldAsync(worldId, worldObjectId, objectFieldCreate, AuthenticatedUser);
             return Ok();
         }
 
         [HttpPut]
-        public async Task<ActionResult> UpdateWorldObject([FromRoute] Guid worldId, [FromRoute] Guid worldObjectId,
+        public async Task<ActionResult> UpdateObjectField([FromRoute] Guid worldId, [FromRoute] Guid worldObjectId,
             [FromBody] ObjectFieldUpdate objectFieldUpdate)
         {
             await objectFieldService.UpdateObjectFieldAsync(worldId, worldObjectId, objectFieldUpdate, AuthenticatedUser);
@@ -37,10 +37,10 @@ namespace qDshunUtilities.Controllers
 
 
         [HttpDelete]
-        public async Task<ActionResult> DeleteWorldObject([FromRoute] Guid worldId,
-            [FromRoute] Guid worldObjectId)
+        public async Task<ActionResult> DeleteObjectField([FromRoute] Guid worldId,
+            [FromRoute] Guid worldObjectId, [FromBody] Guid objectFieldId)
         {
-            //await objectFieldService.DeleteWorldObjectAsync(worldId, worldObjectId, AuthenticatedUser);
+            await objectFieldService.DeleteObjectFieldAsync(worldId, worldObjectId, objectFieldId, AuthenticatedUser);
             return Ok();
         }
     }
