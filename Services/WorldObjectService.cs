@@ -13,9 +13,9 @@ namespace qDshunUtilities.Services;
 public interface IWorldObjectService
 {
     Task<GetWorldObjectResponse> GetWorldObjectsAsync(Guid worldId, Guid authenticatedUser);
-    Task CreateWorldObjectAsync(Guid worldId, WorldObjectCreate worldObjectCreate, Guid authenticatedUser);
+    Task CreateWorldObjectAsync(Guid worldId, WorldObjectCreateRequest worldObjectCreate, Guid authenticatedUser);
     Task<WorldObjectDto> GetWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser);
-    Task UpdateCharacterSheetAsync(Guid worldId, CharacterSheetUpdateRequest worldObjectUpdate, Guid authenticatedUser);
+    Task UpdateCharacterSheetAsync(Guid worldId, CharacterSheetUpdateRequest request, Guid authenticatedUser);
     Task DeleteWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser);
 }
 
@@ -50,13 +50,13 @@ public class WorldObjectService(ApplicationDbContext dbContext, IMapper mapper, 
         return worldObject;
     }
 
-    public async Task CreateWorldObjectAsync(Guid worldId, WorldObjectCreate worldObjectCreate, Guid authenticatedUser)
+    public async Task CreateWorldObjectAsync(Guid worldId, WorldObjectCreateRequest request, Guid authenticatedUser)
     {
-        WorldObjectEntity worldObjectEntity = worldObjectCreate.Type switch
+        WorldObjectEntity worldObjectEntity = request.Type switch
         {
-            WorldObjectType.Folder => new FolderEntity(worldObjectCreate),
-            WorldObjectType.Handout => new HandoutEntity(worldObjectCreate),
-            WorldObjectType.CharacterSheet => new CharacterSheetEntity(worldObjectCreate),
+            WorldObjectType.Folder => GetFolderEntity(request),
+            WorldObjectType.Handout => GetHandoutEntity(request),
+            WorldObjectType.CharacterSheet => GetCharacterSheetEntity(request),
             _ => throw new NotImplementedException(),
         };
         var worldUser = await dbContext.WorldUsers.SingleAsync(wu => wu.UserId == authenticatedUser && wu.WorldId == worldId);
@@ -69,12 +69,54 @@ public class WorldObjectService(ApplicationDbContext dbContext, IMapper mapper, 
         dbContext.WorldObjects.Add(worldObjectEntity);
         await dbContext.SaveChangesAsync();
     }
+
+    static private FolderEntity GetFolderEntity(WorldObjectCreateRequest request)
+    {
+        return new()
+        {
+            Name = request.Name,
+            ParentId = request.ParentId,
+            PreviousId = request.PreviousId,
+            WorldId = request.WorldId,
+            PreviewImageUrl = request.PreviewImageUrl
+        };
+    }
+
+    static private HandoutEntity GetHandoutEntity(WorldObjectCreateRequest request)
+    {
+        return new()
+        {
+            Name = request.Name,
+            ParentId = request.ParentId,
+            PreviousId = request.PreviousId,
+            WorldId = request.WorldId,
+            PreviewImageUrl = request.PreviewImageUrl,
+            TemplateId = request.TemplateId
+        };
+    }
+    static private CharacterSheetEntity GetCharacterSheetEntity(WorldObjectCreateRequest request)
+    {
+        return new()
+        {
+            Name = request.Name,
+            ParentId = request.ParentId,
+            PreviousId = request.PreviousId,
+            WorldId = request.WorldId,
+            PreviewImageUrl = request.PreviewImageUrl,
+            TemplateId = request.TemplateId,
+            TokenImageUrl = request.TokenImageUrl
+        };
+    }
+
+
     public async Task UpdateCharacterSheetAsync(Guid worldId, CharacterSheetUpdateRequest request, Guid authenticatedUser)
     {
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
         await accessService.AssertHasWorldObjectPermissionAsync(request.Id, authenticatedUser, Perms.AllowRead);
 
-        var characterSheetEntity = await dbContext.WorldObjects.OfType<CharacterSheetEntity>().SingleAsync(w => w.Id == request.Id);
+        var characterSheetEntity = await dbContext.WorldObjects
+            .OfType<CharacterSheetEntity>()
+            .SingleAsync(w => w.Id == request.Id);
 
         characterSheetEntity.Name = request.Name;
         characterSheetEntity.ParentId = request.ParentId;
@@ -93,8 +135,12 @@ public class WorldObjectService(ApplicationDbContext dbContext, IMapper mapper, 
 
         await accessService.AssertHasWorldObjectPermissionAsync(worldObjectId, authenticatedUser, Perms.AllowEdit);
 
-        await dbContext.WorldObjectPermissions.Where(wo => wo.WorldObjectId == worldObjectId).ExecuteDeleteAsync();
-        await dbContext.WorldObjects.Where(wo => wo.Id == worldObjectId).ExecuteDeleteAsync();
+        await dbContext.WorldObjectPermissions
+            .Where(wo => wo.WorldObjectId == worldObjectId)
+            .ExecuteDeleteAsync();
+        await dbContext.WorldObjects
+            .Where(wo => wo.Id == worldObjectId)
+            .ExecuteDeleteAsync();
     }
 
     private async Task<IEnumerable<WorldObjectPermissionEntity>> CreateWorldObjectPermissionEntitiesAsync(List<string> permissions, Guid worldId, Guid worldUserId)

@@ -13,8 +13,8 @@ public interface IObjectFieldService
 {
     Task<IEnumerable<ObjectFieldDto>> GetObjectFieldsAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser);
     Task<ObjectFieldDto> GetObjectFieldAsync(Guid worldId, Guid worldObjectId, Guid objectFieldId, Guid authenticatedUser);
-    Task CreateObjectFieldAsync(Guid worldId, Guid worldObjectId, ObjectFieldCreate objectFieldCreate, Guid authenticatedUser);
-    Task UpdateObjectFieldAsync(Guid worldId, Guid worldObjectId, ObjectFieldUpdate objectFieldUpdate, Guid authenticatedUser);
+    Task CreateObjectFieldAsync(Guid worldId, Guid worldObjectId, ObjectFieldCreateRequest objectFieldCreate, Guid authenticatedUser);
+    Task UpdateObjectFieldAsync(Guid worldId, Guid worldObjectId, ObjectFieldUpdateRequest objectFieldUpdate, Guid authenticatedUser);
     Task DeleteObjectFieldAsync(Guid worldId, Guid worldObjectId, Guid objectFieldId, Guid authenticatedUser);
 
 }
@@ -27,11 +27,10 @@ public class ObjectFieldService(ApplicationDbContext dbContext, IMapper mapper, 
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
         await accessService.AssertHasWorldObjectPermissionAsync(worldObjectId, authenticatedUser, Perms.AllowRead);
 
-        List<ObjectFieldDto> objectFields = await dbContext.ObjectFields
+        return await dbContext.ObjectFields
             .Where(of => of.TemplatedWorldObjectId == worldObjectId)
             .Select(of => new ObjectFieldDto(of))
             .ToListAsync();
-        return objectFields;
     }
 
     public async Task<ObjectFieldDto> GetObjectFieldAsync(Guid worldId, Guid worldObjectId, Guid objectFieldId, Guid authenticatedUser)
@@ -39,26 +38,30 @@ public class ObjectFieldService(ApplicationDbContext dbContext, IMapper mapper, 
         // Todo: Possible bypass of the access by using unrelated to object fields  worldObjectId and WorldId
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
         await accessService.AssertHasWorldObjectPermissionAsync(worldObjectId, authenticatedUser, Perms.AllowRead);
-        ObjectFieldEntity objectField = await dbContext.ObjectFields
+        return await dbContext.ObjectFields
             .Where(of => of.Id == objectFieldId)
             .Where(of => of.TemplatedWorldObjectId == worldObjectId)
+            .Select(of => new ObjectFieldDto(of))
             .FirstAsync();
-
-        return new ObjectFieldDto(objectField);
     }
 
-    public async Task CreateObjectFieldAsync(Guid worldId, Guid worldObjectId, ObjectFieldCreate objectFieldCreate, Guid authenticatedUser)
+    public async Task CreateObjectFieldAsync(Guid worldId, Guid worldObjectId, ObjectFieldCreateRequest objectFieldCreate, Guid authenticatedUser)
     {
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
-        await accessService.AssertHasWorldObjectPermissionAsync(worldObjectId, authenticatedUser, Perms.AllowRead);
+        await accessService.AssertHasWorldObjectPermissionAsync(worldObjectId, authenticatedUser, Perms.AllowEdit);
 
-        var objectFieldEntity = objectFieldCreate.ToEntity();
-
-        dbContext.ObjectFields.Add(objectFieldEntity);
+        var entity = new ObjectFieldEntity
+        {
+            ParentId = objectFieldCreate.ParentId,
+            Name = objectFieldCreate.Name,
+            Value = objectFieldCreate.Value,
+            TemplatedWorldObjectId = objectFieldCreate.TemplatedWorldObjectId
+        };
+        dbContext.ObjectFields.Add(entity);
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateObjectFieldAsync(Guid worldId, Guid worldObjectId, ObjectFieldUpdate objectFieldUpdate, Guid authenticatedUser)
+    public async Task UpdateObjectFieldAsync(Guid worldId, Guid worldObjectId, ObjectFieldUpdateRequest objectFieldUpdate, Guid authenticatedUser)
     {
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
         await accessService.AssertHasWorldObjectPermissionAsync(worldObjectId, authenticatedUser, Perms.AllowEdit);

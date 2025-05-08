@@ -14,7 +14,7 @@ public class WorldObjectEntity : BaseEntity
     public string PreviewImageUrl { get; set; }
     public List<WorldObjectPermissionEntity> WorldObjectPermissions { get; set; } = [];
 
-    public WorldObjectEntity(WorldObjectCreate obj)
+    public WorldObjectEntity(WorldObjectCreateRequest obj)
     {
         Name = obj.Name;
         ParentId = obj.ParentId;

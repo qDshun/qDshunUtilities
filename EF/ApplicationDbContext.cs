@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using qDshunUtilities.EF.Entities;
-using qDshunUtilities.EF.Entities.MapObjects;
+using qDshunUtilities.EF.Entities.RenderableObjects;
 using qDshunUtilities.EF.Entities.WorldObjects;
 using System.Reflection.Emit;
 

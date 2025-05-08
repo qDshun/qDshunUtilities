@@ -22,17 +22,17 @@ namespace qDshunUtilities.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateWorldObject([FromRoute] Guid worldId, [FromBody] WorldObjectCreate worldObjectCreate)
+        public async Task<ActionResult> CreateWorldObject([FromRoute] Guid worldId, [FromBody] WorldObjectCreateRequest worldObjectCreate)
         {
             await worldObjectService.CreateWorldObjectAsync(worldId, worldObjectCreate, AuthenticatedUser);
             return Ok();
         }
 
-        [HttpPut]
-        public async Task<ActionResult> UpdateWorldObject([FromRoute] Guid worldId,
-            [FromBody] WorldObjectUpdate worldObjectUpdate)
+        [HttpPut("charactet-sheet")]
+        public async Task<ActionResult> UpdateCharacterSheet([FromRoute] Guid worldId,
+        [FromBody] CharacterSheetUpdateRequest request)
         {
-            await worldObjectService.UpdateWorldObjectAsync(worldId, worldObjectUpdate, AuthenticatedUser);
+            await worldObjectService.UpdateCharacterSheetAsync(worldId, request, AuthenticatedUser);
             return Ok();
         }
 

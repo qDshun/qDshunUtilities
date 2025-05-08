@@ -2,11 +2,11 @@
 
 namespace qDshunUtilities.Models.Inbound;
 
-public class WorldObjectCreate
+public class WorldObjectCreateRequest
 {
     public WorldObjectType Type { get; set; }
     public string Name { get; set; }
-    public Guid TemplateId { get; set; }
+    public Guid? TemplateId { get; set; }
     public Guid? ParentId { get; set; }
     public Guid? PreviousId { get; set; }
     public Guid WorldId { get; set; }
