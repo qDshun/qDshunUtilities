@@ -1,4 +1,6 @@
-﻿namespace qDshunUtilities.EF.Entities.WorldObjects;
+﻿using qDshunUtilities.Models.Inbound;
+
+namespace qDshunUtilities.EF.Entities.WorldObjects;
 
 public class WorldObjectEntity : BaseEntity
 {
@@ -11,5 +13,4 @@ public class WorldObjectEntity : BaseEntity
     public WorldEntity World { get; set; }
     public string PreviewImageUrl { get; set; }
     public List<WorldObjectPermissionEntity> WorldObjectPermissions { get; set; } = [];
-
 }
