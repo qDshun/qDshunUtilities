@@ -9,3 +9,4 @@ export * from './view.service';
 export * from './favourites.service';
 export * from './world.service';
 export * from './world-object.api.service';
+export * from './event.service';

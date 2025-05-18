@@ -214,7 +214,6 @@ export class WorldObjectListComponent {
 
   private getWorldObjectsCopy(){
     const worldObjects = this.stateService.worldObjects();
-    console.log(worldObjects);
     return untracked(() => worldObjects.map(wo => wo.Copy(wo.id)));
   }
 }
