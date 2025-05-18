@@ -1,7 +1,7 @@
 import { Injectable, signal, WritableSignal, computed, inject } from "@angular/core";
 import { GameComponent } from "@components/game/game/game.component";
 import { VerticalHexGridConfiguration, HorizontalHexGridConfiguration, SquareGridConfiguration, Token, GameMap, AnyWorldObject, WorldObjectType, WorldObjectCharacter, WorldObjectFolder, WorldObjectHandout, Layer } from "@models/business";
-import { Observable, Subject, tap } from "rxjs";
+import { Observable, ReplaySubject, Subject, tap } from "rxjs";
 import { WorldObjectApiService } from "./world-object.api.service";
 import { WorldObjectResponse } from "@models/response";
 import { FavouritesService } from "./favourites.service";
@@ -27,6 +27,8 @@ export class StateService {
   public onBeforeMapDestroyed$ = this._onBeforeMapDestroyed$.asObservable();
   private _onAfterMapInit$ = new Subject<string>();
   public onAfterMapInit$ = this._onAfterMapInit$.asObservable();
+  private readonly _ready$ = new ReplaySubject<void>();
+  public readonly ready$ = this._ready$.asObservable()
 
   public changeMap(mapId: string){
     if (this._currentMapId){
@@ -43,7 +45,8 @@ export class StateService {
     const favouriteIds = this.favouritesService.getFavourites();
 
     return this.worldObjectApiService.getWorldObjects(worldId).pipe(
-      tap(response => this.worldObjects.set(response.worldObjects.map(worldObjectDto => this.toWorldObjectModel(worldObjectDto, favouriteIds))))
+      tap(response => this.worldObjects.set(response.worldObjects.map(worldObjectDto => this.toWorldObjectModel(worldObjectDto, favouriteIds)))),
+      tap(() => this._ready$.next())
     );
   }
 

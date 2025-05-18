@@ -1,7 +1,10 @@
-<mat-tab-group [mat-stretch-tabs]="false" animationDuration="0ms" (selectedIndexChange)="onSelectedTabIndexChange($event)">
+@if (stateServiceReady$ | async) {
+  <mat-tab-group [mat-stretch-tabs]="false" animationDuration="0ms"
+    (selectedIndexChange)="onSelectedTabIndexChange($event)">
   @for (map of maps(); track map.id) {
-    <mat-tab [label]="map.name()" >
+    <mat-tab [label]="map.name()">
     </mat-tab>
   }
 
-</mat-tab-group>
+  </mat-tab-group>
+}
