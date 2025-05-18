@@ -17,7 +17,7 @@ export class GameApplication extends Application {
     super.destroy(rendererDestroyOptions, options);
   }
 
-  public initGame(canvas: HTMLCanvasElement): Observable<void> {
+  public initGameApplication(canvas: HTMLCanvasElement): Observable<void> {
     const canvasWidth = canvas.clientWidth;
     const canvasHeight = canvas.clientHeight;
     return from(this.init(

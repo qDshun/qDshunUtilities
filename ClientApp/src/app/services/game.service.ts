@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy, inject, Injector, DestroyRef, ElementRef, runInInjectionContext } from "@angular/core";
 import { GameComponent } from "@components/game/game/game.component";
-import { Observable, defer, from, map, tap } from "rxjs";
+import { Observable, defer, from, map, switchMap, tap } from "rxjs";
 import { MapRenderingSubsystem, LayerRenderingSubsystem, TokenRenderingSubsystem, SusbsystemManager } from "./subsystems";
 import { StateService } from "./state.service";
 import { ViewService } from "./view.service";
@@ -35,7 +35,7 @@ export class GameService implements OnDestroy {
       (globalThis as any).__PIXI_APP__ = this.application;
       return from(this.stateService.initializeWorldState(worldId))
         .pipe(
-          tap(() => this.application.initGame(this.canvas)),
+          switchMap(() => this.application.initGameApplication(this.canvas)),
           map(() => new SusbsystemManager(this.application, this.stateService, this.canvasDestroyRef, this.injectorRef)),
           tap(subsystemManager => subsystemManager.registerPerMapSubsystem(this.mapRenderingSubsystem)),
           tap(subsystemManager => subsystemManager.registerPerMapSubsystem(this.layerRenderingSubsystem)),
