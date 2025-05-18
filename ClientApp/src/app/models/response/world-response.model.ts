@@ -1,5 +1,7 @@
+import { Guid } from "app/helpers/guid.type";
+
 export class WorldResponse {
-  id!: string;
+  id!: Guid;
   name!: string;
   imageUrl!: string;
 }
