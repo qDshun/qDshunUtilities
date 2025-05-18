@@ -6,6 +6,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { AnyWorldObject, WorldObjectCharacter, WorldObjectType } from "@models/business";
 import { CharacterSheetOverlayComponent } from "../character-sheets/character-sheet-overlay/character-sheet-overlay.component";
+import { FavouritesService } from "@services";
 
 
 @Component({
@@ -17,6 +18,7 @@ import { CharacterSheetOverlayComponent } from "../character-sheets/character-sh
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WorldObjectComponent {
+  private favouritesService = inject(FavouritesService);
   @Input() worldObjectNode!: AnyWorldObject;
 
   private overlay = inject(Overlay);
@@ -29,6 +31,7 @@ export class WorldObjectComponent {
 
   public toggleFavourite(): void {
     (this.worldObjectNode as WorldObjectCharacter).isFavourite.update(isFavourite => !isFavourite);
+    this.favouritesService.toggleFavourite(this.worldObjectNode.id);
   }
 
   public toggleCharacterSheet(){

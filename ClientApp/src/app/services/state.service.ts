@@ -41,21 +41,23 @@ export class StateService {
     this.maps = this.getMaps();
 
     const favouriteIds = this.favouritesService.getFavourites();
+
     return this.worldObjectApiService.getWorldObjects(worldId).pipe(
       tap(response => this.worldObjects.set(response.worldObjects.map(worldObjectDto => this.toWorldObjectModel(worldObjectDto, favouriteIds))))
     );
   }
 
   private toWorldObjectModel(worldObjectDto: WorldObjectResponse, favouriteIds: string[]): AnyWorldObject {
+    const isFavourite = favouriteIds.includes(worldObjectDto.id);
     switch (worldObjectDto.type) {
       case WorldObjectType.CharacterSheet: {
-        return new WorldObjectCharacter(worldObjectDto, favouriteIds);
+        return new WorldObjectCharacter(worldObjectDto, isFavourite);
       }
       case WorldObjectType.Folder: {
-        return new WorldObjectFolder(worldObjectDto, favouriteIds);
+        return new WorldObjectFolder(worldObjectDto);
       }
       case WorldObjectType.Handout: {
-        return new WorldObjectHandout(worldObjectDto, favouriteIds);
+        return new WorldObjectHandout(worldObjectDto, isFavourite);
       }
     }
   }
