@@ -38,7 +38,7 @@ export class StateService {
   }
 
   public initializeWorldState(worldId: string): Observable<any> {
-    this.maps = this.getMaps();
+    this.maps.set(this.getMaps()())
 
     const favouriteIds = this.favouritesService.getFavourites();
 
