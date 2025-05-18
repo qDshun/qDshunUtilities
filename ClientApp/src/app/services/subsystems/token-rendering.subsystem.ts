@@ -1,7 +1,7 @@
 import { Injectable, inject, EffectRef } from "@angular/core";
 import { GameComponent } from "@components/game/game/game.component";
 import { GameApplication, ContainerType, GameMap, RenderableObject, IGridConfiguration } from "@models/business";
-import { Container, Sprite, Texture } from "pixi.js";
+import { Container, Sprite } from "pixi.js";
 import { Subject } from "rxjs";
 import { DraggableService } from "../draggable.service";
 import { StateService } from "../state.service";
@@ -81,16 +81,17 @@ export class TokenRenderingSubsystem implements IPerMapSubsystem {
       });
     }
 
-    private updateOrCreateRenderableObject(layerContainer: Container, renderableObject: RenderableObject, mapTileConfiguration: IGridConfiguration) {
+    private updateOrCreateRenderableObject(layerContainer: Container, renderableObject: RenderableObject, gridConfiguration: IGridConfiguration) {
       const label = 'Renderable-' + renderableObject.id;
+      const tokenSize = gridConfiguration.cellSize * 1.5;
       let existingSprite = (layerContainer.getChildByLabel(label) as Sprite);
       if (!existingSprite) {
-        existingSprite = new Sprite({ texture: Texture.WHITE, width: 20, height: 20, anchor: 0.5, interactive: true, cursor: 'pointer', label });
-        this.draggableService.makeDraggable({ source: existingSprite, dragContainer: layerContainer, destroyRef: this.mapDestroyed$, renderableObject, application: this.appRef, mapTileConfiguration, allowDrag: true })
+        existingSprite = new Sprite({ texture: renderableObject.texture, width: tokenSize, height: tokenSize, anchor: 0.5, interactive: true, cursor: 'pointer', label });
+        this.draggableService.makeDraggable({ source: existingSprite, dragContainer: layerContainer, destroyRef: this.mapDestroyed$, renderableObject, application: this.appRef, mapTileConfiguration: gridConfiguration, allowDrag: true })
         layerContainer.addChild(existingSprite);
       }
 
-      this.onSnapUpdated(existingSprite, renderableObject, mapTileConfiguration);
+      this.onSnapUpdated(existingSprite, renderableObject, gridConfiguration);
     }
 
     private onSnapUpdated(sprite: Sprite, renderableObject: RenderableObject, mapTileConfiguration: IGridConfiguration) {
