@@ -1,53 +1,60 @@
 import { signal, WritableSignal } from "@angular/core";
-import { WorldObjectResponse, WorldObjectFolderResponse, WorldObjectItemResponse } from "@models/response";
+import { WorldObjectResponse } from "@models/response";
+import { WorldObjectType } from "./world-object-type.model";
 
-export class WorldObject {
-  type!: 'folder' | 'item';
+class WorldObject {
+  type!: WorldObjectType;
   id: string;
   name: WritableSignal<string>;
-  parentId: WritableSignal<string | undefined>;
-  previousId: WritableSignal<string | undefined>;
+  parentId: WritableSignal<string | null>;
+  previousId: WritableSignal<string | null>;
+  previewImageUrl: WritableSignal<string | null>;
 
   constructor(worldObjectDto: WorldObjectResponse, favouriteIds: string[]) {
     this.id = worldObjectDto.id;
     this.name = signal(worldObjectDto.name);
     this.parentId = signal(worldObjectDto.parentId)
     this.previousId = signal(worldObjectDto.previousId);
-  }
-
-  private removeLeadingSlash(str: string): string {
-    if (str.startsWith('/')) {
-      return str.substring(1);
-    }
-    return str;
+    this.previewImageUrl = signal(worldObjectDto.previewImageUrl);
   }
 }
 
 export class WorldObjectFolder extends WorldObject {
-  constructor(worldObjectDto: WorldObjectFolderResponse, favouriteIds: string[]) {
+  constructor(worldObjectDto: WorldObjectResponse, favouriteIds: string[]) {
     super(worldObjectDto, favouriteIds);
-    this.type = 'folder';
+    this.type = WorldObjectType.Folder;
   }
 
   public Copy(id: string) {
-    return new WorldObjectFolder({ type: this.type, name: this.name(), id, parentId: this.parentId(), previousId: this.previousId() }, []);
+    return new WorldObjectFolder({ type: this.type, name: this.name(), id, previewImageUrl: this.previewImageUrl(), parentId: this.parentId(), previousId: this.previousId() }, []);
   }
 }
 
-export class WorldObjectItem extends WorldObject {
-  url: WritableSignal<string>;
+export class WorldObjectCharacter extends WorldObject {
   isFavourite: WritableSignal<boolean>;
 
-  constructor(worldObjectDto: WorldObjectItemResponse, favouriteIds: string[]) {
+  constructor(worldObjectDto: WorldObjectResponse, favouriteIds: string[]) {
     super(worldObjectDto, favouriteIds);
-    this.type = 'item';
-    this.url = signal(worldObjectDto.url);
+    this.type = WorldObjectType.CharacterSheet;
     this.isFavourite = signal(favouriteIds.includes(worldObjectDto.id));
   }
 
   public Copy(id: string) {
-    return new WorldObjectItem({ type: this.type, name: this.name(), id, url: this.url(), parentId: this.parentId(), previousId: this.previousId() }, []);
+    return new WorldObjectCharacter({ type: this.type, name: this.name(), id, previewImageUrl: this.previewImageUrl(), parentId: this.parentId(), previousId: this.previousId() }, []);
+  }
+}
+export class WorldObjectHandout extends WorldObject {
+  isFavourite: WritableSignal<boolean>;
+
+  constructor(worldObjectDto: WorldObjectResponse, favouriteIds: string[]) {
+    super(worldObjectDto, favouriteIds);
+    this.type = WorldObjectType.Handout;
+    this.isFavourite = signal(favouriteIds.includes(worldObjectDto.id));
+  }
+
+  public Copy(id: string) {
+    return new WorldObjectCharacter({ type: this.type, name: this.name(), id, previewImageUrl: this.previewImageUrl(), parentId: this.parentId(), previousId: this.previousId() }, []);
   }
 }
 
-export type AnyWorldObject = WorldObjectFolder | WorldObjectItem;
+export type AnyWorldObject = WorldObjectFolder | WorldObjectCharacter | WorldObjectHandout;

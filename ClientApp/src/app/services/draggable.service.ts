@@ -1,9 +1,8 @@
 import { Injectable } from "@angular/core";
-import { IGridConfiguration } from "@models/business";
+import { IGridConfiguration, RenderableObject } from "@models/business";
 import { ViewContainer, FederatedPointerEvent, Sprite, Container, Application } from "pixi.js";
 import { fromEvent, filter, tap, switchMap, takeUntil, throttleTime, take, Observable } from "rxjs";
 import { HasEventTargetAddRemove } from "rxjs/internal/observable/fromEvent";
-import { RenderableObject } from "./state.service";
 
 
 @Injectable({

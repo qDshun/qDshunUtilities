@@ -4,7 +4,7 @@ import { CommonModule } from "@angular/common";
 import { Component, ChangeDetectionStrategy, Input, inject, computed } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
-import { WorldObjectItem } from "@models/business";
+import { AnyWorldObject, WorldObjectCharacter, WorldObjectType } from "@models/business";
 import { CharacterSheetOverlayComponent } from "../character-sheets/character-sheet-overlay/character-sheet-overlay.component";
 
 
@@ -17,17 +17,18 @@ import { CharacterSheetOverlayComponent } from "../character-sheets/character-sh
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WorldObjectComponent {
-  @Input() worldObjectNode!: WorldObjectItem;
+  @Input() worldObjectNode!: AnyWorldObject;
 
   private overlay = inject(Overlay);
   private _overlayRef: OverlayRef | null = null;
-  public isFavouriteStyle = computed(() => `fill: ${this.worldObjectNode.isFavourite() ? 'yellow' : 'rgb(95, 99, 104)'}`);
+  public WorldObjectType = WorldObjectType;
+  public isFavouriteStyle = computed(() => `fill: ${(this.worldObjectNode as WorldObjectCharacter).isFavourite() ? 'yellow' : 'rgb(95, 99, 104)'}`);
   public backgroundImageStyle = computed(() =>
-    `background: linear-gradient(rgba(35, 36, 39, 0.4), rgba(35, 36, 39, 0.4)), url('${this.worldObjectNode.url()}');
+    `background: linear-gradient(rgba(35, 36, 39, 0.4), rgba(35, 36, 39, 0.4)), url('${this.worldObjectNode.previewImageUrl()}');
      background-position: center center; background-size: cover;`);
 
-  public toggleFavourite(worldObjectNode: WorldObjectItem): void {
-    worldObjectNode.isFavourite.update(isFavourite => !isFavourite);
+  public toggleFavourite(): void {
+    (this.worldObjectNode as WorldObjectCharacter).isFavourite.update(isFavourite => !isFavourite);
   }
 
   public toggleCharacterSheet(){

@@ -6,5 +6,6 @@ export * from './game.service';
 export * from './identity.service';
 export * from './state.service';
 export * from './view.service';
-export * from './world-object.service';
+export * from './favourites.service';
 export * from './world.service';
+export * from './world-object.api.service';

@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTabsModule } from '@angular/material/tabs';
-import { GameMap, StateService } from '@services';
+import { GameMap } from '@models/business';
+import { StateService } from '@services';
 
 @Component({
   selector: 'app-game-bar-map-select',

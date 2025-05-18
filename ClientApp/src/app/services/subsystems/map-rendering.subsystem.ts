@@ -1,7 +1,7 @@
 import { Injectable, inject, EffectRef } from "@angular/core";
 import { GameComponent } from "@components/game/game/game.component";
-import { ContainerType, GameApplication, IGridConfiguration } from "@models/business";
-import { StateService, GameMap } from "app/services/state.service";
+import { ContainerType, GameApplication, GameMap, IGridConfiguration } from "@models/business";
+import { StateService } from "app/services/state.service";
 import { Container, Graphics, Size } from "pixi.js";
 import { Observable, of } from "rxjs";
 import { IPerMapSubsystem } from "./subsystem";

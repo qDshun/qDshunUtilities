@@ -7,8 +7,8 @@ import { MatButtonModule } from "@angular/material/button";
 import { fromEvent, Subject, takeUntil } from "rxjs";
 import { CdkTreeModule } from "@angular/cdk/tree";
 import { WorldObjectComponent } from "../world-object/world-object.component";
-import { AnyWorldObject } from "@models/business";
-import { WorldObjectService } from "@services";
+import { AnyWorldObject, WorldObjectType } from "@models/business";
+import { FavouritesService, StateService } from "@services";
 
 @Component({
   selector: 'app-world-object-list',
@@ -22,7 +22,7 @@ export class WorldObjectListComponent {
   @ViewChild('tree') tree!: MatTree<AnyWorldObject>;
 
   @ViewChildren('mat-tree-node') nodes!: any;
-  private worldObjectService = inject(WorldObjectService);
+  private stateService = inject(StateService);
   dragEndUnsubscribe$!: Subject<void>;
 
 
@@ -65,7 +65,7 @@ export class WorldObjectListComponent {
     const previewedWorldObject = this.previewedWorldObject()!;
     if (this.isDropSuccessfull(event) && !this.isSameLocation(previewedWorldObject)) {
       const lwos = untracked(() => this.linkedWorldObjects());
-      const originalObjects = this.worldObjectService.worldObjects()
+      const originalObjects = this.stateService.worldObjects()
 
       const maybeAffectedNode = lwos.find(lwo => lwo.previousId() == previewedWorldObject?.id);
       const originalOfPreview = originalObjects.find(oo => oo.id == this.draggedWorldObject()?.id)!;
@@ -85,7 +85,7 @@ export class WorldObjectListComponent {
       const originalOfNextToDragged = originalObjects.find(oo => oo.id == copyOfNextToDragged?.id);
 
       if (originalOfNextToDragged && copyOfNextToDragged){
-        originalOfNextToDragged.previousId.set(this.draggedWorldObject()?.previousId());
+        originalOfNextToDragged.previousId.set(this.draggedWorldObject()?.previousId() ?? null);
       }
     }
 
@@ -142,14 +142,14 @@ export class WorldObjectListComponent {
 
 
       if (insertionStrategy == 'before'){
-        previewedWorldObject.parentId.set(parentWorldObject?.id);
+        previewedWorldObject.parentId.set(parentWorldObject?.id ?? null);
 
-        previewedWorldObject.previousId.set(previousNodeOfTarget?.id);
+        previewedWorldObject.previousId.set(previousNodeOfTarget?.id ?? null);
         targetWorldObject.previousId.set(previewedWorldObject.id);
       }
 
       if (insertionStrategy == 'after'){
-        previewedWorldObject.parentId.set(parentWorldObject?.id);
+        previewedWorldObject.parentId.set(parentWorldObject?.id ?? null);
 
         previewedWorldObject.previousId.set(targetWorldObject.id);
         nextNodeOfTarget?.previousId.set(previewedWorldObject.id);
@@ -184,7 +184,7 @@ export class WorldObjectListComponent {
   }
 
   hasChild = (_: number, node: AnyWorldObject) => this.childrenAccessor(node).length > 0;
-  isFolder = (_: number, node: AnyWorldObject) => node.type == 'folder';
+  isFolder = (_: number, node: AnyWorldObject) => node.type == WorldObjectType.Folder;
 
   private isDropSuccessfull(event: DragEvent){
     return event.dataTransfer?.dropEffect != 'none';
@@ -213,7 +213,8 @@ export class WorldObjectListComponent {
   }
 
   private getWorldObjectsCopy(){
-    const worldObjects = this.worldObjectService.worldObjects();
+    const worldObjects = this.stateService.worldObjects();
+    console.log(worldObjects);
     return untracked(() => worldObjects.map(wo => wo.Copy(wo.id)));
   }
 }

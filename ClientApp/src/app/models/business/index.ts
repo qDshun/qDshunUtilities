@@ -5,5 +5,9 @@ export * from './world-object.model';
 export * from './board-container.model';
 export * from './container-type.enum';
 export * from './game-application.model';
+export * from './world-object-type.model';
+export * from './renderable-object.model';
+export * from './snapping-options.model';
+export * from './game-map.model';
 
 export * from './gurps/gurps-character-sheet.model';

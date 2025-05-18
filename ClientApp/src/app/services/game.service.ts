@@ -25,7 +25,7 @@ export class GameService implements OnDestroy {
     this.application.destroy({}, true);
   }
 
-  initialize(canvasRef: ElementRef<HTMLCanvasElement>, canvasDestroyRef: DestroyRef): Observable<any> {
+  initialize(worldId: string, canvasRef: ElementRef<HTMLCanvasElement>, canvasDestroyRef: DestroyRef): Observable<any> {
     return runInInjectionContext((this.injectorRef), () => defer(() => {
       this.canvas = canvasRef.nativeElement;
       this.canvasDestroyRef = canvasDestroyRef;
@@ -33,8 +33,9 @@ export class GameService implements OnDestroy {
 
       //TODO: Enabled pixi devtools, disable in prod build
       (globalThis as any).__PIXI_APP__ = this.application;
-      return from(this.application.initGame(this.canvas))
+      return from(this.stateService.initializeWorldState(worldId))
         .pipe(
+          tap(() => this.application.initGame(this.canvas)),
           map(() => new SusbsystemManager(this.application, this.stateService, this.canvasDestroyRef, this.injectorRef)),
           tap(subsystemManager => subsystemManager.registerPerMapSubsystem(this.mapRenderingSubsystem)),
           tap(subsystemManager => subsystemManager.registerPerMapSubsystem(this.layerRenderingSubsystem)),

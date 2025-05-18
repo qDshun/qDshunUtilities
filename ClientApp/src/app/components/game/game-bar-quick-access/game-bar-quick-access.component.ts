@@ -1,8 +1,8 @@
 import { DragDropModule, CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { CommonModule } from "@angular/common";
 import { Component, ChangeDetectionStrategy, inject, computed } from "@angular/core";
-import { WorldObjectItem } from "@models/business";
-import { WorldObjectService } from "@services";
+import { WorldObjectCharacter, WorldObjectType } from "@models/business";
+import { FavouritesService, StateService } from "@services";
 
 @Component({
   selector: 'app-game-bar-quick-access',
@@ -13,8 +13,8 @@ import { WorldObjectService } from "@services";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GameBarQuickAccessComponent {
-  private worldObjectService = inject(WorldObjectService);
-  public favouriteWorldObjects = computed(() => this.worldObjectService.worldObjects().filter(wo => wo.type == 'item' && (wo as WorldObjectItem).isFavourite()))
+  private stateService = inject(StateService);
+  public favouriteWorldObjects = computed(() => this.stateService.worldObjects().filter(wo => wo.type == WorldObjectType.CharacterSheet && (wo as WorldObjectCharacter).isFavourite()))
 
   drop(event: CdkDragDrop<string[]>, array: any[]) {
     moveItemInArray(array, event.previousIndex, event.currentIndex);

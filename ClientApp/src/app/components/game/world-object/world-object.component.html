@@ -1,20 +1,20 @@
 <!-- use a disabled button to provide padding for tree leaf -->
 <div class="world-object-row-container">
 
-<div class="icon-name-container">
-  <button mat-icon-button disabled class="world-object-icon"
-  [style]= "backgroundImageStyle()">
-  </button>
-  {{worldObjectNode.name()}}
-</div>
+  <div class="icon-name-container">
+    <button mat-icon-button disabled class="world-object-icon" [style]="backgroundImageStyle()">
+    </button>
+    {{worldObjectNode.name()}}
+  </div>
 
-  <button mat-icon-button (click)="toggleFavourite(worldObjectNode)">
+
+  @if (worldObjectNode.type == WorldObjectType.CharacterSheet){
+  <button mat-icon-button (click)="toggleFavourite()">
     <mat-icon [svgIcon]="'star'" [style]="isFavouriteStyle()"></mat-icon>
   </button>
 
-  @if (worldObjectNode.type == 'item'){
-    <button mat-icon-button (click)="toggleCharacterSheet()">
-      <mat-icon [fontIcon]="'menu_book'"></mat-icon>
-    </button>
+  <button mat-icon-button (click)="toggleCharacterSheet()">
+    <mat-icon [fontIcon]="'menu_book'"></mat-icon>
+  </button>
   }
 </div>

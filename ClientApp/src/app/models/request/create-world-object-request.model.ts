@@ -1,10 +1,11 @@
 import { WorldObjectType } from "@models/business";
 
-export class WorldObjectResponse {
-  id!: string;
+export class CreateWorldObjectRequest {
+  type!: WorldObjectType;
   name!: string;
+  templateId!: string | null;
   parentId!: string | null;
   previousId!: string | null;
   previewImageUrl!: string | null;
-  type!: WorldObjectType;
+  tokenImageUrl!: string | null;
 }

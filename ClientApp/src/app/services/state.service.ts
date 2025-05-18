@@ -1,34 +1,63 @@
-import { Injectable, OnDestroy, signal, WritableSignal, computed } from "@angular/core";
+import { Injectable, signal, WritableSignal, computed, inject } from "@angular/core";
 import { GameComponent } from "@components/game/game/game.component";
-import { VerticalHexGridConfiguration, HorizontalHexGridConfiguration, SquareGridConfiguration, IGridConfiguration } from "@models/business";
-import { Subject } from "rxjs";
+import { VerticalHexGridConfiguration, HorizontalHexGridConfiguration, SquareGridConfiguration, Token, GameMap, AnyWorldObject, WorldObjectType, WorldObjectCharacter, WorldObjectFolder, WorldObjectHandout, Layer } from "@models/business";
+import { Observable, Subject, tap } from "rxjs";
+import { WorldObjectApiService } from "./world-object.api.service";
+import { WorldObjectResponse } from "@models/response";
+import { FavouritesService } from "./favourites.service";
 
 
 @Injectable({
   providedIn: GameComponent
 })
-export class StateService implements OnDestroy {
+export class StateService {
+  private worldObjectApiService = inject(WorldObjectApiService);
+  private favouritesService = inject(FavouritesService);
+  public worldObjects: WritableSignal<AnyWorldObject[]> = signal([]);
+
   private _currentMapId: string | null = null;
   public currentMapId = signal('1');
-  constructor() { }
 
-  ngOnDestroy(): void {
 
-  }
-
-  public maps = this.getMaps();
+  public maps: WritableSignal<GameMap[]> = signal([]);
   public currentMap = this.getCurrentMapAndThrowIfNotExists();
   private tokenMockCounter = 0;
 
-  public onBeforeMapDestroyed$ = new Subject<string>();
-  public onAfterMapInit$ = new Subject<string>();
+  private _onBeforeMapDestroyed$ = new Subject<string>();
+  public onBeforeMapDestroyed$ = this._onBeforeMapDestroyed$.asObservable();
+  private _onAfterMapInit$ = new Subject<string>();
+  public onAfterMapInit$ = this._onAfterMapInit$.asObservable();
+
   public changeMap(mapId: string){
     if (this._currentMapId){
-      this.onBeforeMapDestroyed$.next(this._currentMapId);
+      this._onBeforeMapDestroyed$.next(this._currentMapId);
     }
     this.currentMapId.set(mapId);
-    this.onAfterMapInit$.next(mapId);
+    this._onAfterMapInit$.next(mapId);
     this._currentMapId = mapId;
+  }
+
+  public initializeWorldState(worldId: string): Observable<any> {
+    this.maps = this.getMaps();
+
+    const favouriteIds = this.favouritesService.getFavourites();
+    return this.worldObjectApiService.getWorldObjects(worldId).pipe(
+      tap(response => this.worldObjects.set(response.worldObjects.map(worldObjectDto => this.toWorldObjectModel(worldObjectDto, favouriteIds))))
+    );
+  }
+
+  private toWorldObjectModel(worldObjectDto: WorldObjectResponse, favouriteIds: string[]): AnyWorldObject {
+    switch (worldObjectDto.type) {
+      case WorldObjectType.CharacterSheet: {
+        return new WorldObjectCharacter(worldObjectDto, favouriteIds);
+      }
+      case WorldObjectType.Folder: {
+        return new WorldObjectFolder(worldObjectDto, favouriteIds);
+      }
+      case WorldObjectType.Handout: {
+        return new WorldObjectHandout(worldObjectDto, favouriteIds);
+      }
+    }
   }
 
   private getMaps(): WritableSignal<GameMap[]> {
@@ -60,40 +89,3 @@ export class UnrecoverableError extends Error {
 
 }
 
-export class GameMap {
-  constructor(
-    public id: string,
-    public name: WritableSignal<string>,
-    public mapTileConfiguration: WritableSignal<IGridConfiguration>,
-    public backgroundColor: WritableSignal<string>,
-
-    public backgroundLayer: Layer,
-    public hiddenLayer: Layer,
-    public interactableLayer: Layer,
-  ) { }
-}
-
-export class Layer {
-  constructor(
-    public tokens: WritableSignal<Token[]>,
-    public renderableObjects: WritableSignal<RenderableObject[]>,
-  ) { }
-}
-
-export class RenderableObject {
-  public snap = signal(this._snap);
-  constructor(
-    public id: string,
-    public name: string,
-    public url: string,
-    private _snap: SnappingOptions
-  ) { }
-}
-
-export type SnappingOptions =
-  | { type: 'tile'; i: number; j: number }
-  | { type: 'free'; x: number; y: number };
-
-export class Token extends RenderableObject {
-
-}
