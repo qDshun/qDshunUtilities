@@ -4,6 +4,7 @@ import { GurpsCharacterSheet } from "@models/business";
 import { CharacterApiService } from "@services";
 import { Observable, map } from "rxjs";
 import { GurpsCharacterSheetComponent } from "../gurps/gurps-character-sheet/gurps-character-sheet.component";
+import { Guid } from "app/helpers/guid.type";
 
 
 @Component({
@@ -15,7 +16,7 @@ import { GurpsCharacterSheetComponent } from "../gurps/gurps-character-sheet/gur
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CharacterSheetOverlayComponent {
-  @Input({ required: true }) characterSheetId!: string;
+  @Input({ required: true }) characterSheetId!: Guid;
   private characterApiService = inject(CharacterApiService)
 
   public getCharacterSheet(): Observable<GurpsCharacterSheet> {

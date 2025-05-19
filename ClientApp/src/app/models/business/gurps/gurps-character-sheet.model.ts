@@ -2,6 +2,7 @@ import { Signal, computed } from "@angular/core";
 import { CharacterSheetResponse, CharacterSheetFieldResponse } from "@models/response";
 import { CharacterSheetField } from "../character-sheet-field.model";
 import { CharacterSheet } from "../character-sheet.model";
+import { Guid } from "app/helpers/guid.type";
 
 export class GurpsCharacterSheet extends CharacterSheet {
   constructor(characterSheetResponse: CharacterSheetResponse){
@@ -43,7 +44,7 @@ export class GurpsCharacterSheet extends CharacterSheet {
 
   private MOCK_ID = 0;
   private GET_MOCK_FIELD(): CharacterSheetField {
-    let reponseMock: CharacterSheetFieldResponse = { id: (this.MOCK_ID++).toString(), name: 'test', value: "0" };
+    let reponseMock: CharacterSheetFieldResponse = { id: (this.MOCK_ID++).toString() as Guid, name: 'test', value: "0" };
     return new CharacterSheetField(reponseMock);
   }
 }

@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, WritableSignal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatRippleModule } from '@angular/material/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { GameMap } from '@models/business';
 import { StateService } from '@services';
-import { map } from 'rxjs';
+import { map, tap } from 'rxjs';
 
 @Component({
   selector: 'app-game-bar-map-select',
@@ -17,11 +17,14 @@ import { map } from 'rxjs';
 })
 export class GameBarMapSelectComponent {
   private readonly stateService = inject(StateService);
-  public readonly stateServiceReady$ = this.stateService.ready$.pipe(
-    map(() => true)
+
+  public maps!: WritableSignal<GameMap[]>;
+
+  public readonly mapsReady$ = this.stateService.ready$.pipe(
+    tap(() => this.maps = this.stateService.maps),
+    map(() => true),
   );
 
-  public readonly maps = this.stateService.maps;
 
   onSelectedTabIndexChange(event: number) {
     this.switchToMap(this.maps()[event]);

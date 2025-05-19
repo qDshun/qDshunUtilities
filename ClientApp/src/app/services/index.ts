@@ -1,5 +1,3 @@
-export * from './api.service';
-export * from './character-api.service';
 export * from './chat.service';
 export * from './draggable.service';
 export * from './game.service';
@@ -8,5 +6,9 @@ export * from './state.service';
 export * from './view.service';
 export * from './favourites.service';
 export * from './world.service';
-export * from './world-object.api.service';
 export * from './event.service';
+
+export * from './api.service';
+export * from './character-api.service';
+export * from './world-object.api.service';
+export * from './map.api.service';

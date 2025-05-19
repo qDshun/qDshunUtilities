@@ -1,11 +1,12 @@
 import { WritableSignal, Signal, signal } from "@angular/core";
 import { CharacterSheetFieldResponse } from "@models/response";
+import { Guid } from "app/helpers/guid.type";
 
 
 export class CharacterSheetField {
   protected _value: WritableSignal<string>;
 
-  public id: string;
+  public id: Guid;
   public name: string;
   public value: Signal<string>;
 

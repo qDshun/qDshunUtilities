@@ -1,14 +1,15 @@
 import { signal, WritableSignal } from "@angular/core";
 import { WorldObjectResponse } from "@models/response";
 import { WorldObjectType } from "./world-object-type.model";
+import { Guid } from "app/helpers/guid.type";
 
 class WorldObject {
   type!: WorldObjectType;
-  id: string;
+  id: Guid;
   name: WritableSignal<string>;
-  parentId: WritableSignal<string | null>;
-  previousId: WritableSignal<string | null>;
-  previewImageUrl: WritableSignal<string | null>;
+  parentId: WritableSignal<Guid | null>;
+  previousId: WritableSignal<Guid | null>;
+  previewImageUrl: WritableSignal<Guid | null>;
 
   constructor(worldObjectDto: WorldObjectResponse) {
     this.id = worldObjectDto.id;
@@ -25,7 +26,7 @@ export class WorldObjectFolder extends WorldObject {
     this.type = WorldObjectType.Folder;
   }
 
-  public Copy(id: string) {
+  public Copy(id: Guid) {
     return new WorldObjectFolder({ type: this.type, name: this.name(), id, previewImageUrl: this.previewImageUrl(), parentId: this.parentId(), previousId: this.previousId() });
   }
 }
@@ -39,7 +40,7 @@ export class WorldObjectCharacter extends WorldObject {
     this.isFavourite = signal(isFavourite);
   }
 
-  public Copy(id: string) {
+  public Copy(id: Guid) {
     return new WorldObjectCharacter({ type: this.type, name: this.name(), id, previewImageUrl: this.previewImageUrl(), parentId: this.parentId(), previousId: this.previousId() }, this.isFavourite());
   }
 }
@@ -52,7 +53,7 @@ export class WorldObjectHandout extends WorldObject {
     this.isFavourite = signal(isFavourite);
   }
 
-  public Copy(id: string) {
+  public Copy(id: Guid) {
     return new WorldObjectCharacter({ type: this.type, name: this.name(), id, previewImageUrl: this.previewImageUrl(), parentId: this.parentId(), previousId: this.previousId() }, this.isFavourite());
   }
 }

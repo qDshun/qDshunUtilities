@@ -5,6 +5,7 @@ import { GetLastMessagesRequest } from '../models/request/get-last-messages-requ
 import { ChatMessageResponse } from '../models/response/chat-message-reponse.model';
 import { ApiService } from './api.service';
 import { EventService } from './event.service';
+import { Guid } from 'app/helpers/guid.type';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,7 @@ export class ChatService {
   private readonly newMessageMethodName = 'newMessage';
 
 
-  public getMessages(worldId: string) {
+  public getMessages(worldId: Guid) {
     return this.getLastMessages(worldId, 100)
     .pipe(
       switchMap(initialMessages => this.eventService.onEvent<ChatMessageResponse>(this.newMessageEventName).pipe(
@@ -26,11 +27,11 @@ export class ChatService {
     );
   }
 
-  sendMessage(worldId: string, message: string): Observable<void> {
+  sendMessage(worldId: Guid, message: string): Observable<void> {
     return this.eventService.send<void>(this.newMessageMethodName, message, worldId)
   }
 
-  getLastMessages(worldId: string, numberOfMessage: number): Observable<ChatMessageResponse[]> {
+  getLastMessages(worldId: Guid, numberOfMessage: number): Observable<ChatMessageResponse[]> {
     const request: GetLastMessagesRequest = { worldId, msgCount: numberOfMessage }
     return this.apiService.post<ChatMessageResponse[]>("Chat", request);
   }

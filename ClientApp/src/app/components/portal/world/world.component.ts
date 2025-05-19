@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Guid } from 'app/helpers/guid.type';
 
 @Component({
   selector: 'app-world',
@@ -16,7 +17,7 @@ export class WorldComponent {
 
   private router = inject(Router)
 
-  redirectToGame(worldId: string){
+  redirectToGame(worldId: Guid){
     this.router.navigateByUrl(`game/${worldId}`)
   }
 }

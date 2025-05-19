@@ -9,6 +9,7 @@ import { CdkTreeModule } from "@angular/cdk/tree";
 import { WorldObjectComponent } from "../world-object/world-object.component";
 import { AnyWorldObject, WorldObjectType } from "@models/business";
 import { FavouritesService, StateService } from "@services";
+import { Guid } from "app/helpers/guid.type";
 
 @Component({
   selector: 'app-world-object-list',
@@ -41,8 +42,8 @@ export class WorldObjectListComponent {
     effect(() => this.onDragStateChanged(), { allowSignalWrites: true });
   }
 
-  private getPreviewId(id: string) {
-    return `preview-${id}`;
+  private getPreviewId(id: Guid) {
+    return `preview-${id}` as Guid;
   }
 
   onDragStart(event: DragEvent, node: AnyWorldObject) {
@@ -160,9 +161,9 @@ export class WorldObjectListComponent {
 
   childrenAccessor = (node: AnyWorldObject) => this.childrenAccessorById(node.id);
 
-  childrenAccessorById = (nodeId: string | undefined) => {
+  childrenAccessorById = (nodeId: Guid | undefined) => {
     const children = this.linkedWorldObjects().filter(lwo => lwo.parentId() == nodeId);
-    let previousId: string  | undefined = undefined;
+    let previousId: Guid  | undefined = undefined;
 
     const sortedChildren = [];
     for (let i = 0; i<children.length; i++){

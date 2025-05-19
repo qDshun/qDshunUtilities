@@ -1,4 +1,4 @@
-@if (stateServiceReady$ | async) {
+@if (mapsReady$ | async) {
   <mat-tab-group [mat-stretch-tabs]="false" animationDuration="0ms"
     (selectedIndexChange)="onSelectedTabIndexChange($event)">
   @for (map of maps(); track map.id) {

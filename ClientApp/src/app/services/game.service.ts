@@ -5,6 +5,7 @@ import { MapRenderingSubsystem, LayerRenderingSubsystem, TokenRenderingSubsystem
 import { StateService } from "./state.service";
 import { ViewService } from "./view.service";
 import { GameApplication } from "@models/business";
+import { Guid } from "app/helpers/guid.type";
 
 
 @Injectable({
@@ -25,7 +26,7 @@ export class GameService implements OnDestroy {
     this.application.destroy({}, true);
   }
 
-  initialize(worldId: string, canvasRef: ElementRef<HTMLCanvasElement>, canvasDestroyRef: DestroyRef): Observable<any> {
+  initialize(worldId: Guid, canvasRef: ElementRef<HTMLCanvasElement>, canvasDestroyRef: DestroyRef): Observable<any> {
     return runInInjectionContext((this.injectorRef), () => defer(() => {
       this.canvas = canvasRef.nativeElement;
       this.canvasDestroyRef = canvasDestroyRef;

@@ -6,21 +6,31 @@ export class MapDto {
   name!: string;
   cellSize!: number;
   strokeColor!: string;
+  backgroundColor!: string;
   width!: number;
   height!: number;
-  gridType!: GridType
+  gridType!: GridType;
+  renderableObjects!: RenderableObjectDto[];
 }
 
 export enum GridType {
   Square = 0,
   VerticalHex = 1,
-  HorizaontalHex = 2,
+  HorizontalHex = 2,
 }
 
 export class RenderableObjectDto {
   id!: Guid;
   type!: RenderableObjectType;
+  imageUrl!: string;
   snapping!: SnappingOptions;
+  layerType!: LayerType;
+}
+
+export enum LayerType {
+  Background = 0,
+  Hidden = 1,
+  Interactable = 2
 }
 
 export enum RenderableObjectType {

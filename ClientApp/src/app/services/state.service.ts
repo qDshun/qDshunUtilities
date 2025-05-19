@@ -1,27 +1,29 @@
 import { Injectable, signal, WritableSignal, computed, inject } from "@angular/core";
 import { GameComponent } from "@components/game/game/game.component";
-import { VerticalHexGridConfiguration, HorizontalHexGridConfiguration, SquareGridConfiguration, Token, GameMap, AnyWorldObject, WorldObjectType, WorldObjectCharacter, WorldObjectFolder, WorldObjectHandout, Layer } from "@models/business";
-import { forkJoin, map, Observable, ReplaySubject, Subject, switchMap, tap } from "rxjs";
+import { GameMap, AnyWorldObject, WorldObjectType, WorldObjectCharacter, WorldObjectFolder, WorldObjectHandout } from "@models/business";
+import { forkJoin, map, Observable, of, ReplaySubject, Subject, switchMap, tap } from "rxjs";
 import { WorldObjectApiService } from "./world-object.api.service";
 import { WorldObjectResponse } from "@models/response";
 import { FavouritesService } from "./favourites.service";
+import { Guid } from "app/helpers/guid.type";
+import { MapApiService } from "./map.api.service";
 
 
 @Injectable({
   providedIn: GameComponent
 })
 export class StateService {
-  private worldObjectApiService = inject(WorldObjectApiService);
-  private favouritesService = inject(FavouritesService);
+  private readonly worldObjectApiService = inject(WorldObjectApiService);
+  private readonly mapApiService = inject(MapApiService);
+  private readonly favouritesService = inject(FavouritesService);
   public worldObjects: WritableSignal<AnyWorldObject[]> = signal([]);
 
-  private _currentMapId: string | null = null;
+  private _currentMapId: Guid | null = null;
   public currentMapId = signal('1');
 
 
   public maps: WritableSignal<GameMap[]> = signal([]);
   public currentMap = this.getCurrentMapAndThrowIfNotExists();
-  private tokenMockCounter = 0;
 
   private _onBeforeMapDestroyed$ = new Subject<string>();
   public onBeforeMapDestroyed$ = this._onBeforeMapDestroyed$.asObservable();
@@ -30,7 +32,7 @@ export class StateService {
   private readonly _ready$ = new ReplaySubject<void>();
   public readonly ready$ = this._ready$.asObservable()
 
-  public changeMap(mapId: string){
+  public changeMap(mapId: Guid){
     if (this._currentMapId){
       this._onBeforeMapDestroyed$.next(this._currentMapId);
     }
@@ -39,17 +41,22 @@ export class StateService {
     this._currentMapId = mapId;
   }
 
-  public initializeWorldState(worldId: string): Observable<any> {
-    const maps = this.getMaps()()
-    this.maps.set(maps)
+  public initializeWorldState(worldId: Guid): Observable<void> {
+    return of(void 0).pipe(
+      switchMap(() => this.initMaps(worldId)),
+      switchMap(() => this.initWorldObjects(worldId)),
+      tap(() => console.debug('State service is ready!')),
+      tap(() => this._ready$.next())
+    )
+  }
 
+  private initWorldObjects(worldId: Guid): Observable<void> {
     const favouriteIds = this.favouritesService.getFavourites();
 
     return this.worldObjectApiService.getWorldObjects(worldId).pipe(
       tap(response => this.worldObjects.set(response.worldObjects.map(worldObjectDto => this.toWorldObjectModel(worldObjectDto, favouriteIds)))),
-      switchMap(() => this.initRenderableObjectsTexture(maps)),
-      tap(() => this._ready$.next())
-    );
+      map(_ => void 0)
+    )
   }
 
   private toWorldObjectModel(worldObjectDto: WorldObjectResponse, favouriteIds: string[]): AnyWorldObject {
@@ -67,6 +74,15 @@ export class StateService {
     }
   }
 
+  private initMaps(worldId: Guid): Observable<void> {
+    return this.mapApiService.getMaps(worldId).pipe(
+      map(mapDtos => mapDtos.map(mapDto => new GameMap(mapDto))),
+      tap(maps => this.maps = signal(maps)),
+      switchMap(maps => this.initRenderableObjectsTexture(maps)),
+      tap(() => console.debug('Init of maps done')),
+    )
+  }
+
   //TODO: Rewrite completely when Map Api would be availible
   private initRenderableObjectsTexture(maps: GameMap[]): Observable<void> {
     const renderableObjects = [
@@ -75,28 +91,9 @@ export class StateService {
       ...maps.flatMap(m => m.interactableLayer.renderableObjects())
     ];
     return forkJoin(renderableObjects.map(ro => ro.loadTexture())).pipe(
+      tap(() => console.debug('Init of renderable objects (loading textures) done')),
       map(_ => void 0)
     );
-  }
-
-  private getMaps(): WritableSignal<GameMap[]> {
-    const values = signal([
-      new GameMap('1', signal('Forest'), signal(new VerticalHexGridConfiguration(20, this.getRandomColor())), signal(this.getRandomColor()),
-        new Layer(signal([]), signal([])), new Layer(signal([]), signal([])), new Layer(signal([]),
-          signal([new Token('0', `Token ${(this.tokenMockCounter++).toString()}`, 'https://files.d20.io/images/367846040/hJolqMhEY78rNstomGaDPg/med.png?1700094567', { type: 'tile', i: 10, j: 10 })]))),
-      new GameMap('2', signal('Village'), signal(new HorizontalHexGridConfiguration(20, this.getRandomColor(), 1200, 800)), signal(this.getRandomColor()),
-        new Layer(signal([]), signal([])), new Layer(signal([]), signal([])), new Layer(signal([]),
-          signal([new Token('0', `Token ${(this.tokenMockCounter++).toString()}`, 'https://files.d20.io/images/367846040/hJolqMhEY78rNstomGaDPg/med.png?1700094567', { type: 'tile', i: 8, j: 8 }), new Token('1', `Token ${(this.tokenMockCounter++).toString()}`, 'https://files.d20.io/images/367846040/hJolqMhEY78rNstomG', { type: 'tile', i: 10, j: 10 })]))),
-      new GameMap('3', signal('Volcano'), signal(new SquareGridConfiguration(20, this.getRandomColor(), 900, 200)), signal(this.getRandomColor()),
-        new Layer(signal([]), signal([])), new Layer(signal([]), signal([])), new Layer(signal([]),
-          signal([new Token('0', `Token ${(this.tokenMockCounter++).toString()}`, 'https://files.d20.io/images/367846040/hJolqMhEY78rNstomGaDPg/med.png?1700094567', { type: 'tile', i: 10, j: 10 })]))),
-    ]);
-    return values;
-  }
-
-
-  public getRandomColor(): string {
-    return "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0")
   }
 
   private getCurrentMapAndThrowIfNotExists() {

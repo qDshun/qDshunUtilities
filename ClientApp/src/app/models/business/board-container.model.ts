@@ -1,10 +1,11 @@
 import { UnrecoverableError } from "@services";
 import { ContainerChild, Container, Graphics } from "pixi.js";
 import { ContainerType } from ".";
+import { Guid } from "app/helpers/guid.type";
 
 export class BoardContainer<T extends ContainerChild = ContainerChild> extends Container<T> {
 
-  getOrCreateBoardChild(this: Container, containerType: ContainerType, id: string) {
+  getOrCreateBoardChild(this: Container, containerType: ContainerType, id: Guid) {
     let target = this.getChildByLabel(containerType + id);
     if (target) {
       return target;
@@ -14,7 +15,7 @@ export class BoardContainer<T extends ContainerChild = ContainerChild> extends C
     return target;
   }
 
-  getExistingBoardChild(this: Container, containerType: ContainerType, id: string) {
+  getExistingBoardChild(this: Container, containerType: ContainerType, id: Guid) {
     const child = this.getChildByLabel(containerType + id);
     if (!child){
       throw new UnrecoverableError(`Missing container with id ${containerType + id} that should exist`);
@@ -22,11 +23,11 @@ export class BoardContainer<T extends ContainerChild = ContainerChild> extends C
     return child;
   }
 
-  getBoardChild(this: Container, containerType: ContainerType, id: string) {
+  getBoardChild(this: Container, containerType: ContainerType, id: Guid) {
     return this.getChildByLabel(containerType + id);
   }
 
-  createBoardChild(this: Container, containerType: ContainerType, id: string) {
+  createBoardChild(this: Container, containerType: ContainerType, id: Guid) {
     const parentWidth = this.width;
     const parentHeight = this.height;
 

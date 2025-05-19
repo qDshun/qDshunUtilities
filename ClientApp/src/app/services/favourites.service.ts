@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { Guid } from "app/helpers/guid.type";
 
 
 @Injectable({
@@ -7,7 +8,7 @@ import { Injectable } from "@angular/core";
 export class FavouritesService {
   private readonly favouriteKey = 'FavouriteWorldObjects';
 
-  toggleFavourite(id: string) {
+  toggleFavourite(id: Guid) {
     //TODO: use it when updating signal
     const favourites = this.getFavourites();
     if (favourites.includes(id)) {

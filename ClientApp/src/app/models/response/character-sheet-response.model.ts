@@ -1,10 +1,12 @@
+import { Guid } from "app/helpers/guid.type";
+
 export class CharacterSheetResponse {
-  id!: string;
+  id!: Guid;
   fields!: CharacterSheetFieldResponse[];
 }
 
 export class CharacterSheetFieldResponse {
-  id!: string;
+  id!: Guid;
   name!: string;
   value!: string;
 }

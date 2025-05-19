@@ -7,6 +7,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { AnyWorldObject, WorldObjectCharacter, WorldObjectType } from "@models/business";
 import { CharacterSheetOverlayComponent } from "../character-sheets/character-sheet-overlay/character-sheet-overlay.component";
 import { FavouritesService } from "@services";
+import { Guid } from "app/helpers/guid.type";
 
 
 @Component({
@@ -43,7 +44,7 @@ export class WorldObjectComponent {
     }
   }
 
-  private openCharacterSheet(id: string) {
+  private openCharacterSheet(id: Guid) {
     const positionStrategy = this.overlay.position()
       .global()
       .centerVertically()

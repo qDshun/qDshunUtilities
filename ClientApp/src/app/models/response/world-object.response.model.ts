@@ -1,10 +1,11 @@
 import { WorldObjectType } from "@models/business";
+import { Guid } from "app/helpers/guid.type";
 
 export class WorldObjectResponse {
-  id!: string;
+  id!: Guid;
   name!: string;
-  parentId!: string | null;
-  previousId!: string | null;
-  previewImageUrl!: string | null;
+  parentId!: Guid | null;
+  previousId!: Guid | null;
+  previewImageUrl!: Guid | null;
   type!: WorldObjectType;
 }
