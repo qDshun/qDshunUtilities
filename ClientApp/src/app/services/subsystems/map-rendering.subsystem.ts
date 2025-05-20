@@ -129,8 +129,8 @@ export class MapRenderingSubsystem implements IPerMapSubsystem {
         const graphicsClone = mapTileConfiguration.tileGraphics.clone();
         graphicsClone.label = MapInternalContainers.Cell;
         //TODO: Move offset (tileSize.x / 2) to mapTileConfiguration
-        graphicsClone.x = centerCoords.x + tileSize.x / 2;
-        graphicsClone.y = centerCoords.y + tileSize.y / 2;
+        graphicsClone.x = Math.round(centerCoords.x + tileSize.x / 2);
+        graphicsClone.y = Math.round(centerCoords.y + tileSize.y / 2);
         mapContainer.addChild(graphicsClone)
       }
     }

@@ -56,7 +56,7 @@ export class ViewService {
 
   private zoom(application: Application, event: WheelEvent) {
     const scaleSpeed = 0.25;
-    const minZoom = 0.5;
+    const minZoom = 0.75;
     const maxZoom = 3;
 
     const container = application.stage;

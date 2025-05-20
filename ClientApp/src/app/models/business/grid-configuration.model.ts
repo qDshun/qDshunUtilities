@@ -32,8 +32,7 @@ export abstract class BaseGridConfiguration implements IGridConfiguration {
   getCenterCoords = (i: number, j: number) => {
     const topLeft = this.getTopLeftCoords(i, j);
     const tileSize = this.getTileSize();
-
-    return { x: topLeft.x + tileSize.x / 2, y: topLeft.y + tileSize.y / 2 };
+    return { x: Math.round(topLeft.x + tileSize.x / 2), y: Math.round(topLeft.y + tileSize.y / 2) };
   };
 }
 
@@ -58,7 +57,7 @@ export class VerticalHexGridConfiguration extends BaseGridConfiguration {
   }
 
   tileGraphics: PIXI.Graphics = new PIXI.Graphics().regularPoly(0, 0, this.cellSize, 6)
-    .stroke({ color: this.strokeColor, width: 2 });
+    .stroke({ color: this.strokeColor, width: 1 });
 }
 
 export class HorizontalHexGridConfiguration extends BaseGridConfiguration {
@@ -83,7 +82,7 @@ export class HorizontalHexGridConfiguration extends BaseGridConfiguration {
   }
 
   tileGraphics: PIXI.Graphics = new PIXI.Graphics().regularPoly(0, 0, this.cellSize, 6, Math.PI / 2)
-    .stroke({ color: this.strokeColor, width: 2 });
+    .stroke({ color: this.strokeColor, width: 1 });
 }
 
 export class SquareGridConfiguration extends BaseGridConfiguration {
@@ -105,5 +104,5 @@ export class SquareGridConfiguration extends BaseGridConfiguration {
   }
 
   tileGraphics: PIXI.Graphics = new PIXI.Graphics().regularPoly(0, 0, this.cellSize, 4, Math.PI / 4)
-    .stroke({ color: this.strokeColor, width: 2 });
+    .stroke({ color: this.strokeColor, width: 1 });
 }
