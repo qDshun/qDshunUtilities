@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy, inject, Injector, DestroyRef, ElementRef, runInInjectionContext } from "@angular/core";
 import { GameComponent } from "@components/game/game/game.component";
 import { Observable, defer, from, map, switchMap, tap } from "rxjs";
-import { MapRenderingSubsystem, LayerRenderingSubsystem, TokenRenderingSubsystem, SusbsystemManager } from "./subsystems";
+import { BackgroundRenderingSubsystem as BackgroundColorRenderingSubsystem, LayerRenderingSubsystem, TokenRenderingSubsystem, SusbsystemManager, GridRenderingSubsystem } from "./subsystems";
 import { StateService } from "./state.service";
 import { ViewService } from "./view.service";
 import { GameApplication } from "@models/business";
@@ -19,7 +19,8 @@ export class GameService implements OnDestroy {
   private application!: GameApplication;
   private injectorRef = inject(Injector);
   private canvasDestroyRef!: DestroyRef;
-  private mapRenderingSubsystem = inject(MapRenderingSubsystem);
+  private backgroundColorRenderingSubsystem = inject(BackgroundColorRenderingSubsystem);
+  private gridRenderingSubsystem = inject(GridRenderingSubsystem);
   private layerRenderingSubsystem = inject(LayerRenderingSubsystem);
   private tokenRenderingSubsystem = inject(TokenRenderingSubsystem);
 
@@ -40,7 +41,8 @@ export class GameService implements OnDestroy {
         .pipe(
           switchMap(() => this.application.initGameApplication(this.canvas)),
           map(() => new SusbsystemManager(this.application, this.stateService, this.canvasDestroyRef, this.injectorRef)),
-          tap(subsystemManager => subsystemManager.registerPerMapSubsystem(this.mapRenderingSubsystem)),
+          tap(subsystemManager => subsystemManager.registerPerMapSubsystem(this.backgroundColorRenderingSubsystem)),
+          tap(subsystemManager => subsystemManager.registerPerMapSubsystem(this.gridRenderingSubsystem)),
           tap(subsystemManager => subsystemManager.registerPerMapSubsystem(this.layerRenderingSubsystem)),
           tap(subsystemManager => subsystemManager.registerPerMapSubsystem(this.tokenRenderingSubsystem)),
           tap(() => this.viewService.initializeViewHandlers(this.application, this.canvas, this.canvasDestroyRef)),

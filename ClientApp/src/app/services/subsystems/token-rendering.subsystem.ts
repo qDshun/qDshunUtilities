@@ -1,13 +1,13 @@
 import { Injectable, inject, EffectRef } from "@angular/core";
 import { GameComponent } from "@components/game/game/game.component";
-import { GameApplication, ContainerType, GameMap, RenderableObject, IGridConfiguration } from "@models/business";
+import { GameApplication, SubsystemRootContainerType, GameMap, RenderableObject, IGridConfiguration } from "@models/business";
 import { Container, Sprite } from "pixi.js";
 import { Subject } from "rxjs";
 import { DraggableService } from "../draggable.service";
 import { StateService } from "../state.service";
 import { LayerRenderingSubsystem } from "./layer-rendering.subsystem";
-import { MapRenderingSubsystem } from "./map-rendering.subsystem";
 import { IPerMapSubsystem } from "./subsystem";
+import { BackgroundRenderingSubsystem } from "./background-color-rendering.subsystem";
 
 
 
@@ -23,7 +23,7 @@ export class TokenRenderingSubsystem implements IPerMapSubsystem {
   private appRef!: GameApplication;
 
   //TODO: Remove copy-pasta and use APIs from dependencies, after dependencies are properly implemented
-  private readonly playerInteractableLayers = [ContainerType.Background, ContainerType.Hidden, ContainerType.Interactable];
+  private readonly playerInteractableLayers = [SubsystemRootContainerType.BackgroundLayerContainer, SubsystemRootContainerType.GMLayerContainer, SubsystemRootContainerType.InteractableLayerContainer];
   private perMapEffectRefs: EffectRef[] = [];
   //TODO: Rewrite it somehow, used to notify draggable service
   private mapDestroyed$!: Subject<void>;
@@ -37,7 +37,8 @@ export class TokenRenderingSubsystem implements IPerMapSubsystem {
   }
 
   getDependencies(): string[] {
-    return [MapRenderingSubsystem.DependencyName, LayerRenderingSubsystem.DependencyName];
+    //TODO: Dependencies dont work as of right now, rework them so they would work
+    return [BackgroundRenderingSubsystem.DependencyName, LayerRenderingSubsystem.DependencyName];
   }
 
   onAfterMapInit(): void {
@@ -114,13 +115,13 @@ export class TokenRenderingSubsystem implements IPerMapSubsystem {
       });
 }
 
-private getCorrespondingLayer(map: GameMap, containerType: ContainerType) {
+private getCorrespondingLayer(map: GameMap, containerType: SubsystemRootContainerType) {
   switch (containerType) {
-    case ContainerType.Background:
+    case SubsystemRootContainerType.BackgroundLayerContainer:
       return map.backgroundLayer;
-    case ContainerType.Hidden:
+    case SubsystemRootContainerType.GMLayerContainer:
       return map.hiddenLayer;
-    case ContainerType.Interactable:
+    case SubsystemRootContainerType.InteractableLayerContainer:
       return map.interactableLayer;
     default:
       throw new Error(`Container type ${containerType} not allowed`);

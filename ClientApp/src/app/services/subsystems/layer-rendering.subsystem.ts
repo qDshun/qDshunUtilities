@@ -2,9 +2,9 @@ import { Injectable, inject, EffectRef } from "@angular/core";
 import { GameComponent } from "@components/game/game/game.component";
 import { StateService } from "app/services/state.service";
 import { Observable, of } from "rxjs";
-import { MapRenderingSubsystem } from "./map-rendering.subsystem";
 import { IPerMapSubsystem } from "./subsystem";
-import { ContainerType, GameApplication, GameMap } from "@models/business";
+import { SubsystemRootContainerType, GameApplication, GameMap } from "@models/business";
+import { BackgroundRenderingSubsystem } from "./background-color-rendering.subsystem";
 
 @Injectable({
   providedIn: GameComponent
@@ -13,7 +13,7 @@ export class LayerRenderingSubsystem implements IPerMapSubsystem {
   public static DependencyName = 'LayerRenderingSubsystem';
   private stateService = inject(StateService);
   private appRef!: GameApplication;
-  private readonly playerInteractableLayers = [ContainerType.Background, ContainerType.Hidden, ContainerType.Interactable];
+  private readonly playerInteractableLayers = [SubsystemRootContainerType.BackgroundLayerContainer, SubsystemRootContainerType.GMLayerContainer, SubsystemRootContainerType.InteractableLayerContainer];
 
   private perMapEffectRefs: EffectRef[] = [];
 
@@ -26,7 +26,7 @@ export class LayerRenderingSubsystem implements IPerMapSubsystem {
   }
 
   public getDependencies(): string[] {
-    return [MapRenderingSubsystem.DependencyName];
+    return [BackgroundRenderingSubsystem.DependencyName];
   }
 
   public onBeforeMapDestroy(): Observable<void> {
@@ -55,7 +55,7 @@ export class LayerRenderingSubsystem implements IPerMapSubsystem {
     this.playerInteractableLayers.forEach(layerContainerName => this.createInteractiveLayer(map, layerContainerName));
   }
 
-  private createInteractiveLayer(map: GameMap, layerContainerName: ContainerType) {
+  private createInteractiveLayer(map: GameMap, layerContainerName: SubsystemRootContainerType) {
     const interactableLayer = this.appRef.board.createBoardChild(layerContainerName, map.id);
     interactableLayer.setSize({height: map.mapTileConfiguration().mapHeight, width: map.mapTileConfiguration().mapWidth});
     interactableLayer.interactive = true;

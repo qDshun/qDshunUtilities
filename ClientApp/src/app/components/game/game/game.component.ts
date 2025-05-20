@@ -5,7 +5,7 @@ import { GameBarQuickAccessComponent } from "../game-bar-quick-access/game-bar-q
 import { GameBarRightComponent } from "../game-bar-right/game-bar-right.component";
 import { GameBarToolsComponent } from "../game-bar-tools/game-bar-tools.component";
 import { GameScreenComponent } from "../game-screen/game-screen.component";
-import { LayerRenderingSubsystem, MapRenderingSubsystem, TokenRenderingSubsystem } from "@subsystems";
+import { GridRenderingSubsystem, LayerRenderingSubsystem, BackgroundRenderingSubsystem, TokenRenderingSubsystem } from "@subsystems";
 
 
 @Component({
@@ -15,7 +15,7 @@ import { LayerRenderingSubsystem, MapRenderingSubsystem, TokenRenderingSubsystem
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [WorldObjectApiService, MapApiService, GameService, StateService, ViewService, MapRenderingSubsystem, LayerRenderingSubsystem, TokenRenderingSubsystem]
+  providers: [WorldObjectApiService, MapApiService, GameService, StateService, ViewService, BackgroundRenderingSubsystem, GridRenderingSubsystem, LayerRenderingSubsystem, TokenRenderingSubsystem]
   // Using providers, combined with providedIn: GameComponent, to create a new copy each time component is loaded, since that services should be local per-game
 })
 export class GameComponent {
