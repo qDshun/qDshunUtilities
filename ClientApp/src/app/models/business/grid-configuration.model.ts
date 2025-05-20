@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
-
+// TODO: Make sure edges of grid alignes pixel-perfect (some times they miss by 1 pixel, so one side is 5px wide and other is 4px wide on the monitor)
+// That's (most probably) the reason it looks shitty and not crisp
 export interface IGridConfiguration {
   cellSize: number;
   mapWidth: number;
