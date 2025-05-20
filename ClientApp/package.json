@@ -21,6 +21,7 @@
     "@angular/platform-browser-dynamic": "^18.0.0",
     "@angular/router": "^18.0.0",
     "@microsoft/signalr": "^8.0.7",
+    "@pixi/settings": "^7.4.3",
     "@types/signalr": "^2.4.3",
     "pixi-filters": "^6.0.5",
     "pixi.js": "^8.5.1",

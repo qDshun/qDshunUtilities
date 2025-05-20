@@ -6,6 +6,7 @@ import { StateService } from "./state.service";
 import { ViewService } from "./view.service";
 import { GameApplication } from "@models/business";
 import { Guid } from "app/helpers/guid.type";
+import { settings } from '@pixi/settings';
 
 
 @Injectable({
@@ -27,11 +28,12 @@ export class GameService implements OnDestroy {
   }
 
   initialize(worldId: Guid, canvasRef: ElementRef<HTMLCanvasElement>, canvasDestroyRef: DestroyRef): Observable<any> {
+    // Default is 1, which is not aligned to any possible screen at all
+    settings.RESOLUTION = window.devicePixelRatio;
     return runInInjectionContext((this.injectorRef), () => defer(() => {
       this.canvas = canvasRef.nativeElement;
       this.canvasDestroyRef = canvasDestroyRef;
       this.application = new GameApplication(this.injectorRef);
-
       //TODO: Enabled pixi devtools, disable in prod build
       (globalThis as any).__PIXI_APP__ = this.application;
       return from(this.stateService.initializeWorldState(worldId))
