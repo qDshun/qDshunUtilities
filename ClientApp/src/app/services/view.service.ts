@@ -73,7 +73,6 @@ export class ViewService {
     // To zoom relative to the mouse position, adjust the container's position
     container.position.x -= (event.layerX - container.position.x) * (scaleRatio - 1);
     container.position.y -= (event.layerY - container.position.y) * (scaleRatio - 1);
-    console.log('Scale is ', newScale)
     container.scale.set(newScale);
   }
 
