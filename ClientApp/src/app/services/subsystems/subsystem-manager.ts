@@ -30,6 +30,10 @@ export class SusbsystemManager {
     });
   }
 
+  public getSubsystems(): ISubsystem[] {
+    return [...this.perMapSubsystems, ...this.globalSubsystems]
+  }
+
   public registerGlobalSubsystem(subsystem: ISubsystem){
     subsystem.register(this.gameApplication);
   }

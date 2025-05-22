@@ -7,7 +7,7 @@ import { DraggableService } from "../draggable.service";
 import { StateService } from "../state.service";
 import { LayerRenderingSubsystem } from "./layer-rendering.subsystem";
 import { IPerMapSubsystem } from "./subsystem";
-import { BackgroundRenderingSubsystem } from "./background-color-rendering.subsystem";
+import { BackgroundColorRenderingSubsystem } from "./background-color-rendering.subsystem";
 
 
 
@@ -38,7 +38,7 @@ export class TokenRenderingSubsystem implements IPerMapSubsystem {
 
   getDependencies(): string[] {
     //TODO: Dependencies dont work as of right now, rework them so they would work
-    return [BackgroundRenderingSubsystem.DependencyName, LayerRenderingSubsystem.DependencyName];
+    return [BackgroundColorRenderingSubsystem.DependencyName, LayerRenderingSubsystem.DependencyName];
   }
 
   onAfterMapInit(): void {
@@ -120,7 +120,7 @@ private getCorrespondingLayer(map: GameMap, containerType: SubsystemRootContaine
     case SubsystemRootContainerType.BackgroundLayerContainer:
       return map.backgroundLayer;
     case SubsystemRootContainerType.GMLayerContainer:
-      return map.hiddenLayer;
+      return map.gmLayer;
     case SubsystemRootContainerType.InteractableLayerContainer:
       return map.interactableLayer;
     default:

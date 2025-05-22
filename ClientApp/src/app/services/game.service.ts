@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy, inject, Injector, DestroyRef, ElementRef, runInInjectionContext } from "@angular/core";
 import { GameComponent } from "@components/game/game/game.component";
 import { Observable, defer, from, map, switchMap, tap } from "rxjs";
-import { BackgroundRenderingSubsystem as BackgroundColorRenderingSubsystem, LayerRenderingSubsystem, TokenRenderingSubsystem, SusbsystemManager, GridRenderingSubsystem } from "./subsystems";
+import { BackgroundColorRenderingSubsystem, LayerRenderingSubsystem, TokenRenderingSubsystem, SusbsystemManager, GridRenderingSubsystem } from "./subsystems";
 import { StateService } from "./state.service";
 import { ViewService } from "./view.service";
 import { GameApplication } from "@models/business";
@@ -13,16 +13,16 @@ import { settings } from '@pixi/settings';
   providedIn: GameComponent,
 })
 export class GameService implements OnDestroy {
-  private stateService = inject(StateService);
-  private viewService = inject(ViewService);
+  private readonly stateService = inject(StateService);
+  private readonly viewService = inject(ViewService);
   private canvas!: HTMLCanvasElement;
   private application!: GameApplication;
   private injectorRef = inject(Injector);
   private canvasDestroyRef!: DestroyRef;
-  private backgroundColorRenderingSubsystem = inject(BackgroundColorRenderingSubsystem);
-  private gridRenderingSubsystem = inject(GridRenderingSubsystem);
-  private layerRenderingSubsystem = inject(LayerRenderingSubsystem);
-  private tokenRenderingSubsystem = inject(TokenRenderingSubsystem);
+  private readonly backgroundColorRenderingSubsystem = inject(BackgroundColorRenderingSubsystem);
+  private readonly gridRenderingSubsystem = inject(GridRenderingSubsystem);
+  private readonly layerRenderingSubsystem = inject(LayerRenderingSubsystem);
+  private readonly tokenRenderingSubsystem = inject(TokenRenderingSubsystem);
 
   ngOnDestroy(): void {
     this.application.destroy({}, true);
@@ -45,7 +45,7 @@ export class GameService implements OnDestroy {
           tap(subsystemManager => subsystemManager.registerPerMapSubsystem(this.gridRenderingSubsystem)),
           tap(subsystemManager => subsystemManager.registerPerMapSubsystem(this.layerRenderingSubsystem)),
           tap(subsystemManager => subsystemManager.registerPerMapSubsystem(this.tokenRenderingSubsystem)),
-          tap(() => this.viewService.initializeViewHandlers(this.application, this.canvas, this.canvasDestroyRef)),
+          tap(() => this.viewService.initializeViewHandlers(this.application, this.canvas, this.canvasDestroyRef))
         );
     }))
   }

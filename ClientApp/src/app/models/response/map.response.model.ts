@@ -29,7 +29,7 @@ export class RenderableObjectDto {
 
 export enum LayerType {
   Background = 0,
-  Hidden = 1,
+  GM = 1,
   Interactable = 2
 }
 

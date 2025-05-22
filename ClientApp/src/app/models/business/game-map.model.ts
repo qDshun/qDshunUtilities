@@ -3,6 +3,7 @@ import { HorizontalHexGridConfiguration, IGridConfiguration, SquareGridConfigura
 import { RenderableObject } from "./renderable-object.model";
 import { Guid } from "app/helpers/guid.type";
 import { GridType, LayerType, MapDto } from "../response/map.response.model";
+import { SubsystemRootContainerType } from ".";
 
 export class GameMap {
     public id: Guid;
@@ -11,7 +12,7 @@ export class GameMap {
     public backgroundColor: WritableSignal<string>;
 
     public backgroundLayer: Layer;
-    public hiddenLayer: Layer;
+    public gmLayer: Layer;
     public interactableLayer: Layer;
 
   constructor(mapDto: MapDto) {
@@ -23,16 +24,16 @@ export class GameMap {
     const backgroundgObjects = mapDto.renderableObjects.filter(roDto => roDto.layerType == LayerType.Background)
       .map(roDto => new RenderableObject(roDto.id, roDto.imageUrl, roDto.type, roDto.snapping));
 
-    const hiddenObjects = mapDto.renderableObjects.filter(roDto => roDto.layerType == LayerType.Hidden)
+    const gmObjects = mapDto.renderableObjects.filter(roDto => roDto.layerType == LayerType.GM)
       .map(roDto => new RenderableObject(roDto.id, roDto.imageUrl, roDto.type, roDto.snapping));
 
     const interactableObjects = mapDto.renderableObjects.filter(roDto => roDto.layerType == LayerType.Interactable)
       .map(roDto => new RenderableObject(roDto.id, roDto.imageUrl, roDto.type, roDto.snapping));
 
 
-    this.backgroundLayer = new Layer(signal(backgroundgObjects));
-    this.hiddenLayer = new Layer(signal(hiddenObjects));
-    this.interactableLayer = new Layer(signal(interactableObjects));
+    this.backgroundLayer = new Layer(LayerType.Background, "Background", SubsystemRootContainerType.BackgroundLayerContainer, signal(backgroundgObjects));
+    this.gmLayer = new Layer(LayerType.GM, "GM", SubsystemRootContainerType.GMLayerContainer, signal(gmObjects));
+    this.interactableLayer = new Layer(LayerType.Interactable, "Interactable", SubsystemRootContainerType.InteractableLayerContainer, signal(interactableObjects))
   }
 
   private createMapTileConfiguration(mapDto: MapDto): IGridConfiguration {
@@ -50,8 +51,12 @@ export class GameMap {
 }
 
 export class Layer {
+  public renderableObjects = this._renderableObjects.asReadonly();
   constructor(
-    public renderableObjects: WritableSignal<RenderableObject[]>,
+    public readonly type: LayerType,
+    public readonly name: string,
+    public readonly rootContainerType: SubsystemRootContainerType,
+    private _renderableObjects: WritableSignal<RenderableObject[]>,
   ) { }
 }
 

@@ -86,7 +86,7 @@ export class StateService {
   //TODO: Rewrite completely when Map Api would be availible
   private initRenderableObjectsTexture(maps: GameMap[]): Observable<void> {
     const renderableObjects = [
-      ...maps.flatMap(m => m.hiddenLayer.renderableObjects()),
+      ...maps.flatMap(m => m.gmLayer.renderableObjects()),
       ...maps.flatMap(m => m.backgroundLayer.renderableObjects()),
       ...maps.flatMap(m => m.interactableLayer.renderableObjects())
     ];

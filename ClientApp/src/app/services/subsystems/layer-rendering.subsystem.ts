@@ -1,19 +1,26 @@
-import { Injectable, inject, EffectRef } from "@angular/core";
+import { Injectable, inject, EffectRef, computed } from "@angular/core";
 import { GameComponent } from "@components/game/game/game.component";
 import { StateService } from "app/services/state.service";
 import { Observable, of } from "rxjs";
 import { IPerMapSubsystem } from "./subsystem";
-import { SubsystemRootContainerType, GameApplication, GameMap } from "@models/business";
-import { BackgroundRenderingSubsystem } from "./background-color-rendering.subsystem";
+import { SubsystemRootContainerType, GameApplication, GameMap, Layer } from "@models/business";
+import { BackgroundColorRenderingSubsystem } from "./background-color-rendering.subsystem";
+
+export interface LayerSubsystemApi {
+   getLayers(): Layer[];
+   changeLayerTo(layer: Layer): void;
+}
 
 @Injectable({
   providedIn: GameComponent
 })
-export class LayerRenderingSubsystem implements IPerMapSubsystem {
+export class LayerRenderingSubsystem implements IPerMapSubsystem, LayerSubsystemApi {
   public static DependencyName = 'LayerRenderingSubsystem';
   private stateService = inject(StateService);
   private appRef!: GameApplication;
-  private readonly playerInteractableLayers = [SubsystemRootContainerType.BackgroundLayerContainer, SubsystemRootContainerType.GMLayerContainer, SubsystemRootContainerType.InteractableLayerContainer];
+  //TODO: Move to state service and be able to query from backend?
+  private readonly currentMap = computed(() => this.stateService.currentMap())
+  private readonly layers = computed(() => [this.currentMap().backgroundLayer, this.currentMap().gmLayer, this.currentMap().interactableLayer])
 
   private perMapEffectRefs: EffectRef[] = [];
 
@@ -26,7 +33,7 @@ export class LayerRenderingSubsystem implements IPerMapSubsystem {
   }
 
   public getDependencies(): string[] {
-    return [BackgroundRenderingSubsystem.DependencyName];
+    return [BackgroundColorRenderingSubsystem.DependencyName];
   }
 
   public onBeforeMapDestroy(): Observable<void> {
@@ -45,14 +52,17 @@ export class LayerRenderingSubsystem implements IPerMapSubsystem {
 
   /* API */
 
-  public getInteractableLayers() {
-    return this.playerInteractableLayers;
+  public getLayers() {
+    return this.layers();
   }
 
+  public changeLayerTo(layer: Layer): void {
+    throw new Error("Method not implemented.");
+  }
   /* endof API */
 
   private createInteractiveLayers(map: GameMap){
-    this.playerInteractableLayers.forEach(layerContainerName => this.createInteractiveLayer(map, layerContainerName));
+    this.layers().forEach(layer => this.createInteractiveLayer(map, layer.rootContainerType));
   }
 
   private createInteractiveLayer(map: GameMap, layerContainerName: SubsystemRootContainerType) {
@@ -62,6 +72,6 @@ export class LayerRenderingSubsystem implements IPerMapSubsystem {
   }
 
   private destroyInteractiveLayers(map: GameMap){
-    this.playerInteractableLayers.forEach(layerContainerName => this.appRef.board.getBoardChild(layerContainerName, map.id)?.destroy());
+    this.layers().forEach(layer => this.appRef.board.getBoardChild(layer.rootContainerType, map.id)?.destroy());
   }
 }

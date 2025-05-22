@@ -10,7 +10,7 @@ import { IPerMapSubsystem } from "./subsystem";
 @Injectable({
   providedIn: GameComponent
 })
-export class BackgroundRenderingSubsystem implements IPerMapSubsystem {
+export class BackgroundColorRenderingSubsystem implements IPerMapSubsystem {
   public static readonly DependencyName = 'BackgroundRenderingSubsystem';
   private readonly rootContainerType = SubsystemRootContainerType.BackgroundColorContainer;
   private readonly stateService = inject(StateService);

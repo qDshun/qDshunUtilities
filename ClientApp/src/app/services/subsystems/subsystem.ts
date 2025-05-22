@@ -15,3 +15,7 @@ export interface IPerMapSubsystem extends ISubsystem {
 
   onBeforeMapDestroy(): void;
 }
+
+export interface ISubsystemPublicApi {
+
+}
