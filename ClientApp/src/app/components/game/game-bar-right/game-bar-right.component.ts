@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
-import { MatTabsModule } from '@angular/material/tabs';
-import { ChatComponent } from '../chat/chat.component';
+import { Component, ChangeDetectionStrategy, ViewEncapsulation } from "@angular/core";
+import { MatTabsModule } from "@angular/material/tabs";
+import { ChatComponent } from "../chat/chat.component";
 import { WorldObjectListComponent } from "../world-object-list/world-object-list.component";
+
 
 @Component({
   selector: 'app-game-bar-right',

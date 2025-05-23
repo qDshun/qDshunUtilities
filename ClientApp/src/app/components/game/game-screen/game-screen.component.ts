@@ -1,5 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, ViewChild } from '@angular/core';
-import { GameService } from '../../../services/game.service';
+import { ActivatedRoute } from '@angular/router';
+import { GameService } from '@services';
 
 @Component({
   selector: 'app-game-screen',
@@ -14,9 +15,10 @@ export class GameScreenComponent implements AfterViewInit {
 
   private destroyRef = inject(DestroyRef);
   private gameService = inject(GameService);
+  private activatedRoute = inject(ActivatedRoute);
 
   ngAfterViewInit(): void {
-    this.gameService.initialize(this._canvas, this.destroyRef)
+    this.gameService.initialize(this.activatedRoute.snapshot.params['worldId'], this._canvas, this.destroyRef)
       .subscribe();
   }
 

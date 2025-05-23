@@ -1,0 +1,56 @@
+<div class="character-sheet">
+  <mat-tab-group dynamicHeight>
+
+    <mat-tab label="Roll">
+      <div class="roll-tab">
+
+        <app-rollable-attribute [attribute]="characterSheet.Strength"></app-rollable-attribute>
+        <app-rollable-attribute [attribute]="characterSheet.StrikeStrength"></app-rollable-attribute>
+        <app-rollable-attribute [attribute]="characterSheet.LiftStrength"></app-rollable-attribute>
+        <app-rollable-attribute [attribute]="characterSheet.DX"></app-rollable-attribute>
+        <app-rollable-attribute [attribute]="characterSheet.IQ"></app-rollable-attribute>
+        <app-rollable-attribute [attribute]="characterSheet.Perception"></app-rollable-attribute>
+        <app-rollable-attribute [attribute]="characterSheet.Vision"></app-rollable-attribute>
+        <app-rollable-attribute [attribute]="characterSheet.Hearing"></app-rollable-attribute>
+        <app-rollable-attribute [attribute]="characterSheet.Smell"></app-rollable-attribute>
+        <app-rollable-attribute [attribute]="characterSheet.Touch"></app-rollable-attribute>
+        <app-rollable-attribute [attribute]="characterSheet.Willpower"></app-rollable-attribute>
+        <app-rollable-attribute [attribute]="characterSheet.Fright"></app-rollable-attribute>
+        <app-rollable-attribute [attribute]="characterSheet.Health"></app-rollable-attribute>
+        <!-- <app-rollable-attribute [attribute]="characterSheet.Unstun"></app-rollable-attribute> -->
+        <!-- <app-rollable-attribute [attribute]="characterSheet.Knockdown"></app-rollable-attribute> -->
+        <app-rollable-attribute [attribute]="characterSheet.Unconscious"></app-rollable-attribute>
+        <app-rollable-attribute [attribute]="characterSheet.Death"></app-rollable-attribute>
+
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Exp">
+      <div class="exp-tab">
+        <app-trainable-attribute [attribute]="characterSheet.Strength"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.StrikeStrength"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.LiftStrength"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.HealthPoints"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.DX"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.IQ"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.Perception"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.Vision"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.Hearing"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.Smell"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.Touch"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.Willpower"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.Fright"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.Health"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.FatiguePoints"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.Unconscious"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.Death"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.BasicSpeed"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.BasicMove"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.WaterMove"></app-trainable-attribute>
+        <app-trainable-attribute [attribute]="characterSheet.AirMove"></app-trainable-attribute>
+
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+</div>

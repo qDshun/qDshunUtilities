@@ -1,8 +1,14 @@
-import { ChangeDetectionStrategy, Component, computed, Input } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { CommonModule } from '@angular/common';
-import { WorldObjectItem } from '../../../models/world-object.model';
+import { Overlay, OverlayRef } from "@angular/cdk/overlay";
+import { ComponentPortal } from "@angular/cdk/portal";
+import { CommonModule } from "@angular/common";
+import { Component, ChangeDetectionStrategy, Input, inject, computed } from "@angular/core";
+import { MatButtonModule } from "@angular/material/button";
+import { MatIconModule } from "@angular/material/icon";
+import { AnyWorldObject, WorldObjectCharacter, WorldObjectType } from "@models/business";
+import { CharacterSheetOverlayComponent } from "../character-sheets/character-sheet-overlay/character-sheet-overlay.component";
+import { FavouritesService } from "@services";
+import { Guid } from "app/helpers/guid.type";
+
 
 @Component({
   selector: 'app-world-object[worldObjectNode]',
@@ -13,15 +19,44 @@ import { WorldObjectItem } from '../../../models/world-object.model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WorldObjectComponent {
-  @Input() worldObjectNode!: WorldObjectItem;
+  private favouritesService = inject(FavouritesService);
+  @Input() worldObjectNode!: AnyWorldObject;
 
-  public isFavouriteStyle = computed(() => `fill: ${this.worldObjectNode.isFavourite() ? 'yellow' : 'rgb(95, 99, 104)'}`);
+  private overlay = inject(Overlay);
+  private _overlayRef: OverlayRef | null = null;
+  public WorldObjectType = WorldObjectType;
+  public isFavouriteStyle = computed(() => `fill: ${(this.worldObjectNode as WorldObjectCharacter).isFavourite() ? 'yellow' : 'rgb(95, 99, 104)'}`);
   public backgroundImageStyle = computed(() =>
-    `background: linear-gradient(rgba(35, 36, 39, 0.4), rgba(35, 36, 39, 0.4)), url('${this.worldObjectNode.url()}');
+    `background: linear-gradient(rgba(35, 36, 39, 0.4), rgba(35, 36, 39, 0.4)), url('${this.worldObjectNode.previewImageUrl()}');
      background-position: center center; background-size: cover;`);
 
-  toggleFavourite(worldObjectNode: WorldObjectItem): void {
-    worldObjectNode.isFavourite.update(isFavourite => !isFavourite);
+  public toggleFavourite(): void {
+    (this.worldObjectNode as WorldObjectCharacter).isFavourite.update(isFavourite => !isFavourite);
+    this.favouritesService.toggleFavourite(this.worldObjectNode.id);
   }
 
+  public toggleCharacterSheet(){
+    if (this._overlayRef){
+      this._overlayRef.detach();
+      this._overlayRef = null;
+    } else {
+      this.openCharacterSheet(this.worldObjectNode.id);
+    }
+  }
+
+  private openCharacterSheet(id: Guid) {
+    const positionStrategy = this.overlay.position()
+      .global()
+      .centerVertically()
+      .centerHorizontally();
+
+    this._overlayRef = this.overlay.create({
+      // height: 800,
+      // width: 400,
+      positionStrategy
+    });
+    const characterSheetOverlayPortal = new ComponentPortal(CharacterSheetOverlayComponent);
+    const componentPortal = this._overlayRef.attach(characterSheetOverlayPortal);
+    componentPortal.instance.characterSheetId = id;
+  }
 }

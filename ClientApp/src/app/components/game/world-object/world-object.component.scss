@@ -11,12 +11,18 @@
   display: flex;
   align-items: center;
   gap: 10px;
+
+  span {
+    white-space: nowrap;
+    width: 8em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
-.world-object-row-container{
+.world-object-row-container {
   align-items: center;
   display: flex;
   flex: 1;
   justify-content: space-between;
-
 }

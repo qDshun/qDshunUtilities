@@ -1,4 +1,4 @@
-import { ApplicationConfig, isDevMode, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, InjectionToken, isDevMode, provideExperimentalZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -6,13 +6,15 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { AuthInterceptor } from './interceptors';
 
+export const BASE_URL = new InjectionToken<string>("BASE_URL");
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideExperimentalZonelessChangeDetection(),
     provideRouter(routes),
     provideAnimationsAsync('animations'),
     provideHttpClient(withInterceptorsFromDi()),
-    { provide: 'BASE_URL', useFactory: getBaseUrl, deps: [] },
+    { provide: BASE_URL, useFactory: getBaseUrl, deps: [] },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ]
 };

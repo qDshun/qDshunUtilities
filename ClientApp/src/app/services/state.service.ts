@@ -1,47 +1,99 @@
-import { computed, Injectable, OnDestroy, signal, WritableSignal } from '@angular/core';
-import { VerticalHexGridConfiguration, HorizontalHexGridConfiguration, SquareGridConfiguration, IGridConfiguration } from '../models/grid-configuration.model';
-import { GameComponent } from '../components/game/game/game.component';
-import { Subject } from 'rxjs';
+import { Injectable, signal, WritableSignal, computed, inject } from "@angular/core";
+import { GameComponent } from "@components/game/game/game.component";
+import { GameMap, AnyWorldObject, WorldObjectType, WorldObjectCharacter, WorldObjectFolder, WorldObjectHandout } from "@models/business";
+import { forkJoin, map, Observable, of, ReplaySubject, Subject, switchMap, tap } from "rxjs";
+import { WorldObjectApiService } from "./world-object.api.service";
+import { WorldObjectResponse } from "@models/response";
+import { FavouritesService } from "./favourites.service";
+import { Guid } from "app/helpers/guid.type";
+import { MapApiService } from "./map.api.service";
+
 
 @Injectable({
   providedIn: GameComponent
 })
-export class StateService implements OnDestroy {
-  private _currentMapId: string | null = null;
+export class StateService {
+  private readonly worldObjectApiService = inject(WorldObjectApiService);
+  private readonly mapApiService = inject(MapApiService);
+  private readonly favouritesService = inject(FavouritesService);
+  public worldObjects: WritableSignal<AnyWorldObject[]> = signal([]);
+
+  private _currentMapId: Guid | null = null;
   public currentMapId = signal('1');
-  constructor() { }
 
-  ngOnDestroy(): void {
 
-  }
-
-  public maps = this.getMaps();
+  public maps: WritableSignal<GameMap[]> = signal([]);
   public currentMap = this.getCurrentMapAndThrowIfNotExists();
-  private tokenMockCounter = 0;
 
-  public onBeforeMapDestroyed$ = new Subject<string>();
-  public onAfterMapInit$ = new Subject<string>();
-  public changeMap(mapId: string){
+  private _onBeforeMapDestroyed$ = new Subject<string>();
+  public onBeforeMapDestroyed$ = this._onBeforeMapDestroyed$.asObservable();
+  private _onAfterMapInit$ = new Subject<string>();
+  public onAfterMapInit$ = this._onAfterMapInit$.asObservable();
+  private readonly _ready$ = new ReplaySubject<void>();
+  public readonly ready$ = this._ready$.asObservable()
+
+  public changeMap(mapId: Guid){
     if (this._currentMapId){
-      this.onBeforeMapDestroyed$.next(this._currentMapId);
+      this._onBeforeMapDestroyed$.next(this._currentMapId);
     }
     this.currentMapId.set(mapId);
-    this.onAfterMapInit$.next(mapId);
+    this._onAfterMapInit$.next(mapId);
     this._currentMapId = mapId;
   }
 
-  private getMaps(): WritableSignal<GameMap[]> {
-    const values = signal([
-      new GameMap('1', signal('Forest'), signal(new VerticalHexGridConfiguration(20, this.getRandomColor())), signal(this.getRandomColor()), new Layer(signal([]), signal([])), new Layer(signal([]), signal([])), new Layer(signal([]), signal([new Token('0', `Token ${(this.tokenMockCounter++).toString()}`, 'https://media.istockphoto.com/id/1973365581/vector/sample-ink-rubber-stamp.jpg?s=612x612&w=0&k=20&c=_m6hNbFtLdulg3LK5LRjJiH6boCb_gcxPvRLytIz0Ws=', { type: 'tile', i: 10, j: 10 })]))),
-      new GameMap('2', signal('Village'), signal(new HorizontalHexGridConfiguration(20, this.getRandomColor(), 1200, 800)), signal(this.getRandomColor()), new Layer(signal([]), signal([])), new Layer(signal([]), signal([])), new Layer(signal([]), signal([new Token('0', `Token ${(this.tokenMockCounter++).toString()}`, 'https://media.istockphoto.com/id/1973365581/vector/sample-ink-rubber-stamp.jpg?s=612x612&w=0&k=20&c=_m6hNbFtLdulg3LK5LRjJiH6boCb_gcxPvRLytIz0Ws=', { type: 'tile', i: 8, j: 8 }), new Token('1', `Token ${(this.tokenMockCounter++).toString()}`, 'https://media.istockphoto.com/id/1973365581/vector/sample-ink-rubber-stamp.jpg?s=612x612&w=0&k=20&c=_m6hNbFtLdulg3LK5LRjJiH6boCb_gcxPvRLytIz0Ws=', { type: 'tile', i: 10, j: 10 })]))),
-      new GameMap('3', signal('Volcano'), signal(new SquareGridConfiguration(20, this.getRandomColor(), 900, 200)), signal(this.getRandomColor()), new Layer(signal([]), signal([])), new Layer(signal([]), signal([])), new Layer(signal([]), signal([new Token('0', `Token ${(this.tokenMockCounter++).toString()}`, 'https://media.istockphoto.com/id/1973365581/vector/sample-ink-rubber-stamp.jpg?s=612x612&w=0&k=20&c=_m6hNbFtLdulg3LK5LRjJiH6boCb_gcxPvRLytIz0Ws=', { type: 'tile', i: 7, j: 7 }), new Token('1', `Token ${(this.tokenMockCounter++).toString()}`, 'https://media.istockphoto.com/id/1973365581/vector/sample-ink-rubber-stamp.jpg?s=612x612&w=0&k=20&c=_m6hNbFtLdulg3LK5LRjJiH6boCb_gcxPvRLytIz0Ws=', { type: 'tile', i: 9, j: 9 }), new Token('2', `Token ${(this.tokenMockCounter++).toString()}`, 'https://media.istockphoto.com/id/1973365581/vector/sample-ink-rubber-stamp.jpg?s=612x612&w=0&k=20&c=_m6hNbFtLdulg3LK5LRjJiH6boCb_gcxPvRLytIz0Ws=', { type: 'tile', i: 10, j: 10 })]))),
-    ]);
-    return values;
+  public initializeWorldState(worldId: Guid): Observable<void> {
+    return of(void 0).pipe(
+      switchMap(() => this.initMaps(worldId)),
+      switchMap(() => this.initWorldObjects(worldId)),
+      tap(() => console.debug('State service is ready!')),
+      tap(() => this._ready$.next())
+    )
   }
 
+  private initWorldObjects(worldId: Guid): Observable<void> {
+    const favouriteIds = this.favouritesService.getFavourites();
 
-  public getRandomColor(): string {
-    return "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0")
+    return this.worldObjectApiService.getWorldObjects(worldId).pipe(
+      tap(response => this.worldObjects.set(response.worldObjects.map(worldObjectDto => this.toWorldObjectModel(worldObjectDto, favouriteIds)))),
+      map(_ => void 0)
+    )
+  }
+
+  private toWorldObjectModel(worldObjectDto: WorldObjectResponse, favouriteIds: string[]): AnyWorldObject {
+    const isFavourite = favouriteIds.includes(worldObjectDto.id);
+    switch (worldObjectDto.type) {
+      case WorldObjectType.CharacterSheet: {
+        return new WorldObjectCharacter(worldObjectDto, isFavourite);
+      }
+      case WorldObjectType.Folder: {
+        return new WorldObjectFolder(worldObjectDto);
+      }
+      case WorldObjectType.Handout: {
+        return new WorldObjectHandout(worldObjectDto, isFavourite);
+      }
+    }
+  }
+
+  private initMaps(worldId: Guid): Observable<void> {
+    return this.mapApiService.getMaps(worldId).pipe(
+      map(mapDtos => mapDtos.map(mapDto => new GameMap(mapDto))),
+      tap(maps => this.maps = signal(maps)),
+      switchMap(maps => this.initRenderableObjectsTexture(maps)),
+      tap(() => console.debug('Init of maps done')),
+    )
+  }
+
+  //TODO: Rewrite completely when Map Api would be availible
+  private initRenderableObjectsTexture(maps: GameMap[]): Observable<void> {
+    const renderableObjects = [
+      ...maps.flatMap(m => m.gmLayer.renderableObjects()),
+      ...maps.flatMap(m => m.backgroundLayer.renderableObjects()),
+      ...maps.flatMap(m => m.interactableLayer.renderableObjects())
+    ];
+    return forkJoin(renderableObjects.map(ro => ro.loadTexture())).pipe(
+      tap(() => console.debug('Init of renderable objects (loading textures) done')),
+      map(_ => void 0)
+    );
   }
 
   private getCurrentMapAndThrowIfNotExists() {
@@ -59,40 +111,3 @@ export class UnrecoverableError extends Error {
 
 }
 
-export class GameMap {
-  constructor(
-    public id: string,
-    public name: WritableSignal<string>,
-    public mapTileConfiguration: WritableSignal<IGridConfiguration>,
-    public backgroundColor: WritableSignal<string>,
-
-    public backgroundLayer: Layer,
-    public hiddenLayer: Layer,
-    public interactableLayer: Layer,
-  ) { }
-}
-
-export class Layer {
-  constructor(
-    public tokens: WritableSignal<Token[]>,
-    public renderableObjects: WritableSignal<RenderableObject[]>,
-  ) { }
-}
-
-export class RenderableObject {
-  public snap = signal(this._snap);
-  constructor(
-    public id: string,
-    public name: string,
-    public url: string,
-    private _snap: SnappingOptions
-  ) { }
-}
-
-export type SnappingOptions =
-  | { type: 'tile'; i: number; j: number }
-  | { type: 'free'; x: number; y: number };
-
-export class Token extends RenderableObject {
-
-}

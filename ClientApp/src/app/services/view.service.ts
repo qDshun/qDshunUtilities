@@ -1,9 +1,10 @@
-import { DestroyRef, Injectable } from '@angular/core';
-import { Application, Point } from 'pixi.js';
-import { fromEvent, tap, merge, filter, map, Observable, pairwise, switchMap, takeUntil, throttleTime } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { HasEventTargetAddRemove } from 'rxjs/internal/observable/fromEvent';
-import { GameComponent } from '../components/game/game/game.component';
+import { Injectable, DestroyRef } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { GameComponent } from "@components/game/game/game.component";
+import { Application, Point } from "pixi.js";
+import { merge, fromEvent, tap, Observable, filter, switchMap, pairwise, throttleTime, map, takeUntil } from "rxjs";
+import { HasEventTargetAddRemove } from "rxjs/internal/observable/fromEvent";
+
 
 @Injectable({
   providedIn: GameComponent
@@ -54,7 +55,10 @@ export class ViewService {
 
 
   private zoom(application: Application, event: WheelEvent) {
-    const scaleSpeed = 0.2;
+    const scaleSpeed = 0.25;
+    const minZoom = 0.75;
+    const maxZoom = 3;
+
     const container = application.stage;
     // Determine the zoom direction (up or down)
     const zoomDirection = event.deltaY > 0 ? -1 : 1;
@@ -63,13 +67,12 @@ export class ViewService {
     const scaleDifference = zoomDirection * scaleSpeed;
     // Save the old scale and calculate the new scale
     const oldScale = container.scale.x;
-    const newScale = Math.max(0.1, Math.min(3, oldScale + scaleDifference));
+    const newScale = Math.max(minZoom, Math.min(maxZoom, oldScale + scaleDifference));
     const scaleRatio = newScale / oldScale;
 
     // To zoom relative to the mouse position, adjust the container's position
     container.position.x -= (event.layerX - container.position.x) * (scaleRatio - 1);
     container.position.y -= (event.layerY - container.position.y) * (scaleRatio - 1);
-
     container.scale.set(newScale);
   }
 

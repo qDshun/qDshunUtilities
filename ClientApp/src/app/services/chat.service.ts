@@ -1,47 +1,38 @@
-import { inject, Injectable } from '@angular/core';
-import { Observable, ReplaySubject } from 'rxjs';
+import { inject, Injectable, InjectionToken } from '@angular/core';
+import { Observable, ReplaySubject, scan, startWith, switchMap } from 'rxjs';
 import * as signalR from "@microsoft/signalr";
-import { ChatMessage } from '../models/chat-message';
+import { GetLastMessagesRequest } from '../models/request/get-last-messages-request.model';
+import { ChatMessageResponse } from '../models/response/chat-message-reponse.model';
 import { ApiService } from './api.service';
-import { GetLastMessagesRequest } from '../models/request/get-last-messages-request';
+import { EventService } from './event.service';
+import { Guid } from 'app/helpers/guid.type';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService {
-  private apiService = inject(ApiService);
-  private connection!: signalR.HubConnection;
-  public lastMsg$ : ReplaySubject<ChatMessage>;
-
-  chatEntries!: ChatMessage[];
-  constructor() { 
-    this.connection = new signalR.HubConnectionBuilder()
-    .withUrl("https://localhost:7297/hub")
-    .build();
-    this.lastMsg$ = new ReplaySubject();
-    this.chatEntries = [];
-    this.connection.on("messageReceived", (line : ChatMessage) => {
-      this.chatEntries.push(line);
-      this.lastMsg$.next(line);
-
-    });
-    this.connection.onclose((error) => {
-      console.error(`Something went wrong: ${error}`);
-  });
-    this.connection.start().catch((err) => console.log(err));
+  private readonly apiService = inject(ApiService);
+  private readonly eventService = inject(EventService)
+  private readonly newMessageEventName = 'messageReceived';
+  private readonly newMessageMethodName = 'newMessage';
 
 
+  public getMessages(worldId: Guid) {
+    return this.getLastMessages(worldId, 100)
+    .pipe(
+      switchMap(initialMessages => this.eventService.onEvent<ChatMessageResponse>(this.newMessageEventName).pipe(
+        scan((acc: ChatMessageResponse[], curr: ChatMessageResponse) => [...acc, curr], initialMessages),
+        startWith(initialMessages)
+      ))
+    );
   }
 
-  sendMessage(message: string, worldId: string) {
-    try {
-      this.connection.invoke("newMessage", message, worldId);
-    } catch (err) {
-        console.error(err);
-    }
+  sendMessage(worldId: Guid, message: string): Observable<void> {
+    return this.eventService.send<void>(this.newMessageMethodName, message, worldId)
   }
 
-  getLastMessages(numberOfMessage: number, worldId: string): Observable<ChatMessage[]> {
-    return this.apiService.post<ChatMessage[]>("Chat", new GetLastMessagesRequest(numberOfMessage, worldId));
+  getLastMessages(worldId: Guid, numberOfMessage: number): Observable<ChatMessageResponse[]> {
+    const request: GetLastMessagesRequest = { worldId, msgCount: numberOfMessage }
+    return this.apiService.post<ChatMessageResponse[]>("Chat", request);
   }
 }

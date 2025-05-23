@@ -1,9 +1,10 @@
-import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, ReplaySubject, share, switchMap, tap } from 'rxjs';
-import { ApiService } from './api.service';
-import { CreateWorldRequest } from '../models/request/create-world-request';
-import { EditWorldRequest } from '../models/request/edit-world-request';
-import { WorldResponse } from '../models/response/world-response';
+import { Injectable, inject } from "@angular/core";
+import { CreateWorldRequest, EditWorldRequest } from "@models/request";
+import { WorldResponse } from "@models/response";
+import { BehaviorSubject, switchMap, share, ReplaySubject, Observable, tap } from "rxjs";
+import { ApiService } from "./api.service";
+import { Guid } from "app/helpers/guid.type";
+
 
 @Injectable({
   providedIn: 'root'
@@ -28,13 +29,13 @@ export class WorldService {
     );
   }
 
-  updateWorld(id: string, world: EditWorldRequest) {
+  updateWorld(id: Guid, world: EditWorldRequest) {
     return this.apiService.put(`world/${id}`, world).pipe(
       tap(() => this.worldsUpdated$.next(null))
     );
   }
 
-  deleteWorld(id: string) {
+  deleteWorld(id: Guid) {
     return this.apiService.delete(`world/${id}`).pipe(
       tap(() => this.worldsUpdated$.next(null))
     );

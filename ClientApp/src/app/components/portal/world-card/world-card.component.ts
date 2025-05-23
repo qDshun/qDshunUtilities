@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { Router } from '@angular/router';
-import { WorldResponse } from '../../../models/response/world-response';
+import { WorldResponse } from '@models/response';
+import { Guid } from 'app/helpers/guid.type';
 
 @Component({
   selector: 'app-world-card[world]',
@@ -17,7 +18,7 @@ export class WorldCardComponent {
 
   @Input() world!: WorldResponse;
 
-  selectWorld(worldId: string) {
+  selectWorld(worldId: Guid) {
       this.router.navigateByUrl(`world/${worldId}`);
   }
 

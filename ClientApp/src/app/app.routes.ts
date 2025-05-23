@@ -1,13 +1,14 @@
-import { Routes } from '@angular/router';
-import { LoginComponent } from './components/auth/login/login.component';
-import { RegisterComponent } from './components/auth/register/register.component';
-import { authGuard } from './guards';
-import { WorldSelectComponent } from './components/portal/world-select/world-select.component';
-import { WorldComponent } from './components/portal/world/world.component';
-import { PortalLayoutComponent } from './components/portal/portal-layout/portal-layout.component';
-import { GameComponent } from './components/game/game/game.component';
-import { PrivacyPolicyComponent } from './components/portal/privacy-policy/privacy-policy.component';
-import { GurpsArmorCraftingComponent } from './components/utilities/gurps-armor-crafting/gurps-armor-crafting.component';
+import { Routes } from "@angular/router";
+import { LoginComponent } from "@components/auth/login/login.component";
+import { RegisterComponent } from "@components/auth/register/register.component";
+import { GameComponent } from "@components/game/game/game.component";
+import { PortalLayoutComponent } from "@components/portal/portal-layout/portal-layout.component";
+import { PrivacyPolicyComponent } from "@components/portal/privacy-policy/privacy-policy.component";
+import { WorldSelectComponent } from "@components/portal/world-select/world-select.component";
+import { WorldComponent } from "@components/portal/world/world.component";
+import { authGuard } from "@guards";
+import { GurpsArmorCraftingComponent } from "./components/utilities/gurps-armor-crafting/gurps-armor-crafting.component";
+
 
 export const routes: Routes = [
   {
