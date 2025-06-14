@@ -9,11 +9,11 @@ public enum WorldObjectType
     CharacterSheet,
     Handout
 }
-public class GetWorldObjectResponse(IEnumerable<WorldObjectResponse> worldObjects)
+public class GetWorldObjectResponse(IEnumerable<WorldObjectDto> worldObjects)
 {
-    public IEnumerable<WorldObjectResponse> WorldObjects { get; set; } = worldObjects;
+    public IEnumerable<WorldObjectDto> WorldObjects { get; set; } = worldObjects;
 }
-public class WorldObjectResponse(WorldObjectEntity wo)
+public class WorldObjectDto(WorldObjectEntity wo)
 {
     public WorldObjectType Type { get; set; } = wo switch
     {

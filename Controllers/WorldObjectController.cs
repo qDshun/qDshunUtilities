@@ -12,11 +12,11 @@ namespace qDshunUtilities.Controllers
         [HttpGet]
         public async Task<ActionResult<GetWorldObjectResponse>> GetWorldObjects([FromRoute] Guid worldId)
         {
-            return Ok(await worldObjectService.GetWorldObjectsAsync(worldId, AuthenticatedUser));
+            return await worldObjectService.GetWorldObjectsAsync(worldId, AuthenticatedUser);
         }
 
         [HttpGet("{worldObjectId}")]
-        public async Task<ActionResult<WorldObjectResponse>> GetWorldObject([FromRoute] Guid worldId, [FromRoute] Guid worldObjectId)
+        public async Task<ActionResult<WorldObjectDto>> GetWorldObject([FromRoute] Guid worldId, [FromRoute] Guid worldObjectId)
         {
             return Ok(await worldObjectService.GetWorldObjectAsync(worldId, worldObjectId, AuthenticatedUser));
         }
@@ -25,7 +25,7 @@ namespace qDshunUtilities.Controllers
         public async Task<ActionResult> CreateWorldObject([FromRoute] Guid worldId, [FromBody] WorldObjectCreateRequest worldObjectCreate)
         {
             await worldObjectService.CreateWorldObjectAsync(worldId, worldObjectCreate, AuthenticatedUser);
-            return Ok();
+            return NoContent();
         }
 
         [HttpPut("charactet-sheet")]
@@ -33,7 +33,7 @@ namespace qDshunUtilities.Controllers
         [FromBody] CharacterSheetUpdateRequest request)
         {
             await worldObjectService.UpdateCharacterSheetAsync(worldId, request, AuthenticatedUser);
-            return Ok();
+            return NoContent();
         }
 
 
@@ -42,7 +42,7 @@ namespace qDshunUtilities.Controllers
             [FromRoute] Guid worldObjectId)
         {
             await worldObjectService.DeleteWorldObjectAsync(worldId, worldObjectId, AuthenticatedUser);
-            return Ok();
+            return NoContent();
         }
     }
 }
