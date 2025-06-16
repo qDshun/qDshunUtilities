@@ -32,6 +32,5 @@ namespace qDshunUtilities.Services
                 .ToListAsync();
             return chatLines;
         }
-
     }
 }

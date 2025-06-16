@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using qDshunUtilities.EF;
 using qDshunUtilities.EF.Entities;
+using qDshunUtilities.EF.Entities.WorldObjects;
 using qDshunUtilities.Helpers;
 using qDshunUtilities.Hubs;
 using qDshunUtilities.Models.Inbound;
 using qDshunUtilities.Models.Outbound;
-using qDshunUtilities.Models.Outbound.Notifciations;
+using qDshunUtilities.Models.Outbound.Notifications;
 using System.Collections.Generic;
 
 namespace qDshunUtilities.Services;
@@ -63,7 +64,8 @@ public class ObjectFieldService(ApplicationDbContext dbContext, IMapper mapper, 
         };
         dbContext.ObjectFields.Add(entity);
         await dbContext.SaveChangesAsync();
-        await notificationService.SendObjectFieldCreatedNotificationAsync(worldId.ToString(), worldObjectId, entity);
+        await notificationService.SendNotificationAsync(worldId, worldObjectId, 
+            new ObjectFieldCreatedNotification { WorldObjectId = worldObjectId, ObjectFieldId = entity.Id, ObjectField = new ObjectFieldDto(entity) });
     }
 
     public async Task UpdateObjectFieldAsync(Guid worldId, Guid worldObjectId, ObjectFieldUpdateRequest objectFieldUpdate, Guid authenticatedUser)
@@ -78,7 +80,8 @@ public class ObjectFieldService(ApplicationDbContext dbContext, IMapper mapper, 
         
         dbContext.ObjectFields.Update(objectFieldEntity);
         await dbContext.SaveChangesAsync();
-        await notificationService.SendObjectFieldUpdatedNotificationAsync(worldId.ToString(), worldObjectId, objectFieldEntity);
+        await notificationService.SendNotificationAsync(worldId, worldObjectId,
+            new ObjectFieldUpdatedNotification { WorldObjectId = worldObjectId, ObjectFieldId = objectFieldEntity.Id, ObjectField = new ObjectFieldDto(objectFieldEntity) });
     }
 
     public async Task DeleteObjectFieldAsync(Guid worldId, Guid worldObjectId, Guid objectFieldId, Guid authenticatedUser)
@@ -87,6 +90,7 @@ public class ObjectFieldService(ApplicationDbContext dbContext, IMapper mapper, 
 
         await accessService.AssertHasWorldObjectPermissionAsync(worldObjectId, authenticatedUser, Perms.AllowEdit);
         await dbContext.ObjectFields.Where(of => of.Id == objectFieldId).ExecuteDeleteAsync();
-        await notificationService.SendObjectFieldDeletedNotificationAsync(worldId.ToString(), worldObjectId, objectFieldId);
+        await notificationService.SendNotificationAsync(worldId, worldObjectId,
+            new ObjectFieldUpdatedNotification { WorldObjectId = worldObjectId, ObjectFieldId = objectFieldId });
     }
 }

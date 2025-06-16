@@ -59,6 +59,7 @@ public static class Program
         builder.Services.AddScoped<IAccessService, AccessService>();
         builder.Services.AddScoped<IObjectFieldService, ObjectFieldService>();
         builder.Services.AddScoped<IChatService, ChatService>();
+        builder.Services.AddScoped<INotificationService, NotificationService>();
         builder.Services.AddSingleton<IDiceService, DiceService>();
 
 
@@ -90,7 +91,7 @@ public static class Program
 
         app.UseAuthorization();
 
-        app.MapHub<ChatHub>("/hub");
+        app.MapHub<EventHub>("/hub");
 
         app.MapControllers();
         app.MapGroup("/api/identity").WithTags("Identity").MapIdentityApi<UserEntity>();

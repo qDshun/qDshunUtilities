@@ -10,7 +10,7 @@ using qDshunUtilities.Helpers;
 using qDshunUtilities.Hubs;
 using qDshunUtilities.Models.Inbound;
 using qDshunUtilities.Models.Outbound;
-using qDshunUtilities.Models.Outbound.Notifciations;
+using qDshunUtilities.Models.Outbound.Notifications;
 using System.Linq;
 
 namespace qDshunUtilities.Services;
@@ -79,7 +79,7 @@ public class WorldObjectService(ApplicationDbContext dbContext, IAccessService a
 
         dbContext.WorldObjects.Add(worldObjectEntity);
         await dbContext.SaveChangesAsync();
-        await notificationService.SendWorldObjectCreatedNotificationAsync(worldId.ToString(), worldObjectEntity);
+        await notificationService.SendNotificationAsync(worldId, worldObjectEntity.Id, new WorldObjectCreatedNotification { WorldObjectId = worldObjectEntity.Id, WorldObject = new WorldObjectDto(worldObjectEntity) });
     }
 
     public async Task<bool> ValidateCreateRequest(WorldObjectCreateRequest request)
@@ -144,7 +144,7 @@ public class WorldObjectService(ApplicationDbContext dbContext, IAccessService a
 
         dbContext.WorldObjects.Update(characterSheetEntity);
         await dbContext.SaveChangesAsync();
-        await notificationService.SendWorldObjectUpdatedNotificationAsync(worldId.ToString(), characterSheetEntity);
+        await notificationService.SendNotificationAsync(worldId, characterSheetEntity.Id, new WorldObjectUpdatedNotification { WorldObjectId = characterSheetEntity.Id, WorldObject = new WorldObjectDto(characterSheetEntity) });
     }
 
     public async Task DeleteWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser)
@@ -158,7 +158,7 @@ public class WorldObjectService(ApplicationDbContext dbContext, IAccessService a
         await dbContext.WorldObjects
             .Where(wo => wo.Id == worldObjectId)
             .ExecuteDeleteAsync();
-        await notificationService.SendWorldObjectDeletedNotificationAsync(worldId.ToString(), worldObjectId);
+        await notificationService.SendNotificationAsync(worldId, worldObjectId, new WorldObjectDeletedNotification { WorldObjectId = worldObjectId});
     }
 
     private async Task<IEnumerable<WorldObjectPermissionEntity>> CreateWorldObjectPermissionEntitiesAsync(List<string> permissions, Guid worldId, Guid worldUserId)
@@ -167,7 +167,7 @@ public class WorldObjectService(ApplicationDbContext dbContext, IAccessService a
         foreach (var permission in permissions)
         {
             var PermissionEntity = await dbContext.Permissions.SingleAsync(p => p.Name == permission);
-
+    
             WorldObjectPermissionEntity worldObjectPermissionEntity = new()
             {
                 WorldObjectId = worldId,

@@ -47,6 +47,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasForeignKey(e => e.PreviousId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.Entity<WorldObjectEntity>()
+           .HasIndex(e => new { e.ParentId, e.PreviousId })
+           .IsUnique()
+           .HasFilter("[IsPrimary] = 1");
+
+
         builder.Entity<CharacterSheetEntity>().HasBaseType<TemplatedWorldObjectEntity>();
         builder.Entity<FolderEntity>().HasBaseType<WorldObjectEntity>();
         builder.Entity<HandoutEntity>().HasBaseType<TemplatedWorldObjectEntity>();
