@@ -3,10 +3,10 @@ using System.Security.Claims;
 
 namespace qDshunUtilities;
 
-public class AuthorizedController: ControllerBase
+public class AuthorizedController : ControllerBase
 {
-    public Guid AuthenticatedUser 
-    { 
+    public Guid AuthenticatedUser
+    {
         get
         {
             return GetAuthenticatedUser();

@@ -1,26 +1,26 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using qDshunUtilities.Controllers.WorldController.Inbound;
 using qDshunUtilities.EF;
 using qDshunUtilities.EF.Entities;
 using qDshunUtilities.Exceptions;
-using qDshunUtilities.Models.Inbound;
-using qDshunUtilities.Models.Outbound;
+using qDshunUtilities.Models.World;
 
 namespace qDshunUtilities.Services;
 
 public interface IWorldService
 {
-    Task<IEnumerable<World>> GetWorldsAsync(Guid authenticatedUser);
-    Task<World> GetWorldAsync(Guid worldId, Guid authenticatedUser);
-    Task CreateWorldAsync(WorldCreate worldCreate, Guid authenticatedUser);
-    Task UpdateWorldAsync(Guid worldId, WorldUpdate worldUpdate, Guid authenticatedUser);
+    Task<IEnumerable<WorldModel>> GetWorldsAsync(Guid authenticatedUser);
+    Task<WorldModel> GetWorldAsync(Guid worldId, Guid authenticatedUser);
+    Task CreateWorldAsync(WorldCreateRequest worldCreate, Guid authenticatedUser);
+    Task UpdateWorldAsync(Guid worldId, WorldUpdateRequest worldUpdate, Guid authenticatedUser);
     Task DeleteWorldAsync(Guid worldId, Guid authenticatedUser);
     Task InviteUserToWorldAsync(Guid worldId, InviteUserToWorldRequest request, Guid authenticatedUser);
 }
 
 public class WorldService(ApplicationDbContext dbContext, IMapper mapper, IAccessService accessService) : IWorldService
 {
-    public async Task<IEnumerable<World>> GetWorldsAsync(Guid authenticatedUser)
+    public async Task<IEnumerable<WorldModel>> GetWorldsAsync(Guid authenticatedUser)
     {
         var worlds = await dbContext.Worlds
             .Include(w => w.WorldUsers.Where(wu => wu.UserId == authenticatedUser))
@@ -28,10 +28,10 @@ public class WorldService(ApplicationDbContext dbContext, IMapper mapper, IAcces
                 .ThenInclude(ls => ls.LootItems)
             .ToListAsync();
 
-        return worlds.Select(mapper.Map<World>);
+        return worlds.Select(mapper.Map<WorldModel>);
     }
 
-    public async Task<World> GetWorldAsync(Guid worldId, Guid authenticatedUser)
+    public async Task<WorldModel> GetWorldAsync(Guid worldId, Guid authenticatedUser)
     {
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
 
@@ -42,10 +42,10 @@ public class WorldService(ApplicationDbContext dbContext, IMapper mapper, IAcces
                 .ThenInclude(ls => ls.LootItems)
             .FirstAsync();
 
-        return mapper.Map<World>(world);
+        return mapper.Map<WorldModel>(world);
     }
 
-    public async Task CreateWorldAsync(WorldCreate worldCreate, Guid authenticatedUser)
+    public async Task CreateWorldAsync(WorldCreateRequest worldCreate, Guid authenticatedUser)
     {
         var worldEntity = mapper.Map<WorldEntity>(worldCreate);
         var user = await dbContext.Users.SingleAsync(u => u.Id == authenticatedUser);
@@ -56,7 +56,7 @@ public class WorldService(ApplicationDbContext dbContext, IMapper mapper, IAcces
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateWorldAsync(Guid worldId, WorldUpdate worldUpdate, Guid authenticatedUser)
+    public async Task UpdateWorldAsync(Guid worldId, WorldUpdateRequest worldUpdate, Guid authenticatedUser)
     {
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
 
@@ -96,7 +96,7 @@ public class WorldService(ApplicationDbContext dbContext, IMapper mapper, IAcces
             throw new BadRequestException($"User {request.UserId} is already a member of world {worldId}");
         }
 
-        var worldUserEntity = new WorldUserEntity { WorldId = worldId};
+        var worldUserEntity = new WorldUserEntity { WorldId = worldId };
 
         targetUserEntity.WorldUsers.Add(worldUserEntity);
         await dbContext.SaveChangesAsync();

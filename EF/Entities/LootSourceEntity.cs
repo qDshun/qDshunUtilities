@@ -1,6 +1,6 @@
 ﻿namespace qDshunUtilities.EF.Entities;
 
-public class LootSourceEntity: BaseEntity
+public class LootSourceEntity : BaseEntity
 {
     public string Name { get; set; }
     public List<LootItemEntity> LootItems { get; set; } = [];

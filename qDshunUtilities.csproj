@@ -8,9 +8,13 @@
 
   <ItemGroup>
     <Compile Remove="ClientApp\**" />
+    <Compile Remove="Models\Hub\**" />
     <Content Remove="ClientApp\**" />
+    <Content Remove="Models\Hub\**" />
     <EmbeddedResource Remove="ClientApp\**" />
+    <EmbeddedResource Remove="Models\Hub\**" />
     <None Remove="ClientApp\**" />
+    <None Remove="Models\Hub\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,7 +38,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Hub\" />
+    <Folder Include="Controllers\Dice\Inbound\" />
+    <Folder Include="Controllers\WorldController\Outbound\" />
   </ItemGroup>
 
 </Project>

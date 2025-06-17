@@ -1,6 +1,6 @@
 ﻿namespace qDshunUtilities.EF.Entities;
 
-public class ChatMessageEntity: BaseEntity
+public class ChatMessageEntity : BaseEntity
 {
     public string Text { get; set; }
     public DateTime CreatedAt { get; set; }

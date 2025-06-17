@@ -1,45 +1,42 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+﻿using Microsoft.EntityFrameworkCore;
+using qDshunUtilities.Controllers.WorldObject.Inbound;
+using qDshunUtilities.Controllers.WorldObject.Outbound;
 using qDshunUtilities.EF;
 using qDshunUtilities.EF.Entities;
 using qDshunUtilities.EF.Entities.WorldObjects;
 using qDshunUtilities.Exceptions;
 using qDshunUtilities.Helpers;
-using qDshunUtilities.Hubs;
-using qDshunUtilities.Models.Inbound;
-using qDshunUtilities.Models.Outbound;
-using qDshunUtilities.Models.Outbound.Notifications;
-using System.Linq;
+using qDshunUtilities.Hubs.Outbound.Notifications;
+using qDshunUtilities.Models.WorldObject;
+using qDshunUtilities.Utils;
 
 namespace qDshunUtilities.Services;
 
 public interface IWorldObjectService
 {
-    Task<GetWorldObjectResponse> GetWorldObjectsAsync(Guid worldId, Guid authenticatedUser);
+    Task<GetWorldObjectsResponse> GetWorldObjectsAsync(Guid worldId, Guid authenticatedUser);
     Task CreateWorldObjectAsync(Guid worldId, WorldObjectCreateRequest worldObjectCreate, Guid authenticatedUser);
-    Task<WorldObjectDto> GetWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser);
+    Task<WorldObjectModel> GetWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser);
     Task UpdateCharacterSheetAsync(Guid worldId, CharacterSheetUpdateRequest request, Guid authenticatedUser);
     Task DeleteWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser);
 }
 
 public class WorldObjectService(ApplicationDbContext dbContext, IAccessService accessService, INotificationService notificationService) : IWorldObjectService
 {
-    public async Task<GetWorldObjectResponse> GetWorldObjectsAsync(Guid worldId, Guid authenticatedUser)
+    public async Task<GetWorldObjectsResponse> GetWorldObjectsAsync(Guid worldId, Guid authenticatedUser)
     {
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
 
-        List<WorldObjectDto> worldObjects = await dbContext.WorldObjects
+        List<WorldObjectModel> worldObjects = await dbContext.WorldObjects
             .Where(wo => wo.WorldId == worldId)
             .Include(wo => wo.WorldObjectPermissions)
             .ThenInclude(w => w.WorldUser)
-            .Select(wo => new WorldObjectDto(wo))
+            .Select(wo => new WorldObjectModel(wo))
             .ToListAsync();
-        return new GetWorldObjectResponse(worldObjects);
+        return new GetWorldObjectsResponse(worldObjects);
     }
 
-    public async Task<WorldObjectDto> GetWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser)
+    public async Task<WorldObjectModel> GetWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser)
     {
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
 
@@ -49,7 +46,7 @@ public class WorldObjectService(ApplicationDbContext dbContext, IAccessService a
          .Where(wo => wo.Id == worldObjectId)
          .Include(wo => wo.WorldObjectPermissions)
          .ThenInclude(w => w.WorldUser)
-         .Select(wo => new WorldObjectDto(wo))
+         .Select(wo => new WorldObjectModel(wo))
          .FirstAsync();
 
         return worldObject;
@@ -62,7 +59,7 @@ public class WorldObjectService(ApplicationDbContext dbContext, IAccessService a
         {
             throw new BadRequestException($"Parent object is not a folder");
         }
-       
+
         WorldObjectEntity worldObjectEntity = request.Type switch
         {
             WorldObjectType.Folder => GetFolderEntity(request),
@@ -79,7 +76,7 @@ public class WorldObjectService(ApplicationDbContext dbContext, IAccessService a
 
         dbContext.WorldObjects.Add(worldObjectEntity);
         await dbContext.SaveChangesAsync();
-        await notificationService.SendNotificationAsync(worldId, worldObjectEntity.Id, new WorldObjectCreatedNotification { WorldObjectId = worldObjectEntity.Id, WorldObject = new WorldObjectDto(worldObjectEntity) });
+        await notificationService.SendNotificationAsync(worldId, worldObjectEntity.Id, new WorldObjectCreatedNotification { WorldObjectId = worldObjectEntity.Id, WorldObject = new WorldObjectModel(worldObjectEntity) });
     }
 
     public async Task<bool> ValidateCreateRequest(WorldObjectCreateRequest request)
@@ -144,7 +141,7 @@ public class WorldObjectService(ApplicationDbContext dbContext, IAccessService a
 
         dbContext.WorldObjects.Update(characterSheetEntity);
         await dbContext.SaveChangesAsync();
-        await notificationService.SendNotificationAsync(worldId, characterSheetEntity.Id, new WorldObjectUpdatedNotification { WorldObjectId = characterSheetEntity.Id, WorldObject = new WorldObjectDto(characterSheetEntity) });
+        await notificationService.SendNotificationAsync(worldId, characterSheetEntity.Id, new WorldObjectUpdatedNotification { WorldObjectId = characterSheetEntity.Id, WorldObject = new WorldObjectModel(characterSheetEntity) });
     }
 
     public async Task DeleteWorldObjectAsync(Guid worldId, Guid worldObjectId, Guid authenticatedUser)
@@ -158,7 +155,7 @@ public class WorldObjectService(ApplicationDbContext dbContext, IAccessService a
         await dbContext.WorldObjects
             .Where(wo => wo.Id == worldObjectId)
             .ExecuteDeleteAsync();
-        await notificationService.SendNotificationAsync(worldId, worldObjectId, new WorldObjectDeletedNotification { WorldObjectId = worldObjectId});
+        await notificationService.SendNotificationAsync(worldId, worldObjectId, new WorldObjectDeletedNotification { WorldObjectId = worldObjectId });
     }
 
     private async Task<IEnumerable<WorldObjectPermissionEntity>> CreateWorldObjectPermissionEntitiesAsync(List<string> permissions, Guid worldId, Guid worldUserId)
@@ -167,7 +164,7 @@ public class WorldObjectService(ApplicationDbContext dbContext, IAccessService a
         foreach (var permission in permissions)
         {
             var PermissionEntity = await dbContext.Permissions.SingleAsync(p => p.Name == permission);
-    
+
             WorldObjectPermissionEntity worldObjectPermissionEntity = new()
             {
                 WorldObjectId = worldId,

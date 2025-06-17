@@ -1,6 +1,6 @@
 ﻿namespace qDshunUtilities.EF.Entities;
 
-public class LootItemEntity: BaseEntity
+public class LootItemEntity : BaseEntity
 {
     public string Name { get; set; }
     public string Description { get; set; }

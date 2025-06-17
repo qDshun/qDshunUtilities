@@ -8,623 +8,714 @@ using qDshunUtilities.EF;
 
 #nullable disable
 
-namespace qDshunUtilities.Migrations
+namespace qDshunUtilities.Migrations;
+
+[DbContext(typeof(ApplicationDbContext))]
+partial class ApplicationDbContextModelSnapshot : ModelSnapshot
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    protected override void BuildModel(ModelBuilder modelBuilder)
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
-        {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.3")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+        modelBuilder
+            .HasAnnotation("ProductVersion", "9.0.3")
+            .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+        SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClaimType")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ClaimValue")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
-                });
+                b.ToTable("AspNetUserClaims", (string)null);
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+            {
+                b.Property<string>("LoginProvider")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("ProviderKey")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("ProviderDisplayName")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("LoginProvider", "ProviderKey");
+                b.HasKey("LoginProvider", "ProviderKey");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
-                });
+                b.ToTable("AspNetUserLogins", (string)null);
+            });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+            {
+                b.Property<Guid>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("LoginProvider")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Value")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId", "LoginProvider", "Name");
+                b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
-                });
+                b.ToTable("AspNetUserTokens", (string)null);
+            });
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.ChatMessageEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.ChatMessageEntity", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("CreatedAt")
+                    .HasColumnType("datetime2");
 
-                    b.Property<string>("Text")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Text")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("WorldUserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("WorldUserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("WorldUserId");
+                b.HasIndex("WorldUserId");
 
-                    b.ToTable("ChatMessages");
-                });
+                b.ToTable("ChatMessages");
+            });
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.LootItemEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.LootItemEntity", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("Cost")
-                        .HasColumnType("float");
+                b.Property<double>("Cost")
+                    .HasColumnType("float");
 
-                    b.Property<string>("CountExpression")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("CountExpression")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("LootSourceId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("LootSourceId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Rarity")
-                        .HasColumnType("int");
+                b.Property<int>("Rarity")
+                    .HasColumnType("int");
 
-                    b.Property<double>("Weight")
-                        .HasColumnType("float");
+                b.Property<double>("Weight")
+                    .HasColumnType("float");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("LootSourceId");
+                b.HasIndex("LootSourceId");
 
-                    b.ToTable("LootItems");
-                });
+                b.ToTable("LootItems");
+            });
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.LootSourceEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.LootSourceEntity", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("WorldId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("WorldId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("WorldId");
+                b.HasIndex("WorldId");
 
-                    b.ToTable("LootSources");
-                });
+                b.ToTable("LootSources");
+            });
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.ObjectFieldEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.Map.MapEntity", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("BackgroundColor")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("ParentId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<int>("CellSize")
+                    .HasColumnType("int");
 
-                    b.Property<Guid>("TemplatedWorldObjectId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<int>("GridType")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<int>("Height")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("ParentId");
+                b.Property<string>("StrokeColor")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("TemplatedWorldObjectId");
+                b.Property<int>("Width")
+                    .HasColumnType("int");
 
-                    b.ToTable("ObjectFields");
-                });
+                b.Property<Guid>("WorldId")
+                    .HasColumnType("uniqueidentifier");
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.PermissionEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                b.HasKey("Id");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.HasIndex("WorldId");
 
-                    b.HasKey("Id");
+                b.ToTable("Maps");
+            });
 
-                    b.ToTable("Permissions");
-                });
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.Map.RenderableObjectEntity", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.TemplateEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                b.Property<string>("ImageUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("HTMLTemplate")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<int>("LayerType")
+                    .HasColumnType("int");
 
-                    b.HasKey("Id");
+                b.Property<Guid?>("MapId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.ToTable("Templates");
-                });
+                b.Property<int>("Snapping")
+                    .HasColumnType("int");
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.UserEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                b.Property<int>("Type")
+                    .HasColumnType("int");
 
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
+                b.HasKey("Id");
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                b.HasIndex("MapId");
 
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.ToTable("RenderableObjects");
+            });
 
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.ObjectFieldEntity", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
+                b.Property<Guid?>("ParentId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<Guid>("TemplatedWorldObjectId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("Value")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
+                b.HasKey("Id");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                b.HasIndex("ParentId");
 
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
+                b.HasIndex("TemplatedWorldObjectId");
 
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
+                b.ToTable("ObjectFields");
+            });
 
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.PermissionEntity", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
+                b.ToTable("Permissions");
+            });
 
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.TemplateEntity", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.ToTable("AspNetUsers", (string)null);
-                });
+                b.Property<string>("HTMLTemplate")
+                    .HasColumnType("nvarchar(max)");
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                b.HasKey("Id");
 
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.ToTable("Templates");
+            });
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.UserEntity", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                b.Property<int>("AccessFailedCount")
+                    .HasColumnType("int");
 
-                    b.ToTable("Worlds");
-                });
+                b.Property<string>("ConcurrencyStamp")
+                    .IsConcurrencyToken()
+                    .HasColumnType("nvarchar(max)");
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjectPermissionEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                b.Property<string>("Email")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<Guid>("PermissionId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<bool>("EmailConfirmed")
+                    .HasColumnType("bit");
 
-                    b.Property<Guid?>("WorldObjectId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<bool>("LockoutEnabled")
+                    .HasColumnType("bit");
 
-                    b.Property<Guid>("WorldUserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<DateTimeOffset?>("LockoutEnd")
+                    .HasColumnType("datetimeoffset");
 
-                    b.HasKey("Id");
+                b.Property<string>("NormalizedEmail")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.HasIndex("PermissionId");
+                b.Property<string>("NormalizedUserName")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.HasIndex("WorldObjectId");
+                b.Property<string>("PasswordHash")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("WorldUserId");
+                b.Property<string>("PhoneNumber")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("WorldObjectPermissions");
-                });
+                b.Property<bool>("PhoneNumberConfirmed")
+                    .HasColumnType("bit");
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjects.WorldObjectEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                b.Property<string>("SecurityStamp")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(34)
-                        .HasColumnType("nvarchar(34)");
+                b.Property<bool>("TwoFactorEnabled")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("UserName")
+                    .HasMaxLength(256)
+                    .HasColumnType("nvarchar(256)");
 
-                    b.Property<Guid?>("ParentId")
-                        .HasColumnType("uniqueidentifier");
+                b.HasKey("Id");
 
-                    b.Property<string>("PreviewImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.HasIndex("NormalizedEmail")
+                    .HasDatabaseName("EmailIndex");
 
-                    b.Property<Guid?>("PreviousId")
-                        .HasColumnType("uniqueidentifier");
+                b.HasIndex("NormalizedUserName")
+                    .IsUnique()
+                    .HasDatabaseName("UserNameIndex")
+                    .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.Property<Guid>("WorldId")
-                        .HasColumnType("uniqueidentifier");
+                b.ToTable("AspNetUsers", (string)null);
+            });
 
-                    b.HasKey("Id");
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldEntity", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasIndex("PreviousId");
+                b.Property<string>("ImageUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("WorldId");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("ParentId", "PreviousId")
-                        .IsUnique()
-                        .HasFilter("[IsPrimary] = 1");
+                b.HasKey("Id");
 
-                    b.ToTable("WorldObjects");
+                b.ToTable("Worlds");
+            });
 
-                    b.HasDiscriminator().HasValue("WorldObjectEntity");
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjectPermissionEntity", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.UseTphMappingStrategy();
-                });
+                b.Property<Guid>("PermissionId")
+                    .HasColumnType("uniqueidentifier");
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldUserEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("WorldObjectId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid>("WorldUserId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("WorldId")
-                        .HasColumnType("uniqueidentifier");
+                b.HasKey("Id");
 
-                    b.HasKey("Id");
+                b.HasIndex("PermissionId");
 
-                    b.HasIndex("UserId");
+                b.HasIndex("WorldObjectId");
 
-                    b.HasIndex("WorldId");
+                b.HasIndex("WorldUserId");
 
-                    b.ToTable("WorldUsers");
-                });
+                b.ToTable("WorldObjectPermissions");
+            });
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjects.FolderEntity", b =>
-                {
-                    b.HasBaseType("qDshunUtilities.EF.Entities.WorldObjects.WorldObjectEntity");
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjects.WorldObjectEntity", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasDiscriminator().HasValue("FolderEntity");
-                });
+                b.Property<string>("Discriminator")
+                    .IsRequired()
+                    .HasMaxLength(34)
+                    .HasColumnType("nvarchar(34)");
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjects.TemplatedWorldObjectEntity", b =>
-                {
-                    b.HasBaseType("qDshunUtilities.EF.Entities.WorldObjects.WorldObjectEntity");
+                b.Property<string>("Name")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("TemplateId")
-                        .HasColumnType("uniqueidentifier");
+                b.Property<Guid?>("ParentId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasIndex("TemplateId");
+                b.Property<string>("PreviewImageUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasDiscriminator().HasValue("TemplatedWorldObjectEntity");
-                });
+                b.Property<Guid?>("PreviousId")
+                    .HasColumnType("uniqueidentifier");
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjects.CharacterSheetEntity", b =>
-                {
-                    b.HasBaseType("qDshunUtilities.EF.Entities.WorldObjects.TemplatedWorldObjectEntity");
+                b.Property<Guid>("WorldId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("TokenImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                b.HasKey("Id");
 
-                    b.HasDiscriminator().HasValue("CharacterSheetEntity");
-                });
+                b.HasIndex("PreviousId");
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjects.HandoutEntity", b =>
-                {
-                    b.HasBaseType("qDshunUtilities.EF.Entities.WorldObjects.TemplatedWorldObjectEntity");
+                b.HasIndex("WorldId");
 
-                    b.HasDiscriminator().HasValue("HandoutEntity");
-                });
+                b.HasIndex("ParentId", "PreviousId")
+                    .IsUnique()
+                    .HasFilter("[IsPrimary] = 1");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
-                {
-                    b.HasOne("qDshunUtilities.EF.Entities.UserEntity", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.ToTable("WorldObjects");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
-                {
-                    b.HasOne("qDshunUtilities.EF.Entities.UserEntity", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.HasDiscriminator().HasValue("WorldObjectEntity");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
-                {
-                    b.HasOne("qDshunUtilities.EF.Entities.UserEntity", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                b.UseTphMappingStrategy();
+            });
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.ChatMessageEntity", b =>
-                {
-                    b.HasOne("qDshunUtilities.EF.Entities.WorldUserEntity", "WorldUser")
-                        .WithMany()
-                        .HasForeignKey("WorldUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldUserEntity", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Navigation("WorldUser");
-                });
+                b.Property<Guid>("UserId")
+                    .HasColumnType("uniqueidentifier");
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.LootItemEntity", b =>
-                {
-                    b.HasOne("qDshunUtilities.EF.Entities.LootSourceEntity", "LootSource")
-                        .WithMany("LootItems")
-                        .HasForeignKey("LootSourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.Property<Guid>("WorldId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.Navigation("LootSource");
-                });
+                b.HasKey("Id");
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.LootSourceEntity", b =>
-                {
-                    b.HasOne("qDshunUtilities.EF.Entities.WorldEntity", "World")
-                        .WithMany("LootSources")
-                        .HasForeignKey("WorldId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasIndex("UserId");
 
-                    b.Navigation("World");
-                });
+                b.HasIndex("WorldId");
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.ObjectFieldEntity", b =>
-                {
-                    b.HasOne("qDshunUtilities.EF.Entities.ObjectFieldEntity", "Parent")
-                        .WithMany()
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                b.ToTable("WorldUsers");
+            });
 
-                    b.HasOne("qDshunUtilities.EF.Entities.WorldObjects.TemplatedWorldObjectEntity", "TemplatedWorldObject")
-                        .WithMany("ObjectFields")
-                        .HasForeignKey("TemplatedWorldObjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjects.FolderEntity", b =>
+            {
+                b.HasBaseType("qDshunUtilities.EF.Entities.WorldObjects.WorldObjectEntity");
 
-                    b.Navigation("Parent");
+                b.HasDiscriminator().HasValue("FolderEntity");
+            });
 
-                    b.Navigation("TemplatedWorldObject");
-                });
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjects.TemplatedWorldObjectEntity", b =>
+            {
+                b.HasBaseType("qDshunUtilities.EF.Entities.WorldObjects.WorldObjectEntity");
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjectPermissionEntity", b =>
-                {
-                    b.HasOne("qDshunUtilities.EF.Entities.PermissionEntity", "Permission")
-                        .WithMany("WorldObjectPermissions")
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.Property<Guid?>("TemplateId")
+                    .HasColumnType("uniqueidentifier");
 
-                    b.HasOne("qDshunUtilities.EF.Entities.WorldObjects.WorldObjectEntity", "WorldObject")
-                        .WithMany("WorldObjectPermissions")
-                        .HasForeignKey("WorldObjectId");
+                b.HasIndex("TemplateId");
 
-                    b.HasOne("qDshunUtilities.EF.Entities.WorldUserEntity", "WorldUser")
-                        .WithMany("WorldObjectPermissions")
-                        .HasForeignKey("WorldUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasDiscriminator().HasValue("TemplatedWorldObjectEntity");
+            });
 
-                    b.Navigation("Permission");
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjects.CharacterSheetEntity", b =>
+            {
+                b.HasBaseType("qDshunUtilities.EF.Entities.WorldObjects.TemplatedWorldObjectEntity");
 
-                    b.Navigation("WorldObject");
+                b.Property<string>("TokenImageUrl")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Navigation("WorldUser");
-                });
+                b.HasDiscriminator().HasValue("CharacterSheetEntity");
+            });
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjects.WorldObjectEntity", b =>
-                {
-                    b.HasOne("qDshunUtilities.EF.Entities.WorldObjects.WorldObjectEntity", "Parent")
-                        .WithMany()
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjects.HandoutEntity", b =>
+            {
+                b.HasBaseType("qDshunUtilities.EF.Entities.WorldObjects.TemplatedWorldObjectEntity");
 
-                    b.HasOne("qDshunUtilities.EF.Entities.WorldObjects.WorldObjectEntity", "Previous")
-                        .WithMany()
-                        .HasForeignKey("PreviousId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                b.HasDiscriminator().HasValue("HandoutEntity");
+            });
 
-                    b.HasOne("qDshunUtilities.EF.Entities.WorldEntity", "World")
-                        .WithMany("WorldObjects")
-                        .HasForeignKey("WorldId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+            {
+                b.HasOne("qDshunUtilities.EF.Entities.UserEntity", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
-                    b.Navigation("Parent");
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+            {
+                b.HasOne("qDshunUtilities.EF.Entities.UserEntity", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
-                    b.Navigation("Previous");
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+            {
+                b.HasOne("qDshunUtilities.EF.Entities.UserEntity", null)
+                    .WithMany()
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
-                    b.Navigation("World");
-                });
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.ChatMessageEntity", b =>
+            {
+                b.HasOne("qDshunUtilities.EF.Entities.WorldUserEntity", "WorldUser")
+                    .WithMany()
+                    .HasForeignKey("WorldUserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldUserEntity", b =>
-                {
-                    b.HasOne("qDshunUtilities.EF.Entities.UserEntity", "User")
-                        .WithMany("WorldUsers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.Navigation("WorldUser");
+            });
 
-                    b.HasOne("qDshunUtilities.EF.Entities.WorldEntity", "World")
-                        .WithMany("WorldUsers")
-                        .HasForeignKey("WorldId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.LootItemEntity", b =>
+            {
+                b.HasOne("qDshunUtilities.EF.Entities.LootSourceEntity", "LootSource")
+                    .WithMany("LootItems")
+                    .HasForeignKey("LootSourceId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("User");
+                b.Navigation("LootSource");
+            });
 
-                    b.Navigation("World");
-                });
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.LootSourceEntity", b =>
+            {
+                b.HasOne("qDshunUtilities.EF.Entities.WorldEntity", "World")
+                    .WithMany("LootSources")
+                    .HasForeignKey("WorldId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjects.TemplatedWorldObjectEntity", b =>
-                {
-                    b.HasOne("qDshunUtilities.EF.Entities.TemplateEntity", "Template")
-                        .WithMany("TemplatedWorldObjects")
-                        .HasForeignKey("TemplateId");
+                b.Navigation("World");
+            });
 
-                    b.Navigation("Template");
-                });
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.Map.MapEntity", b =>
+            {
+                b.HasOne("qDshunUtilities.EF.Entities.WorldEntity", "World")
+                    .WithMany("Maps")
+                    .HasForeignKey("WorldId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.LootSourceEntity", b =>
-                {
-                    b.Navigation("LootItems");
-                });
+                b.Navigation("World");
+            });
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.PermissionEntity", b =>
-                {
-                    b.Navigation("WorldObjectPermissions");
-                });
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.Map.RenderableObjectEntity", b =>
+            {
+                b.HasOne("qDshunUtilities.EF.Entities.Map.MapEntity", "Map")
+                    .WithMany("RenderableObjects")
+                    .HasForeignKey("MapId");
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.TemplateEntity", b =>
-                {
-                    b.Navigation("TemplatedWorldObjects");
-                });
+                b.Navigation("Map");
+            });
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.UserEntity", b =>
-                {
-                    b.Navigation("WorldUsers");
-                });
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.ObjectFieldEntity", b =>
+            {
+                b.HasOne("qDshunUtilities.EF.Entities.ObjectFieldEntity", "Parent")
+                    .WithMany()
+                    .HasForeignKey("ParentId")
+                    .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldEntity", b =>
-                {
-                    b.Navigation("LootSources");
+                b.HasOne("qDshunUtilities.EF.Entities.WorldObjects.TemplatedWorldObjectEntity", "TemplatedWorldObject")
+                    .WithMany("ObjectFields")
+                    .HasForeignKey("TemplatedWorldObjectId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("WorldObjects");
+                b.Navigation("Parent");
 
-                    b.Navigation("WorldUsers");
-                });
+                b.Navigation("TemplatedWorldObject");
+            });
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjects.WorldObjectEntity", b =>
-                {
-                    b.Navigation("WorldObjectPermissions");
-                });
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjectPermissionEntity", b =>
+            {
+                b.HasOne("qDshunUtilities.EF.Entities.PermissionEntity", "Permission")
+                    .WithMany("WorldObjectPermissions")
+                    .HasForeignKey("PermissionId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldUserEntity", b =>
-                {
-                    b.Navigation("WorldObjectPermissions");
-                });
+                b.HasOne("qDshunUtilities.EF.Entities.WorldObjects.WorldObjectEntity", "WorldObject")
+                    .WithMany("WorldObjectPermissions")
+                    .HasForeignKey("WorldObjectId");
 
-            modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjects.TemplatedWorldObjectEntity", b =>
-                {
-                    b.Navigation("ObjectFields");
-                });
+                b.HasOne("qDshunUtilities.EF.Entities.WorldUserEntity", "WorldUser")
+                    .WithMany("WorldObjectPermissions")
+                    .HasForeignKey("WorldUserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("Permission");
+
+                b.Navigation("WorldObject");
+
+                b.Navigation("WorldUser");
+            });
+
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjects.WorldObjectEntity", b =>
+            {
+                b.HasOne("qDshunUtilities.EF.Entities.WorldObjects.WorldObjectEntity", "Parent")
+                    .WithMany()
+                    .HasForeignKey("ParentId")
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                b.HasOne("qDshunUtilities.EF.Entities.WorldObjects.WorldObjectEntity", "Previous")
+                    .WithMany()
+                    .HasForeignKey("PreviousId")
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                b.HasOne("qDshunUtilities.EF.Entities.WorldEntity", "World")
+                    .WithMany("WorldObjects")
+                    .HasForeignKey("WorldId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("Parent");
+
+                b.Navigation("Previous");
+
+                b.Navigation("World");
+            });
+
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldUserEntity", b =>
+            {
+                b.HasOne("qDshunUtilities.EF.Entities.UserEntity", "User")
+                    .WithMany("WorldUsers")
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.HasOne("qDshunUtilities.EF.Entities.WorldEntity", "World")
+                    .WithMany("WorldUsers")
+                    .HasForeignKey("WorldId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+                b.Navigation("User");
+
+                b.Navigation("World");
+            });
+
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjects.TemplatedWorldObjectEntity", b =>
+            {
+                b.HasOne("qDshunUtilities.EF.Entities.TemplateEntity", "Template")
+                    .WithMany("TemplatedWorldObjects")
+                    .HasForeignKey("TemplateId");
+
+                b.Navigation("Template");
+            });
+
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.LootSourceEntity", b =>
+            {
+                b.Navigation("LootItems");
+            });
+
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.Map.MapEntity", b =>
+            {
+                b.Navigation("RenderableObjects");
+            });
+
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.PermissionEntity", b =>
+            {
+                b.Navigation("WorldObjectPermissions");
+            });
+
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.TemplateEntity", b =>
+            {
+                b.Navigation("TemplatedWorldObjects");
+            });
+
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.UserEntity", b =>
+            {
+                b.Navigation("WorldUsers");
+            });
+
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldEntity", b =>
+            {
+                b.Navigation("LootSources");
+
+                b.Navigation("Maps");
+
+                b.Navigation("WorldObjects");
+
+                b.Navigation("WorldUsers");
+            });
+
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjects.WorldObjectEntity", b =>
+            {
+                b.Navigation("WorldObjectPermissions");
+            });
+
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldUserEntity", b =>
+            {
+                b.Navigation("WorldObjectPermissions");
+            });
+
+        modelBuilder.Entity("qDshunUtilities.EF.Entities.WorldObjects.TemplatedWorldObjectEntity", b =>
+            {
+                b.Navigation("ObjectFields");
+            });
 #pragma warning restore 612, 618
-        }
     }
 }

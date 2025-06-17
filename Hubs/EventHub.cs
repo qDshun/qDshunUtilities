@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using qDshunUtilities.Models.Outbound;
-using qDshunUtilities.Models.Outbound.Notifications;
+using qDshunUtilities.Hubs.Outbound;
+using qDshunUtilities.Hubs.Outbound.Notifications;
 using qDshunUtilities.Services;
 using System.Collections.Concurrent;
 using System.Security.Claims;
@@ -26,6 +26,6 @@ public class EventHub(IChatService chatService, IAccessService accessService) : 
     // Handle removal of entries also, otherwise the element number will bloat 
 
     public ConcurrentDictionary<string, string> UserClaimsDict;
-    
+
 }
 
