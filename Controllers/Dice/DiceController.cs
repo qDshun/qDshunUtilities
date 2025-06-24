@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using qDshunUtilities.Controllers.Dice.Outbound;
 using qDshunUtilities.Models.Loot;
 using qDshunUtilities.Models.World;
 using qDshunUtilities.Services;
@@ -12,15 +13,15 @@ public class DiceController(ILogger<DiceController> logger, IDiceService diceSer
 {
     [AllowAnonymous]
     [HttpGet("{expression}")]
-    public async Task<ActionResult<IEnumerable<WorldModel>>> EvaluateDice(string expression)
+    public async Task<ActionResult<int>> EvaluateDice(string expression)
     {
-        return Ok(diceService.EvaluateDiceExpression(expression));
+        return diceService.EvaluateDiceExpression(expression);
     }
 
     [Authorize]
     [HttpGet("{lootSourceId}/{lootExpression}")]
-    public async Task<ActionResult<MaterializedLootSourceModel>> MaterializeLootSource(Guid lootSourceId, string lootExpression)
+    public async Task<ActionResult<MaterializeLootSourceResponse>> MaterializeLootSource(Guid lootSourceId, string lootExpression)
     {
-        return Ok(await lootSourceService.MaterializeLootSourceAsync(lootSourceId, AuthenticatedUser, lootExpression));
+        return new MaterializeLootSourceResponse(await lootSourceService.MaterializeLootSourceAsync(lootSourceId, AuthenticatedUser, lootExpression));
     }
 }

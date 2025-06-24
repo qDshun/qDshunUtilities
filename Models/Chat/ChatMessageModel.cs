@@ -1,8 +1,8 @@
 ﻿using qDshunUtilities.EF.Entities;
 
-namespace qDshunUtilities.Hubs.Outbound;
+namespace qDshunUtilities.Models.Chat;
 
-public class ChatMessage(ChatMessageEntity entity)
+public class ChatMessageModel(ChatMessageEntity entity)
 {
     public string UserName { get; set; } = "Placeholder";
     public string Message { get; set; } = entity.Text;

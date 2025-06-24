@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using qDshunUtilities.Hubs.Outbound;
 using qDshunUtilities.Hubs.Outbound.Notifications;
+using qDshunUtilities.Models.Chat;
 using qDshunUtilities.Services;
 using System.Collections.Concurrent;
 using System.Security.Claims;
@@ -21,7 +22,7 @@ public class EventHub(IChatService chatService, IAccessService accessService) : 
     public async Task SendNewMessage(string message, Guid worldId)
     {
         var entity = await chatService.CreateChatMessageAsync(message, worldId, AuthenticatedUser);
-        await Clients.Group(worldId.ToString()).SendAsync(BaseNotification.NewChatMessage, new ChatMessage(entity));
+        await Clients.Group(worldId.ToString()).SendAsync(BaseNotification.NewChatMessage, new ChatMessageModel(entity));
     }
     // Handle removal of entries also, otherwise the element number will bloat 
 

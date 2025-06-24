@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using qDshunUtilities.EF;
 using qDshunUtilities.EF.Entities;
-using qDshunUtilities.Hubs.Outbound;
+using qDshunUtilities.Models.Chat;
 
 namespace qDshunUtilities.Services;
 
 public interface IChatService
 {
     Task<ChatMessageEntity> CreateChatMessageAsync(string chatMessage, Guid worldId, Guid authenticatedUser);
-    Task<List<ChatMessage>> GetLastChatMessagesAsync(int numberOfLastMesssages, Guid worldId, Guid authenticatedUser);
+    Task<List<ChatMessageModel>> GetLastChatMessagesAsync(int numberOfLastMesssages, Guid worldId, Guid authenticatedUser);
 }
 public class ChatService(ApplicationDbContext dbContext) : IChatService
 {
@@ -22,13 +22,13 @@ public class ChatService(ApplicationDbContext dbContext) : IChatService
         return chatLineEntity;
     }
 
-    public async Task<List<ChatMessage>> GetLastChatMessagesAsync(int numberOfLastMesssages, Guid worldId, Guid authenticatedUser)
+    public async Task<List<ChatMessageModel>> GetLastChatMessagesAsync(int numberOfLastMesssages, Guid worldId, Guid authenticatedUser)
     {
-        List<ChatMessage> chatLines = await dbContext.ChatMessages
+        List<ChatMessageModel> chatLines = await dbContext.ChatMessages
             .Where(cl => cl.WorldUser.WorldId == worldId)
             .OrderBy(cl => cl.CreatedAt)
             .Take(numberOfLastMesssages)
-            .Select(cl => new ChatMessage(cl))
+            .Select(cl => new ChatMessageModel(cl))
             .ToListAsync();
         return chatLines;
     }

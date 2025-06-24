@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using qDshunUtilities.Controllers.WorldController.Inbound;
+using qDshunUtilities.Controllers.WorldController.Outbound;
 using qDshunUtilities.Models.World;
 using qDshunUtilities.Services;
 
@@ -12,22 +13,24 @@ namespace qDshunUtilities.Controllers.WorldController;
 public class WorldController(ILogger<WorldController> logger, IWorldService worldService) : AuthorizedController
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<WorldModel>>> GetWorlds()
+    public async Task<ActionResult<IEnumerable<WorldDto>>> GetWorlds()
     {
-        return Ok(await worldService.GetWorldsAsync(AuthenticatedUser));
+        var models = await worldService.GetWorldsAsync(AuthenticatedUser);
+        
+        return Ok(models.Select(worldModel => new WorldDto(worldModel)));
     }
 
     [HttpGet("{worldId}")]
-    public async Task<ActionResult<WorldModel>> GetWorld([FromRoute] Guid worldId)
+    public async Task<ActionResult<WorldDto>> GetWorld([FromRoute] Guid worldId)
     {
-        return Ok(await worldService.GetWorldAsync(worldId, AuthenticatedUser));
+        return new WorldDto(await worldService.GetWorldAsync(worldId, AuthenticatedUser));
     }
 
     [HttpPost]
     public async Task<ActionResult> CreateWorld([FromBody] WorldCreateRequest worldCreate)
     {
         await worldService.CreateWorldAsync(worldCreate, AuthenticatedUser);
-        return Ok();
+        return NoContent();
     }
 
     [HttpPost("{worldId}/invite")]
@@ -36,7 +39,7 @@ public class WorldController(ILogger<WorldController> logger, IWorldService worl
         [FromBody] InviteUserToWorldRequest request)
     {
         await worldService.InviteUserToWorldAsync(worldId, request, AuthenticatedUser);
-        return Ok();
+        return NoContent();
     }
 
     [HttpPut("{worldId}")]
@@ -45,7 +48,7 @@ public class WorldController(ILogger<WorldController> logger, IWorldService worl
         [FromBody] WorldUpdateRequest worldUpdate)
     {
         await worldService.UpdateWorldAsync(worldId, worldUpdate, AuthenticatedUser);
-        return Ok();
+        return NoContent();
     }
 
     [HttpDelete("{worldId}")]
@@ -53,6 +56,6 @@ public class WorldController(ILogger<WorldController> logger, IWorldService worl
         [FromRoute] Guid worldId)
     {
         await worldService.DeleteWorldAsync(worldId, AuthenticatedUser);
-        return Ok();
+        return NoContent();
     }
 }

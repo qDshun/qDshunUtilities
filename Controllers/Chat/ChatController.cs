@@ -1,19 +1,19 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using qDshunUtilities.Controllers.Chat.Inbound;
-using qDshunUtilities.Hubs.Outbound;
+using qDshunUtilities.Controllers.Chat.Outbound;
+using qDshunUtilities.Models.Chat;
 using qDshunUtilities.Services;
 
 namespace qDshunUtilities.Controllers.Chat;
 
 [Authorize]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/{worldId}/[controller]")]
 public class ChatController(ILogger<ChatController> logger, IChatService chatService) : AuthorizedController
 {
-    [HttpPost]
-    public async Task<ActionResult<IEnumerable<ChatMessage>>> GetLastChatMessages([FromBody] GetLastMessagesRequest request)
+    [HttpGet]
+    public async Task<ActionResult<ChatMessagesResponse>> GetLastChatMessages([FromRoute] Guid worldId, [FromQuery] int messageCount)
     {
-        return Ok(await chatService.GetLastChatMessagesAsync(request.MsgCount, request.WorldId, AuthenticatedUser));
+        return new ChatMessagesResponse(await chatService.GetLastChatMessagesAsync(messageCount, worldId, AuthenticatedUser));
     }
 }

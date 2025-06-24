@@ -16,7 +16,7 @@ public class LootItemController(ILogger<LootItemController> logger, ILootItemSer
         [FromBody] LootItemCreateRequest lootSourceCreate)
     {
         await lootItemService.CreateLootItemAsync(lootSourceId, lootSourceCreate, AuthenticatedUser);
-        return Ok();
+        return NoContent();
     }
 
     [HttpPut("{lootItemId}")]
@@ -25,7 +25,7 @@ public class LootItemController(ILogger<LootItemController> logger, ILootItemSer
         [FromBody] LootItemUpdateRequest lootSourceUpdate)
     {
         await lootItemService.UpdateLootItemAsync(lootItemId, lootSourceUpdate, AuthenticatedUser);
-        return Ok();
+        return NoContent();
     }
 
     [HttpDelete("{lootItemId}")]
@@ -33,6 +33,6 @@ public class LootItemController(ILogger<LootItemController> logger, ILootItemSer
         [FromRoute] Guid lootItemId)
     {
         await lootItemService.DeleteLootItemAsync(lootItemId, AuthenticatedUser);
-        return Ok();
+        return NoContent();
     }
 }
