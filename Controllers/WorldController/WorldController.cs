@@ -16,7 +16,7 @@ public class WorldController(ILogger<WorldController> logger, IWorldService worl
     public async Task<ActionResult<IEnumerable<WorldDto>>> GetWorlds()
     {
         var models = await worldService.GetWorldsAsync(AuthenticatedUser);
-        
+
         return Ok(models.Select(worldModel => new WorldDto(worldModel)));
     }
 

@@ -60,8 +60,13 @@ public static class Program
         builder.Services.AddScoped<IObjectFieldService, ObjectFieldService>();
         builder.Services.AddScoped<IChatService, ChatService>();
         builder.Services.AddScoped<INotificationService, NotificationService>();
+        builder.Services.AddScoped<IMapService, MapService>();
         builder.Services.AddSingleton<IDiceService, DiceService>();
 
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.CustomSchemaIds(type => type.ToString());
+        });
 
         builder.Services.AddSignalR(options =>
         {
