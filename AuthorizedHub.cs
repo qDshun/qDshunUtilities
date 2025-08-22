@@ -4,7 +4,7 @@ using System.Security.Claims;
 
 namespace qDshunUtilities;
 
-public class AuthorizedHub: Hub
+public class AuthorizedHub : Hub
 {
     public Guid AuthenticatedUser
     {

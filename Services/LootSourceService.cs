@@ -1,25 +1,24 @@
 ﻿using AutoMapper;
-using KaimiraGames;
 using Microsoft.EntityFrameworkCore;
+using qDshunUtilities.Controllers.LootSource.Inbound;
 using qDshunUtilities.EF;
 using qDshunUtilities.EF.Entities;
 using qDshunUtilities.Helpers;
-using qDshunUtilities.Models.Inbound;
-using qDshunUtilities.Models.Outbound;
+using qDshunUtilities.Models.Loot;
 
 namespace qDshunUtilities.Services;
 
 public interface ILootSourceService
 {
-    Task CreateLootSourceAsync(Guid worldId, LootSourceCreate lootSourceCreate, Guid authenticatedUser);
-    Task UpdateLootSourceAsync(Guid lootSourceId, LootSourceUpdate lootSourceUpdate, Guid authenticatedUser);
+    Task CreateLootSourceAsync(Guid worldId, LootSourceCreateRequest lootSourceCreate, Guid authenticatedUser);
+    Task UpdateLootSourceAsync(Guid lootSourceId, LootSourceUpdateRequest lootSourceUpdate, Guid authenticatedUser);
     Task DeleteLootSourceAsync(Guid lootSourceId, Guid authenticatedUser);
-    Task<MaterializedLootSource> MaterializeLootSourceAsync(Guid lootSourceId, Guid authenticatedUser, string lootExpression);
+    Task<MaterializedLootSourceModel> MaterializeLootSourceAsync(Guid lootSourceId, Guid authenticatedUser, string lootExpression);
 }
 
 public class LootSourceService(ApplicationDbContext dbContext, IMapper mapper, IAccessService accessService) : ILootSourceService
 {
-    public async Task CreateLootSourceAsync(Guid worldId, LootSourceCreate lootSourceCreate, Guid authenticatedUser)
+    public async Task CreateLootSourceAsync(Guid worldId, LootSourceCreateRequest lootSourceCreate, Guid authenticatedUser)
     {
         await accessService.AssertHasAccessToWorldAsync(worldId, authenticatedUser);
 
@@ -30,7 +29,7 @@ public class LootSourceService(ApplicationDbContext dbContext, IMapper mapper, I
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateLootSourceAsync(Guid lootSourceId, LootSourceUpdate lootSourceUpdate, Guid authenticatedUser)
+    public async Task UpdateLootSourceAsync(Guid lootSourceId, LootSourceUpdateRequest lootSourceUpdate, Guid authenticatedUser)
     {
         var lootSourceEntity = await dbContext.LootSources
             .Where(ls => ls.Id == lootSourceId && ls.World.WorldUsers.Any(wu => wu.UserId == authenticatedUser))
@@ -56,7 +55,7 @@ public class LootSourceService(ApplicationDbContext dbContext, IMapper mapper, I
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<MaterializedLootSource> MaterializeLootSourceAsync(Guid lootSourceId, Guid authenticatedUser, string lootExpression)
+    public async Task<MaterializedLootSourceModel> MaterializeLootSourceAsync(Guid lootSourceId, Guid authenticatedUser, string lootExpression)
     {
         var lootSourceEntity = await dbContext.LootSources
             .Where(ls => ls.Id == lootSourceId && ls.World.WorldUsers.Any(wu => wu.UserId == authenticatedUser))
@@ -68,7 +67,7 @@ public class LootSourceService(ApplicationDbContext dbContext, IMapper mapper, I
         lootSourceEntity.LootItems = GetRandomisedItems(lootSourceEntity, itemCount);
 
 
-        var materializedLootSource = mapper.Map<MaterializedLootSource>(lootSourceEntity);
+        var materializedLootSource = mapper.Map<MaterializedLootSourceModel>(lootSourceEntity);
         materializedLootSource.Expression = lootExpression;
         materializedLootSource.Count = itemCount;
         materializedLootSource.MaterializedLootItems = CombineAndSumDuplicates(materializedLootSource.MaterializedLootItems);
@@ -76,9 +75,9 @@ public class LootSourceService(ApplicationDbContext dbContext, IMapper mapper, I
         return materializedLootSource;
     }
 
-    private List<MaterializedLootItem> CombineAndSumDuplicates(IEnumerable<MaterializedLootItem> lootItems)
+    private List<MaterializedLootItemModel> CombineAndSumDuplicates(IEnumerable<MaterializedLootItemModel> lootItems)
     {
-        Dictionary<Guid, MaterializedLootItem> lootItemsById = [];
+        Dictionary<Guid, MaterializedLootItemModel> lootItemsById = [];
 
         foreach (var item in lootItems)
         {
@@ -88,7 +87,7 @@ public class LootSourceService(ApplicationDbContext dbContext, IMapper mapper, I
             }
             else
             {
-                lootItemsById[item.Id] = new MaterializedLootItem
+                lootItemsById[item.Id] = new MaterializedLootItemModel
                 {
                     Id = item.Id,
                     Name = item.Name,

@@ -33,10 +33,10 @@ public class AccessService(ApplicationDbContext dbContext, IMapper mapper) : IAc
     public async Task<bool> HasWorldObjectPermission(Guid worldObjectId, Guid authenticatedUser, string permission)
     {
         var worldObject = await dbContext.WorldObjects.SingleAsync(wo => wo.Id == worldObjectId);
-        return await dbContext.WorldObjectPermissions.AnyAsync(wop => 
-            wop.WorldObject.WorldId == worldObject.WorldId 
-            && wop.WorldUser.UserId == authenticatedUser 
-            && (wop.WorldObjectId == worldObjectId || wop.WorldObjectId == null) 
+        return await dbContext.WorldObjectPermissions.AnyAsync(wop =>
+            wop.WorldObject.WorldId == worldObject.WorldId
+            && wop.WorldUser.UserId == authenticatedUser
+            && (wop.WorldObjectId == worldObjectId || wop.WorldObjectId == null)
             && wop.Permission.Name == permission
             );
     }

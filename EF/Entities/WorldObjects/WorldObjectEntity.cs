@@ -1,6 +1,4 @@
-﻿using qDshunUtilities.Models.Inbound;
-
-namespace qDshunUtilities.EF.Entities.WorldObjects;
+﻿namespace qDshunUtilities.EF.Entities.WorldObjects;
 
 public class WorldObjectEntity : BaseEntity
 {

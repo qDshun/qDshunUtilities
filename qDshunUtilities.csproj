@@ -8,9 +8,13 @@
 
   <ItemGroup>
     <Compile Remove="ClientApp\**" />
+    <Compile Remove="Models\Hub\**" />
     <Content Remove="ClientApp\**" />
+    <Content Remove="Models\Hub\**" />
     <EmbeddedResource Remove="ClientApp\**" />
+    <EmbeddedResource Remove="Models\Hub\**" />
     <None Remove="ClientApp\**" />
+    <None Remove="Models\Hub\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,10 +35,6 @@
     </PackageReference>
     <PackageReference Include="MySqlConnector" Version="2.4.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\Hub\" />
   </ItemGroup>
 
 </Project>

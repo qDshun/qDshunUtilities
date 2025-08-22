@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using qDshunUtilities.EF.Entities;
-using qDshunUtilities.EF.Entities.RenderableObjects;
+using qDshunUtilities.EF.Entities.Map;
 using qDshunUtilities.EF.Entities.WorldObjects;
-using System.Reflection.Emit;
 
 namespace qDshunUtilities.EF;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : IdentityUserContext<UserEntity, Guid>(options)
 {
     public DbSet<ChatMessageEntity> ChatMessages { get; set; }
@@ -15,6 +14,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<LootSourceEntity> LootSources { get; set; }
     public DbSet<ObjectFieldEntity> ObjectFields { get; set; }
     public DbSet<PermissionEntity> Permissions { get; set; }
+    public DbSet<MapEntity> Maps { get; set; }
+    public DbSet<RenderableObjectEntity> RenderableObjects { get; set; }
     public DbSet<TemplateEntity> Templates { get; set; }
     override public DbSet<UserEntity> Users { get; set; }
     public DbSet<WorldEntity> Worlds { get; set; }
@@ -46,6 +47,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .WithMany()
             .HasForeignKey(e => e.PreviousId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<WorldObjectEntity>()
+           .HasIndex(e => new { e.ParentId, e.PreviousId })
+           .IsUnique()
+           .HasFilter("[IsPrimary] = 1");
+
 
         builder.Entity<CharacterSheetEntity>().HasBaseType<TemplatedWorldObjectEntity>();
         builder.Entity<FolderEntity>().HasBaseType<WorldObjectEntity>();

@@ -1,6 +1,6 @@
 ﻿namespace qDshunUtilities.EF.Entities;
 
-public class WorldUserEntity: BaseEntity
+public class WorldUserEntity : BaseEntity
 {
     public Guid UserId { get; set; }
     public UserEntity User { get; set; }
